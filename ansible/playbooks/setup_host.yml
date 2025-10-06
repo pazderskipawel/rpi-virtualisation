@@ -1,0 +1,41 @@
+- name: Setup QEMU/libvirt on Raspberry Pi
+  hosts: rpi
+  become: yes
+  
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install QEMU and libvirt packages
+      ansible.builtin.apt:
+        name:
+          - qemu-system-aarch64
+          - qemu-utils
+          - qemu-efi-aarch64
+          - libvirt-daemon-system
+          - libvirt-clients
+          - virtinst
+        state: present
+
+    - name: Add user to libvirt groups
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups:
+          - libvirt
+          - libvirt-qemu
+          - kvm
+        append: yes
+
+    - name: Enable and start libvirtd service
+      ansible.builtin.systemd:
+        name: libvirtd
+        enabled: yes
+        state: started
+
+    - name: Create VM storage directory
+      ansible.builtin.file:
+        path: /var/lib/libvirt/images
+        state: directory
+        mode: '0755'
