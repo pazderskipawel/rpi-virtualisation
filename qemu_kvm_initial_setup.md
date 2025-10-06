@@ -2,7 +2,7 @@
 
 This document walks through the initial steps to install and validate QEMU/KVM and libvirt on a Raspberry Pi (RPi 5 or similar arm64 device). It covers package installation, service setup, basic verification
 
-It's planned to move it to CICD to automate installation on Raspberries
+It's planned to move it to Ansible to automate installation on Raspberries
 
 ## 1. Fully update the OS
 

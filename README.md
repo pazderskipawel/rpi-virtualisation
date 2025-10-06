@@ -16,14 +16,13 @@ This repository documents and contains supporting material for running virtual m
 - Raspberry Pi OS (or a Debian-based distribution for arm64)
 - QEMU
 - libvirt (libvirtd)
-- Optional tooling (planned): Ansible, Terraform, CI/CD tooling
+- Ansible, Docker
 
 ## Goals / Planned work
 
 - Use Ansible for VM and host configuration management
-- Use Terraform to declare and manage VM instances, networks, and storage
-- Add CI/CD pipelines to validate and automate builds and deployments
-- Document tuning and performance notes for KVM/QEMU on Raspberry Pi
+- Use Docker if app does not require separate OS
+- Add CI/CD pipelines when needed
 
 ## Prerequisites
 
