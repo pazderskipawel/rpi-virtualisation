@@ -14,8 +14,6 @@ This repository documents and contains supporting material for running virtual m
 ## Software stack
 
 - Raspberry Pi OS (or a Debian-based distribution for arm64)
-- QEMU
-- libvirt (libvirtd)
 - Ansible, Docker
 
 ## Prerequisites
