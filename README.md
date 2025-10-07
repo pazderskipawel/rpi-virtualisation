@@ -1,6 +1,6 @@
 # rpi-virtualisation
 
-Create and manage virtual machines on a Raspberry Pi (RPi 5) using QEMU and libvirt.
+Create and manage virtual machines and containers on a Raspberry Pi (RPi 5)
 
 ## Overview
 
@@ -34,6 +34,8 @@ PC
   - configuring host for qemu/KVM virtualisation
 - docker
   - runs container with ansible 
+
+  
 Raspberry PI
 ## Planned architecture
 Raspberry PI
@@ -43,5 +45,7 @@ Raspberry PI
 - docker 
   - klipper container for managing my 3d printer
   - some kind of ui for managing VMs and containers (Ansible Semaphore probably)
+
+
 Repository
 - Actions for pulling current repo to raspberry pi and launching everyting new
