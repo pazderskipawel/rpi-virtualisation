@@ -1,0 +1,28 @@
+name: Deploy app to Pi
+
+on:
+#  push:
+#    paths-ignore:
+#      - 'README.md'
+#      - 'LICENSE.md'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true 
+
+jobs:   
+  checkout-code:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+  setup-host:
+    needs: checkout-code
+    runs-on: self-hosted
+    steps:
+      - name: Setup Ansible
+        uses: dawidd6/action-ansible@v2.1.4
+      - name: Run Ansible Playbook to setup host for VMs
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbooks/setup_host.yml
+  
