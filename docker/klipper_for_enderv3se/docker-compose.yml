@@ -4,7 +4,8 @@ services:
     container_name: klipper
     privileged: true
     volumes:
-      - /home/rpi/printer_data/config:/opt/printer_data/config
+      - /home/rpi/printer_data/config/printer.cfg:/opt/printer_data/config/printer.cfg
+      - /home/rpi/printer_data/config/macros.cfg:/opt/printer_data/config/macros.cfg
       - /dev:/dev
     networks: 
       - klipper-net
@@ -19,7 +20,7 @@ services:
     ports:
       - "7125:7125"
     volumes:
-      - /home/rpi/printer_data/config:/opt/printer_data/config
+      - /home/rpi/printer_data/config/moonraker.conf:/opt/printer_data/config/moonraker.conf
     networks: 
       - klipper-net
     restart: unless-stopped
@@ -31,8 +32,6 @@ services:
       - moonraker
     ports:
       - "8080:80"
-    volumes:
-      - /home/rpi/printer_data/config:/printer_data/config
     networks: 
       - klipper-net
     restart: unless-stopped
