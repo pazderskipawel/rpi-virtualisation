@@ -6,8 +6,7 @@ services:
     ports:
       - "7125:7125"
     volumes:
-      - ./config:/printer_data/config
-      - ./logs:/printer_data/logs
+      - ~/printer-data/config:/printer_data/config
       - /dev:/dev
     networks: 
       - klipper-net
@@ -20,7 +19,7 @@ services:
     depends_on:
       - klipper
     volumes:
-      - ./config:/printer_data/config
+      - ~/printer-data/config:/printer_data/config
     networks: 
       - klipper-net
     restart: unless-stopped
@@ -33,7 +32,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./config:/printer_data/config
+      - ~/printer-data/config:/printer_data/config
     networks: 
       - klipper-net
     restart: unless-stopped
