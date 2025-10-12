@@ -1,5 +1,5 @@
 - name: Setup QEMU/libvirt on Raspberry Pi
-  hosts: [localhost,rpi]
+  hosts: localhost
   become: yes
   
   tasks:
