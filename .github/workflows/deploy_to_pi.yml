@@ -24,6 +24,7 @@ jobs:
         run: |
           if ! [ -x "$(command -v ansible)" ]; then
             cd /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/ansible
+            chmod +x ansible_install.sh
             ./ansible_install.sh
           fi
       - name: Run Ansible Playbook to setup host for docker and VMs
