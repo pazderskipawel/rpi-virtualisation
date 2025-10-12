@@ -4,7 +4,7 @@ services:
     container_name: klipper
     privileged: true
     volumes:
-      - ~/printer-data/config:/printer_data/config
+      - ~/printer-data/config:/printer_data/config:ro
       - /dev:/dev
     networks: 
       - klipper-net
@@ -19,7 +19,7 @@ services:
     ports:
       - "7125:7125"
     volumes:
-      - ~/printer-data/config:/opt/printer_data/config
+      - ~/printer-data/config:/opt/printer_data/config:ro
     networks: 
       - klipper-net
     restart: unless-stopped
@@ -32,7 +32,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ~/printer-data/config:/printer_data/config
+      - ~/printer-data/config:/printer_data/config:ro
     networks: 
       - klipper-net
     restart: unless-stopped
