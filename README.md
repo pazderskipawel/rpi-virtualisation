@@ -2,6 +2,7 @@
 
 Create and manage virtual machines and containers on a Raspberry Pi (RPi 5)
 
+
 ## Overview
 
 This repository documents and contains supporting material for running virtual machines on a Raspberry Pi 5 (8GB) with an attached SSD. The goal is to have a reproducible, automated environment for provisioning and managing VMs and their networking using infrastructure-as-code tools.
@@ -30,6 +31,8 @@ On a fresh Raspberry Pi OS (64-bit) install, ensure you have:
 GITHUB ACTIONS:
   - CICD:
     - installs ansible on rpi if not installed
+  - [![Deploy app to Pi](https://github.com/pazderskipawel/rpi-virtualisation/actions/workflows/deploy_to_pi.yml/badge.svg?branch=main)](https://github.com/pazderskipawel/rpi-virtualisation/actions/workflows/deploy_to_pi.yml)
+  
 RPI:
   - ANSIBLE:
     - praperes host for running VMs and docker containers
