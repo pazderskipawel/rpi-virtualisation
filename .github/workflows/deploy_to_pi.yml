@@ -1,10 +1,9 @@
 name: Deploy app to Pi
 
 on:
-#  push:
-#    paths-ignore:
-#      - 'README.md'
-#      - 'LICENSE.md'
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -15,6 +14,10 @@ jobs:
   checkout-code:
     runs-on: self-hosted
     steps:
+      - name: Configure Git
+        run: |
+          git config user.name "${{ secrets.GIT_USERNAME }}"
+          git config user.email "${{ secrets.GIT_EMAIL }}"
       - name: Checkout code
         uses: actions/checkout@v4.2.2
   setup-host:
@@ -25,4 +28,18 @@ jobs:
         uses: dawidd6/action-ansible@v2.1.4
       - name: Run Ansible Playbook to setup host for VMs
         run: ansible-playbook -i ansible/inventory.yml ansible/playbooks/setup_host.yml
-  
+    continue-on-error: true
+  start-klipper:
+    needs: checkout-code
+    runs-on: self-hosted
+    steps:
+      - name: Check if docker-compose is installed
+        run: |
+         if ! [ -x "$(command -v docker-compose)" ]; then
+           echo 'Error: docker-compose is not installed.' >&2
+           exit 1
+         fi
+      - name: Start klipper containers
+        run: |
+          cd docker/klipper_for_enderv3se
+          docker-compose up -d --build

@@ -1,0 +1,44 @@
+services:
+  klipper:
+    image: Arksine/klipper:latest
+    container_name: klipper
+    privileged: true
+    ports:
+      - "7125:7125"
+    volumes:
+      - ./config:/printer_data/config
+      - ./logs:/printer_data/logs
+      - /dev:/dev
+    networks: 
+      - klipper-net
+    restart: unless-stopped
+
+  moonraker:
+    image: Arksine/moonraker:latest
+    container_name: moonraker
+    network_mode: "host"
+    privileged: true
+    depends_on:
+      - klipper
+    volumes:
+      - ./config:/printer_data/config
+    networks: 
+      - klipper-net
+    restart: unless-stopped
+
+  fluidd:
+    image: cadriel/fluidd:latest
+    container_name: fluidd
+    depends_on:
+      - moonraker
+    ports:
+      - "8080:80"
+    volumes:
+      - ./config:/printer_data/config
+    networks: 
+      - klipper-net
+    restart: unless-stopped
+
+networks:
+  klipper-net:  
+    driver: bridge
