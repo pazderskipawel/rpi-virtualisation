@@ -23,9 +23,9 @@ jobs:
       - name: install Ansible if not present
         run: |
           if ! [ -x "$(command -v ansible)" ]; then
-            cd ../ansible
             ./install-ansible.sh
           fi
+        working-directory: /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/ansible
       - name: Run Ansible Playbook to setup host for docker and VMs
         run: ansible-playbook -i ansible/inventory.yml ansible/playbooks/setup_host.yml
-        working-directory: ../../ansible
+        working-directory: /home/rpi/actions_repos/rpi_virtualisation/rpi-virtualisation/ansible
