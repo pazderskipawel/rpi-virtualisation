@@ -3,8 +3,6 @@ services:
     image: mkuf/klipper:latest
     container_name: klipper
     privileged: true
-    ports:
-      - "7125:7125"
     volumes:
       - ~/printer-data/config:/printer_data/config
       - /dev:/dev
@@ -18,8 +16,10 @@ services:
     privileged: true
     depends_on:
       - klipper
+    ports:
+      - "7125:7125"
     volumes:
-      - ~/printer-data/config:/printer_data/config
+      - ~/printer-data/config:/opt/printer_data/config
     networks: 
       - klipper-net
     restart: unless-stopped
