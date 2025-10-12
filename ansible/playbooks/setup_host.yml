@@ -26,7 +26,7 @@
 
     - name: start klipper containers from docker-compose file (to be in a separate playbook later)
       ansible.builtin.command:
-        chdir: /home/{{ ansible_user }}/actions-repos/rpi-virtualisation/rpi-virtualisation/docker/klipper_for_enderv3se
+        chdir: /home/{{ ansible_user }}/actions_repos/rpi-virtualisation/rpi-virtualisation/docker/klipper_for_enderv3se
         cmd: docker-compose up -d
 
     - name: Install QEMU and libvirt packages
