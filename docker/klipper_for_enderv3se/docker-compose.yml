@@ -16,7 +16,6 @@ services:
   moonraker:
     image: Arksine/moonraker:latest
     container_name: moonraker
-    network_mode: "host"
     privileged: true
     depends_on:
       - klipper
