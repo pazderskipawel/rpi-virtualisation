@@ -1,6 +1,6 @@
 services:
   klipper:
-    image: Arksine/klipper:latest
+    image: mkuf/klipper:latest
     container_name: klipper
     privileged: true
     ports:
@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   moonraker:
-    image: Arksine/moonraker:latest
+    image: mkuf/moonraker:latest
     container_name: moonraker
     privileged: true
     depends_on:
