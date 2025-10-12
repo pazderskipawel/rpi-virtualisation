@@ -4,24 +4,30 @@ services:
     container_name: klipper
     privileged: true
     volumes:
-      - /home/rpi/printer_data/config:/opt/printer_data/config
+      - /home/rpi/printer_data/config:/opt/printer_data/config:ro
+      - /home/rpi/printer_data/run:/opt/printer_data/run
       - /dev:/dev
-    networks: 
+    networks:
       - klipper-net
     restart: unless-stopped
 
   moonraker:
     image: mkuf/moonraker:latest
     container_name: moonraker
-    privileged: true
     depends_on:
       - klipper
-    ports:
-      - "7125:7125"
     volumes:
-      - /home/rpi/printer_data/config:/opt/printer_data/config
-    networks: 
+      - /home/rpi/printer_data/config:/opt/printer_data/config:ro
+      - /home/rpi/printer_data/run:/opt/printer_data/run
+      - /home/rpi/printer_data/gcodes:/opt/printer_data/gcodes
+      - /home/rpi/printer_data/logs:/opt/printer_data/logs
+    networks:
       - klipper-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.moonraker.loadbalancer.server.port=7125"
+      - "traefik.http.routers.moonraker.rule=PathPrefix(`/websocket`) || PathPrefix(`/printer`) || PathPrefix(`/api`) || PathPrefix(`/access`) || PathPrefix(`/machine`) || PathPrefix(`/server`)"
+      - "traefik.http.routers.moonraker.entrypoints=web"
     restart: unless-stopped
 
   fluidd:
@@ -29,12 +35,30 @@ services:
     container_name: fluidd
     depends_on:
       - moonraker
+    networks:
+      - klipper-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.fluidd.loadbalancer.server.port=80"
+      - "traefik.http.routers.fluidd.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.fluidd.entrypoints=web"
+    restart: unless-stopped
+
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     ports:
-      - "8080:80"
-    networks: 
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
       - klipper-net
     restart: unless-stopped
 
 networks:
-  klipper-net:  
+  klipper-net:
     driver: bridge
