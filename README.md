@@ -27,14 +27,14 @@ On a fresh Raspberry Pi OS (64-bit) install, ensure you have:
 - If you're using the official Raspberry Pi SSD board, ensure the board and M.2 drive are properly seated and that any required firmware/kernel updates are applied. Some boards may need extra power or cooling under sustained load.
 
 ## Current architecture
-PC 
-- ansilbe playbooks 
-  - configuring host for qemu/KVM virtualisation
-- docker
-  - runs container with ansible 
-
-  
-Raspberry PI
+GITHUB ACTIONS:
+  - CICD:
+    - installs ansible on rpi if not installed
+RPI:
+  - ANSIBLE:
+    - praperes host for running VMs and docker containers
+  - DOCKER:
+    - compose file for klipper 
 ## Planned architecture
 Raspberry PI
 - ansible playbooks (ansible running locally)
@@ -43,7 +43,5 @@ Raspberry PI
 - docker 
   - klipper container for managing my 3d printer
   - some kind of ui for managing VMs and containers (Ansible Semaphore probably)
-
-
 Repository
 - Actions for pulling current repo to raspberry pi and launching everyting new
