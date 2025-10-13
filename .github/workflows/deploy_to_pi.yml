@@ -27,9 +27,9 @@ jobs:
         run: |
           chmod +x ansible_install.sh
           # run the check; if it exits non-zero, run install
-          if ! ansible_install.sh check; then
+          if ! ./ansible_install.sh check; then
             echo "Check failed, running install"
-            ansible_install.sh install
+            ./ansible_install.sh install
           else
             echo "Check passed, skipping install"
           fi
