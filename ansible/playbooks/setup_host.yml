@@ -1,62 +1,20 @@
-- name: Setup QEMU/libvirt on Raspberry Pi
+- name: Setup Raspberry Pi for virtualization
   hosts: localhost
   become: yes
-  
+
   tasks:
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: yes
         cache_valid_time: 3600
 
-    - name: Install docker
-      ansible.builtin.apt:
-        name: docker.io
-        state: present
-
-    - name: Ensure docker service is running
-      ansible.builtin.systemd:
+    - name: Chcek and install docker
+      include_role:
         name: docker
-        enabled: yes
-        state: started
+        tasks_from: check.yml
 
-    - name: Ensure docker-compose is installed
-      ansible.builtin.apt:
-        name: docker-compose
-        state: present
+    - name: check and install QEMU/libvirt
+      include_role:
+        name: qemu
+        tasks_from: check.yml
 
-    - name: start klipper containers from docker-compose file (to be in a separate playbook later)
-      ansible.builtin.command:
-        chdir: /home/{{ ansible_user }}/actions_repos/rpi-virtualisation/rpi-virtualisation/docker/klipper_for_enderv3se
-        cmd: docker-compose up -d
-
-    - name: Install QEMU and libvirt packages
-      ansible.builtin.apt:
-        name:
-          - qemu-system-aarch64
-          - qemu-utils
-          - qemu-efi-aarch64
-          - libvirt-daemon-system
-          - libvirt-clients
-          - virtinst
-        state: present
-
-    - name: Add user to libvirt groups
-      ansible.builtin.user:
-        name: "{{ ansible_user }}"
-        groups:
-          - libvirt
-          - libvirt-qemu
-          - kvm
-        append: yes
-
-    - name: Enable and start libvirtd service
-      ansible.builtin.systemd:
-        name: libvirtd
-        enabled: yes
-        state: started
-
-    - name: Create VM storage directory
-      ansible.builtin.file:
-        path: /var/lib/libvirt/images
-        state: directory
-        mode: '0755'

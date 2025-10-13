@@ -3,7 +3,7 @@ name: Deploy app to Pi
 on:
   push:
     branches:
-      - main
+      - ansible_roles_test
   workflow_dispatch:
 
 concurrency:
@@ -19,13 +19,24 @@ jobs:
   setup-host:
     needs: checkout-code
     runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/ansible
     steps:
-      - name: install Ansible if not present
+      - name: ensure Ansible present and expected config
         run: |
-          if ! [ -x "$(command -v ansible)" ]; then
-            cd /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/ansible
-            chmod +x ansible_install.sh
-            ./ansible_install.sh
+          chmod +x ansible_install.sh
+          # run the check; if it exits non-zero, run install
+          if ! ./ansible_install.sh check; then
+            echo "Check failed, running install"
+            ./ansible_install.sh install
+          else
+            echo "Check passed, skipping install"
           fi
       - name: Run Ansible Playbook to setup host for docker and VMs
-        run: ansible-playbook -i ansible/inventory.yml ansible/playbooks/setup_host.yml
+        run: ansible-playbook playbooks/setup_host.yml
+      - name: Run Ansible Playbook to start containers
+        run: ansible-playbook playbooks/start_containers.yml
+      - name: Run Ansible Playbook to start VMs (failing currently)
+        run: ansible-playbook playbooks/start_vms.yml
+        continue-on-error: true
