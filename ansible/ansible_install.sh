@@ -16,7 +16,7 @@ check_installed() {
         echo "ansible binary not found"
         return 2
     else 
-        if ansible --version 2>&1 | grep -Fxq "$EXPECTED_LINE"; then
+        if ansible --version 2>&1 | grep "$EXPECTED_LINE"; then
             echo "ansible reports expected config file"
             return 0
         else
