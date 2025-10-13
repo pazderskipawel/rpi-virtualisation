@@ -23,11 +23,15 @@ jobs:
       run:
         working-directory: /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/
     steps:
-      - name: install Ansible if not present
+      - name: ensure Ansible present and expected config
         run: |
-          if ! [ -x "$(command -v ansible)" ]; then
-            chmod +x ansible/ansible_install.sh
-            ./ansible/ansible_install.sh
+          chmod +x ansible/ansible_install.sh
+          # run the check; if it exits non-zero, run install
+          if ! ansible/ansible_install.sh check; then
+            echo "Check failed, running install"
+            ansible/ansible_install.sh install
+          else
+            echo "Check passed, skipping install"
           fi
       - name: Run Ansible Playbook to setup host for docker and VMs
         run: ansible-playbook ansible/playbooks/setup_host.yml
