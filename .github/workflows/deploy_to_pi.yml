@@ -3,7 +3,7 @@ name: Deploy app to Pi
 on:
   push:
     branches:
-      - ansible_roles_test
+      - main
   workflow_dispatch:
 
 concurrency:
