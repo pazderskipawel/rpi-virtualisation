@@ -1,0 +1,15 @@
+- name: Raspberry Pi for virtualization
+  hosts: localhost
+  vars:
+    run_docker: true
+    run_qemu: true
+    run_klipper: false
+  roles:
+    - role: raspberry
+    - role: docker
+      when: run_docker
+    - role: klipper
+      when: run_klipper and run_docker
+    - role: qemu
+      when: run_qemu
+    

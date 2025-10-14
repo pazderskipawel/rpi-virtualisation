@@ -1,1 +1,1 @@
-here will dockerised versrion of https://athemis.me/projects/klipper_guide/ project 
+dockerised versrion of https://athemis.me/projects/klipper_guide/ project 

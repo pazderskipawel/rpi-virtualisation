@@ -35,16 +35,15 @@ GITHUB ACTIONS:
   
 RPI:
   - ANSIBLE:
+    - uses roles
     - praperes host for running VMs and docker containers
+    - configures host for qemu/KVM and docker virtualisation
+    - starts containres
   - DOCKER:
     - compose file for klipper 
 ## Planned architecture
 Raspberry PI
-- ansible playbooks (ansible running locally)
-  - configuring host for qemu/KVM virtualisation
+- ansible 
   - managing Home Assistant OS VM
 - docker 
-  - klipper container for managing my 3d printer
   - some kind of ui for managing VMs and containers (Ansible Semaphore probably)
-Repository
-- Actions for pulling current repo to raspberry pi and launching everyting new

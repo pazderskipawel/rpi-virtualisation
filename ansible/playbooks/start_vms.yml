@@ -1,5 +1,0 @@
-- name: Start containers on Raspberry Pi
-  hosts: localhost
-  become: yes
-
-  tasks:

@@ -33,10 +33,5 @@ jobs:
           else
             echo "Check passed, skipping install"
           fi
-      - name: Run Ansible Playbook to setup host for docker and VMs
-        run: ansible-playbook playbooks/setup_host.yml
-      - name: Run Ansible Playbook to start containers
-        run: ansible-playbook playbooks/start_containers.yml
-      - name: Run Ansible Playbook to start VMs (failing currently)
-        run: ansible-playbook playbooks/start_vms.yml
-        continue-on-error: true
+      - name: Run Ansible Playbook to set up host and run everything
+        run: ansible-playbook run_everything.yml -e run_klipper=true

@@ -1,9 +1,0 @@
-- name: Start containers on Raspberry Pi
-  hosts: localhost
-  become: yes
-
-  tasks:
-      - name: run klipper containers
-        include_role:
-          name: docker
-          tasks_from: run_klipper.yml

@@ -4,8 +4,10 @@ services:
     container_name: klipper
     privileged: true
     volumes:
-      - /home/rpi/printer_data/config:/opt/printer_data/config:ro
+      - /home/rpi/printer_data/config:/opt/printer_data/config
       - /home/rpi/printer_data/run:/opt/printer_data/run
+      - /home/rpi/printer_data/gcodes:/opt/printer_data/gcodes
+      - /home/rpi/printer_data/logs:/opt/printer_data/logs
       - /dev:/dev
     networks:
       - klipper-net
@@ -17,7 +19,7 @@ services:
     depends_on:
       - klipper
     volumes:
-      - /home/rpi/printer_data/config:/opt/printer_data/config:ro
+      - /home/rpi/printer_data/config:/opt/printer_data/config
       - /home/rpi/printer_data/run:/opt/printer_data/run
       - /home/rpi/printer_data/gcodes:/opt/printer_data/gcodes
       - /home/rpi/printer_data/logs:/opt/printer_data/logs
