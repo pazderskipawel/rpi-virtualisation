@@ -4,10 +4,10 @@
     - role: raspberry
       tags: [always]
     - role: docker
-      when: [always]
+      tags: [always]
     - role: qemu
-      when: [always]
+      tags: [always]
     - role: klipper
-      when: [klipper]
+      tags: [klipper]
     - role: cockpit
-      when: [cockpit]
+      tags: [cockpit]
