@@ -4,7 +4,14 @@
         - docker.io
         - docker-compose
       state: present
-      
+  
+  - name: Add user to docker groups
+    ansible.builtin.user:
+      name: "{{ ansible_user }}"
+      groups:
+        - docker
+      append: yes
+
   - name: Enable and start docker service
     ansible.builtin.systemd:
       name: docker
