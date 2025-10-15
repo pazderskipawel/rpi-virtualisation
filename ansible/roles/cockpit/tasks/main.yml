@@ -5,7 +5,7 @@
       - cockpit-machines      # QEMU/KVM VMs management
       - cockpit-networkmanager
       - cockpit-storaged
-      - cockpit-files
+      - cockpit-sosreport
     state: present
 
 - name: Download Cockpit Docker Manager # Docker management plugin
