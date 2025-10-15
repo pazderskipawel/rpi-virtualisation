@@ -3,10 +3,36 @@
     name:
       - cockpit
       - cockpit-machines      # Zarządzanie QEMU/KVM VMs
-      - cockpit-podman        # Zarządzanie Docker/Podman
       - cockpit-networkmanager
       - cockpit-storaged
     state: present
+
+- name: Download Cockpit Docker Manager # zarządzanie kontenerami Docker
+  ansible.builtin.get_url:
+    url: https://github.com/chrisjbawden/cockpit-dockermanager/releases/download/latest/dockermanager.deb
+    dest: /tmp/dockermanager.deb
+    mode: '0644'
+
+- name: Install Cockpit Docker Manager
+  ansible.builtin.apt:
+    deb: /tmp/dockermanager.deb
+    state: present
+
+- name: Clean up downloaded .deb file
+  ansible.builtin.file:
+    path: /tmp/dockermanager.deb
+    state: absent
+
+- name: Enable and start cockpit.socket
+  ansible.builtin.systemd:
+    name: cockpit.socket
+    enabled: yes
+    state: started
+
+- name: Restart Cockpit to load Docker Manager
+  ansible.builtin.systemd:
+    name: cockpit.socket
+    state: restarted
 
 - name: Enable and start cockpit.socket
   ansible.builtin.systemd:
