@@ -7,7 +7,7 @@ Create and manage virtual machines and containers on a Raspberry Pi (RPi 5)
 
 This repository documents and contains supporting material for running virtual machines on a Raspberry Pi 5 (8GB) with an attached SSD. The goal is to have a reproducible, automated environment for provisioning and managing VMs and their networking using infrastructure-as-code tools.
 
-## Hardware
+## Current Hardware
 
 - Raspberry Pi 5 (8 GB)
 - Official Raspberry Pi NVMe/M.2 SSD expansion board (official SSD HAT) — e.g. NVMe M.2 drive (256 GB)
@@ -16,34 +16,34 @@ This repository documents and contains supporting material for running virtual m
 
 - Raspberry Pi OS (or a Debian-based distribution for arm64)
 - Ansible, Docker
-
-## Prerequisites
-
-On a fresh Raspberry Pi OS (64-bit) install, ensure you have:
-
-- Sufficient disk space on the SSD
-- A non-root user with sudo privileges
-- A network connection (for package installs and optional remote management)
-
-- If you're using the official Raspberry Pi SSD board, ensure the board and M.2 drive are properly seated and that any required firmware/kernel updates are applied. Some boards may need extra power or cooling under sustained load.
+- GitHub Actions runner (optional, for running simple pipeline)
 
 ## Current architecture
 GITHUB ACTIONS:
   - CICD:
-    - installs ansible on rpi if not installed
+    - checks out code
+    - runs playbook which runs docker and qemu
   - [![Deploy app to Pi](https://github.com/pazderskipawel/rpi-virtualisation/actions/workflows/deploy_to_pi.yml/badge.svg?branch=main)](https://github.com/pazderskipawel/rpi-virtualisation/actions/workflows/deploy_to_pi.yml)
   
 RPI:
-  - ANSIBLE:
-    - uses roles
-    - praperes host for running VMs and docker containers
-    - configures host for qemu/KVM and docker virtualisation
-    - starts containres
+  - ANSIBLE (managing raspberry itself):
+    - raspberry:
+      - updates apt
+    - qemu:
+      - Prepares and starts qemu, libvrt
+    - docker:
+      - installs and runs docker and docker compose
+    - klipper:
+      - runs docker copose with services managing 3d-printer
   - DOCKER:
-    - compose file for klipper 
+    - compose file for managing 3d printer 
 ## Planned architecture
-Raspberry PI
-- ansible 
-  - managing Home Assistant OS VM
-- docker 
+RPI:
+- ANSIBLE: 
+  - haos
+    - setup and run Home Assistant OS VM
+    - default task for managing existing VMs
+- DOCKER:
   - some kind of ui for managing VMs and containers (Ansible Semaphore probably)
+  - VPN to be able to connect to RPI remotelly (WireGuard probably)
+  - SMB or FTP server
