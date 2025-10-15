@@ -4,6 +4,7 @@
     run_docker: true
     run_qemu: true
     run_klipper: false
+    run_cockpit: false
   roles:
     - role: raspberry
     - role: docker
@@ -12,4 +13,6 @@
       when: run_klipper and run_docker
     - role: qemu
       when: run_qemu
+    - role: cockpit
+      when: run_cockpit
     

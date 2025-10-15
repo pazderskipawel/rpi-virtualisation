@@ -1,0 +1,15 @@
+- name: Install Cockpit and modules
+  ansible.builtin.apt:
+    name:
+      - cockpit
+      - cockpit-machines      # Zarządzanie QEMU/KVM VMs
+      - cockpit-podman        # Zarządzanie Docker/Podman
+      - cockpit-networkmanager
+      - cockpit-storaged
+    state: present
+
+- name: Enable and start cockpit.socket
+  ansible.builtin.systemd:
+    name: cockpit.socket
+    enabled: yes
+    state: started

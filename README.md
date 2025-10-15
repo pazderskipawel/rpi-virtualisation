@@ -35,6 +35,8 @@ RPI:
       - installs and runs docker and docker compose
     - klipper:
       - runs docker copose with services managing 3d-printer
+    - cockpit:
+      - UI for containers and vms
   - DOCKER:
     - compose file for managing 3d printer 
 ## Planned architecture
@@ -44,6 +46,5 @@ RPI:
     - setup and run Home Assistant OS VM
     - default task for managing existing VMs
 - DOCKER:
-  - some kind of ui for managing VMs and containers (Ansible Semaphore probably)
   - VPN to be able to connect to RPI remotelly (WireGuard probably)
   - SMB or FTP server
