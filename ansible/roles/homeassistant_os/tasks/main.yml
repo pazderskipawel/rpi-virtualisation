@@ -121,20 +121,21 @@
           name: "{{ haos_vm_name }}"
           command: get-ip-address
         register: vm_ip
-        until: vm_ip.stdout != ""
+        until: vm_ip != ""
         retries: 3
         delay: 10
 
-      - name: Show VM info
-        ansible.builtin.debug:
-          msg:
-            - "Home Assistant OS VM created successfully:"
-            - "Name: {{ haos_vm_name }}"
-            - "Memory: {{ haos_memory_mb }}MB"
-            - "CPUs: {{ haos_vcpus }}"
-            - "Disk: {{ haos_disk_gb }}GB"
-            - "IP: {{ vm_ip.stdout | default('Waiting for IP...') }}"
-            - "Web UI will be available at: http://VM-IP:8123"
+  - name: Show VM info
+    ansible.builtin.debug:
+      msg:
+        - "Home Assistant OS VM created successfully:"
+        - "Name: {{ haos_vm_name }}"
+        - "Memory: {{ haos_memory_mb }}MB"
+        - "CPUs: {{ haos_vcpus }}"
+        - "Disk: {{ haos_disk_gb }}GB"
+        - "IP: {{ vm_ip | default('Waiting for IP...') }}"
+        - "Web UI will be available at: http://{{ vm_ip | default('VM-IP') }}:8123"
+
 
   - name: Show existing VM info
     when: haos_vm_name in existing_vms.list_vms
