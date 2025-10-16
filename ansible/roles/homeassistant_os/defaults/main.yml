@@ -1,0 +1,19 @@
+# Default values for HAOS setup
+haos_vm_name: "homeassistant"
+haos_memory_mb: 4096
+haos_vcpus: 2
+haos_disk_gb: 32
+
+# Latest HAOS image URL - update as needed
+haos_image_url: "https://github.com/home-assistant/operating-system/releases/download/11.1/haos_ova-11.1.qcow2.xz"
+haos_image_filename: "haos_ova-11.1.qcow2.xz"
+
+# Directory for images
+images_dir: "/var/lib/libvirt/images"
+
+# Network settings
+network_name: "default"
+network_type: "network"
+
+# Whether to enable autostart
+enable_autostart: false

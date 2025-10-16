@@ -1,0 +1,75 @@
+# Setup tasks for HAOS - downloads image and creates VM
+  - name: Create images directory
+    ansible.builtin.file:
+      path: "{{ images_dir }}"
+      state: directory
+      mode: '0755'
+
+  - name: Download HAOS image
+    ansible.builtin.get_url:
+      url: "{{ haos_image_url }}"
+      dest: "{{ images_dir }}/{{ haos_image_filename }}"
+      mode: '0644'
+
+  - name: Extract image if compressed
+    ansible.builtin.command:
+      cmd: "unxz -k {{ images_dir }}/{{ haos_image_filename }}"
+    when: haos_image_filename.endswith('.xz')
+    register: unxz_result
+    changed_when: unxz_result.rc == 0
+
+  - name: Set final image path
+    ansible.builtin.set_fact:
+      final_image: "{{ images_dir }}/{{ haos_image_filename | regex_replace('\\.xz$', '') }}"
+
+  - name: Create VM using virt-install
+    ansible.builtin.command:
+      cmd: >-
+        virt-install
+        --name {{ haos_vm_name }}
+        --memory {{ haos_memory_mb }}
+        --vcpus {{ haos_vcpus }}
+        --disk path={{ final_image }},format=qcow2,bus=virtio,size={{ haos_disk_gb }}
+        --import
+        --os-variant generic
+        {% if network_type == 'bridge' %}
+        --network bridge={{ bridge_name }},model=virtio
+        {% else %}
+        --network network={{ network_name }},model=virtio
+        {% endif %}
+        --graphics none
+        --noautoconsole
+        --boot uefi
+    args:
+      creates: "/etc/libvirt/qemu/{{ haos_vm_name }}.xml"
+
+  - name: Enable autostart if requested
+    community.libvirt.virt:
+      name: "{{ haos_vm_name }}"
+      autostart: "{{ enable_autostart | bool }}"
+    when: enable_autostart | bool
+
+  - name: Start VM
+    community.libvirt.virt:
+      name: "{{ haos_vm_name }}"
+      state: running
+
+  - name: Wait for IP address
+    community.libvirt.virt:
+      name: "{{ haos_vm_name }}"
+      command: get-ip-address
+    register: vm_ip
+    until: vm_ip.stdout != ""
+    retries: 3
+    delay: 10
+
+  - name: Show VM info
+    ansible.builtin.debug:
+      msg:
+        - "Home Assistant OS VM created successfully:"
+        - "Name: {{ haos_vm_name }}"
+        - "Memory: {{ haos_memory_mb }}MB"
+        - "CPUs: {{ haos_vcpus }}"
+        - "Disk: {{ haos_disk_gb }}GB"
+        - "IP: {{ vm_ip.stdout | default('Waiting for IP...') }}"
+        - "Web UI will be available at: http://VM-IP:8123"
