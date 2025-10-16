@@ -89,7 +89,6 @@
           cmd: >-
             virt-install
             --name {{ haos_vm_name }}
-            --description "Home Assistant OS"
             --os-variant=generic
             --ram={{ haos_memory_mb }}
             --vcpus={{ haos_vcpus }}
@@ -98,7 +97,6 @@
             --import
             --graphics none
             --boot uefi
-            --noautoconsole
         args:
           creates: "/etc/libvirt/qemu/{{ haos_vm_name }}.xml"
 
