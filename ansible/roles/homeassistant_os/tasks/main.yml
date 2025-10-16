@@ -25,7 +25,7 @@
 
       - name: Check if image already exists
         ansible.builtin.stat:
-          path: "{{ images_dir }}/{{ haos_image_filename }}"
+          path: "{{ images_dir }}/{{ haos_image_filename | regex_replace('\\.xz$', '') }}"
         register: image_file
 
       - name: Download image if not present
@@ -40,7 +40,7 @@
 
           - name: Extract image if compressed
             ansible.builtin.command:
-              cmd: "unxz -k {{ images_dir }}/{{ haos_image_filename }}"
+              cmd: "unxz {{ images_dir }}/{{ haos_image_filename }}"
             when: haos_image_filename.endswith('.xz')
             register: unxz_result
             changed_when: unxz_result.rc == 0
