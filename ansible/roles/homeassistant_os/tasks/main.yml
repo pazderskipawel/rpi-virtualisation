@@ -91,7 +91,7 @@
             --name {{ haos_vm_name }}
             --memory {{ haos_memory_mb }}
             --vcpus {{ haos_vcpus }}
-            --disk path={{ final_image }},format=qcow2,bus=virtio,size={{ haos_disk_gb }}
+            --disk path={{ final_image }},bus=virtio
             --import
             --os-variant generic
             {% if network_type == 'bridge' %}
