@@ -1,4 +1,4 @@
     - name: start klipper containers from docker-compose file
       ansible.builtin.command:
-        chdir: "{{path_to_repo}}docker/klipper_for_enderv3se"
+        chdir: "{{ role_path }}/files"
         cmd: docker-compose up -d
