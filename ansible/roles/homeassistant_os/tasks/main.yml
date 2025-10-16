@@ -92,11 +92,10 @@
             --os-variant=generic
             --ram={{ haos_memory_mb }}
             --vcpus={{ haos_vcpus }}
-            --disk {{ final_image }},bus=scsi
-            --controller type=scsi,model=virtio-scsi
+            --disk {{ final_image }},bus=virtio
             --import
             --graphics none
-            --boot uefi
+            --noautoconsole
         args:
           creates: "/etc/libvirt/qemu/{{ haos_vm_name }}.xml"
 
