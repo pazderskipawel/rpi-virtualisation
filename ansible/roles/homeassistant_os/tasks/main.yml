@@ -1,113 +1,143 @@
 # Setup tasks for HAOS - downloads image and creates VM
-  - name: Create images directory
-    ansible.builtin.file:
-      path: "{{ images_dir }}"
-      state: directory
-      mode: '0755'
+  - name: Check if VM already exists
+    community.libvirt.virt:
+      command: list_vms
+    register: existing_vms
+    changed_when: false
 
-  - name: Download image
+  - name: Check VM status if exists
+    community.libvirt.virt:
+      name: "{{ haos_vm_name }}"
+      command: status
+    register: vm_status
+    when: haos_vm_name in existing_vms.list_vms
+    failed_when: false
+
+  - name: Create and setup HAOS VM if not exists
+    when: haos_vm_name not in existing_vms.list_vms
     block:
 
-    - name: Download HAOS image
-      ansible.builtin.get_url:
-        url: "{{ haos_image_url }}"
-        dest: "{{ images_dir }}/{{ haos_image_filename }}"
-        mode: '0644'
+      - name: Create images directory
+        ansible.builtin.file:
+          path: "{{ images_dir }}"
+          state: directory
+          mode: '0755'
 
-    - name: Extract image if compressed
-      ansible.builtin.command:
-        cmd: "unxz -k {{ images_dir }}/{{ haos_image_filename }}"
-      when: haos_image_filename.endswith('.xz')
-      register: unxz_result
-      changed_when: unxz_result.rc == 0
+      - name: Check if image already exists
+        ansible.builtin.stat:
+          path: "{{ images_dir }}/{{ haos_image_filename }}"
+        register: image_file
 
-    - name: Set final image path
-      ansible.builtin.set_fact:
-        final_image: "{{ images_dir }}/{{ haos_image_filename | regex_replace('\\.xz$', '') }}"
+      - name: Download image if not present
+        when: not image_file.stat.exists
+        block:
 
-  - name: Setup network
-    block:
+          - name: Download HAOS image
+            ansible.builtin.get_url:
+              url: "{{ haos_image_url }}"
+              dest: "{{ images_dir }}/{{ haos_image_filename }}"
+              mode: '0644'
 
-    - name: Check if default network exists
-      community.libvirt.virt_net:
-        command: list_nets
-      register: libvirt_networks
+          - name: Extract image if compressed
+            ansible.builtin.command:
+              cmd: "unxz -k {{ images_dir }}/{{ haos_image_filename }}"
+            when: haos_image_filename.endswith('.xz')
+            register: unxz_result
+            changed_when: unxz_result.rc == 0
 
-    - name: Define default network if missing
-      community.libvirt.virt_net:
-        command: define
-        name: default
-        xml: |
-          <network>
-            <name>default</name>
-            <forward mode='nat'/>
-            <bridge name='virbr0' stp='on' delay='0'/>
-            <ip address='192.168.122.1' netmask='255.255.255.0'>
-              <dhcp>
-                <range start='192.168.122.2' end='192.168.122.254'/>
-              </dhcp>
-            </ip>
-          </network>
-      when: "'default' not in libvirt_networks.list_nets"
+      - name: Set final image path
+        ansible.builtin.set_fact:
+          final_image: "{{ images_dir }}/{{ haos_image_filename | regex_replace('\\.xz$', '') }}"
 
-    - name: Start default network
-      community.libvirt.virt_net:
-        state: active
-        name: default
+      - name: Setup network
+        block:
 
-    - name: Enable autostart for default network
-      community.libvirt.virt_net:
-        autostart: yes
-        name: default
+          - name: Check if default network exists
+            community.libvirt.virt_net:
+              command: list_nets
+            register: libvirt_networks
 
-  - name: Create VM using virt-install
-    ansible.builtin.command:
-      cmd: >-
-        virt-install
-        --name {{ haos_vm_name }}
-        --memory {{ haos_memory_mb }}
-        --vcpus {{ haos_vcpus }}
-        --disk path={{ final_image }},format=qcow2,bus=virtio,size={{ haos_disk_gb }}
-        --import
-        --os-variant generic
-        {% if network_type == 'bridge' %}
-        --network bridge={{ bridge_name }},model=virtio
-        {% else %}
-        --network network={{ network_name }},model=virtio
-        {% endif %}
-        --graphics none
-        --noautoconsole
-        --boot uefi
-    args:
-      creates: "/etc/libvirt/qemu/{{ haos_vm_name }}.xml"
+          - name: Define default network if missing
+            community.libvirt.virt_net:
+              command: define
+              name: default
+              xml: |
+                <network>
+                  <name>default</name>
+                  <forward mode='nat'/>
+                  <bridge name='virbr0' stp='on' delay='0'/>
+                  <ip address='192.168.122.1' netmask='255.255.255.0'>
+                    <dhcp>
+                      <range start='192.168.122.2' end='192.168.122.254'/>
+                    </dhcp>
+                  </ip>
+                </network>
+            when: "'default' not in libvirt_networks.list_nets"
 
-  - name: Enable autostart if requested
-    community.libvirt.virt:
-      name: "{{ haos_vm_name }}"
-      autostart: "{{ enable_autostart | bool }}"
-    when: enable_autostart | bool
+          - name: Start default network
+            community.libvirt.virt_net:
+              state: active
+              name: default
 
-  - name: Start VM
-    community.libvirt.virt:
-      name: "{{ haos_vm_name }}"
-      state: running
+          - name: Enable autostart for default network
+            community.libvirt.virt_net:
+              autostart: yes
+              name: default
 
-  - name: Wait for IP address
-    community.libvirt.virt:
-      name: "{{ haos_vm_name }}"
-      command: get-ip-address
-    register: vm_ip
-    until: vm_ip.stdout != ""
-    retries: 3
-    delay: 10
+      - name: Create VM using virt-install
+        ansible.builtin.command:
+          cmd: >-
+            virt-install
+            --name {{ haos_vm_name }}
+            --memory {{ haos_memory_mb }}
+            --vcpus {{ haos_vcpus }}
+            --disk path={{ final_image }},format=qcow2,bus=virtio,size={{ haos_disk_gb }}
+            --import
+            --os-variant generic
+            {% if network_type == 'bridge' %}
+            --network bridge={{ bridge_name }},model=virtio
+            {% else %}
+            --network network={{ network_name }},model=virtio
+            {% endif %}
+            --graphics none
+            --noautoconsole
+            --boot uefi
+        args:
+          creates: "/etc/libvirt/qemu/{{ haos_vm_name }}.xml"
 
-  - name: Show VM info
+      - name: Enable autostart if requested
+        community.libvirt.virt:
+          name: "{{ haos_vm_name }}"
+          autostart: "{{ enable_autostart | bool }}"
+        when: enable_autostart | bool
+
+      - name: Start VM
+        community.libvirt.virt:
+          name: "{{ haos_vm_name }}"
+          state: running
+
+      - name: Wait for IP address
+        community.libvirt.virt:
+          name: "{{ haos_vm_name }}"
+          command: get-ip-address
+        register: vm_ip
+        until: vm_ip.stdout != ""
+        retries: 3
+        delay: 10
+
+      - name: Show VM info
+        ansible.builtin.debug:
+          msg:
+            - "Home Assistant OS VM created successfully:"
+            - "Name: {{ haos_vm_name }}"
+            - "Memory: {{ haos_memory_mb }}MB"
+            - "CPUs: {{ haos_vcpus }}"
+            - "Disk: {{ haos_disk_gb }}GB"
+            - "IP: {{ vm_ip.stdout | default('Waiting for IP...') }}"
+            - "Web UI will be available at: http://VM-IP:8123"
+
+  - name: Show existing VM info
+    when: haos_vm_name in existing_vms.list_vms
     ansible.builtin.debug:
-      msg:
-        - "Home Assistant OS VM created successfully:"
-        - "Name: {{ haos_vm_name }}"
-        - "Memory: {{ haos_memory_mb }}MB"
-        - "CPUs: {{ haos_vcpus }}"
-        - "Disk: {{ haos_disk_gb }}GB"
-        - "IP: {{ vm_ip.stdout | default('Waiting for IP...') }}"
-        - "Web UI will be available at: http://VM-IP:8123"
+      msg: "VM '{{ haos_vm_name }}' already exists and is {{ vm_status.status }}. Skipping creation."
+
