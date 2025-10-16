@@ -93,11 +93,9 @@
             --vcpus {{ haos_vcpus }}
             --disk {{ final_image }},bus=virtio,format=qcow2
             --network network={{ network_name }},model=virtio
-            --osinfo detect=on,require=off
+            --osinfo generic
             --boot uefi
-            --cpu host
             --graphics none
-            --wait 0
             --noautoconsole
             --import
         args:
