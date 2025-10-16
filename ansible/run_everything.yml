@@ -1,13 +1,13 @@
 - name: Raspberry Pi for virtualization
   hosts: localhost
   roles:
-    - role: raspberry
-      tags: [always]
+    - role: raspberry #runs /roles/raspberry/tasks/main.yml
+      tags: [always] #always run this role
     - role: docker
       tags: [always]
     - role: qemu
       tags: [always]
     - role: klipper
-      tags: [klipper]
+      tags: [klipper] #only run this role if --tags klipper is specified
     - role: cockpit
       tags: [cockpit]

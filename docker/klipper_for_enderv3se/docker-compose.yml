@@ -1,5 +1,5 @@
 services:
-  klipper:
+  klipper: #printing service
     image: mkuf/klipper:latest
     container_name: klipper
     privileged: true
@@ -13,7 +13,7 @@ services:
       - klipper-net
     restart: unless-stopped
 
-  moonraker:
+  moonraker: #api for klipper
     image: mkuf/moonraker:latest
     container_name: moonraker
     depends_on:
@@ -32,7 +32,7 @@ services:
       - "traefik.http.routers.moonraker.entrypoints=web"
     restart: unless-stopped
 
-  fluidd:
+  fluidd: #web interface for klipper
     image: cadriel/fluidd:latest
     container_name: fluidd
     depends_on:
@@ -46,7 +46,7 @@ services:
       - "traefik.http.routers.fluidd.entrypoints=web"
     restart: unless-stopped
 
-  traefik:
+  traefik: #reverse proxy for comunication between moonraker and fluidd
     image: traefik:v2.10
     container_name: traefik
     command:
