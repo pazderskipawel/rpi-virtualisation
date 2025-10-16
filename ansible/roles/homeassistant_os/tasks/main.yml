@@ -116,16 +116,7 @@
           name: "{{ haos_vm_name }}"
           state: running
 
-      - name: Wait for IP address
-        community.libvirt.virt:
-          name: "{{ haos_vm_name }}"
-          command: get-ip-address
-        register: vm_ip
-        until: vm_ip != ""
-        retries: 3
-        delay: 10
-
-  - name: Show VM info
+  - name: Show new VM info
     ansible.builtin.debug:
       msg:
         - "Home Assistant OS VM created successfully:"
@@ -133,9 +124,6 @@
         - "Memory: {{ haos_memory_mb }}MB"
         - "CPUs: {{ haos_vcpus }}"
         - "Disk: {{ haos_disk_gb }}GB"
-        - "IP: {{ vm_ip | default('Waiting for IP...') }}"
-        - "Web UI will be available at: http://{{ vm_ip | default('VM-IP') }}:8123"
-
 
   - name: Show existing VM info
     when: haos_vm_name in existing_vms.list_vms
