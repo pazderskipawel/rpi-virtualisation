@@ -116,14 +116,14 @@
           name: "{{ haos_vm_name }}"
           state: running
 
-  - name: Show new VM info
-    ansible.builtin.debug:
-      msg:
-        - "Home Assistant OS VM created successfully:"
-        - "Name: {{ haos_vm_name }}"
-        - "Memory: {{ haos_memory_mb }}MB"
-        - "CPUs: {{ haos_vcpus }}"
-        - "Disk: {{ haos_disk_gb }}GB"
+      - name: Show new VM info
+        ansible.builtin.debug:
+          msg:
+            - "Home Assistant OS VM created successfully:"
+            - "Name: {{ haos_vm_name }}"
+            - "Memory: {{ haos_memory_mb }}MB"
+            - "CPUs: {{ haos_vcpus }}"
+            - "Disk: {{ haos_disk_gb }}GB"
 
   - name: Show existing VM info
     when: haos_vm_name in existing_vms.list_vms
