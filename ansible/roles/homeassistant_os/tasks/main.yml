@@ -91,17 +91,15 @@
             --name {{ haos_vm_name }}
             --memory {{ haos_memory_mb }}
             --vcpus {{ haos_vcpus }}
-            --disk path={{ final_image }},bus=virtio
-            --import
-            --os-variant generic
-            {% if network_type == 'bridge' %}
-            --network bridge={{ bridge_name }},model=virtio
-            {% else %}
+            --disk {{ final_image }},bus=virtio,format=qcow2
             --network network={{ network_name }},model=virtio
-            {% endif %}
-            --graphics none
-            --noautoconsole
+            --osinfo detect=on,require=off
             --boot uefi
+            --cpu host
+            --graphics none
+            --wait 0
+            --noautoconsole
+            --import
         args:
           creates: "/etc/libvirt/qemu/{{ haos_vm_name }}.xml"
 
