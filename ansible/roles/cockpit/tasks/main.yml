@@ -1,0 +1,52 @@
+- name: Install Cockpit and modules
+  ansible.builtin.apt:
+    name:
+      - cockpit
+      - cockpit-machines      # QEMU/KVM VMs management
+      - cockpit-networkmanager
+      - cockpit-storaged
+      - cockpit-sosreport
+    state: present
+
+# Docker management plugin (third-party plugin)
+- name: Check if Docker Manager is already installed
+  ansible.builtin.shell: |
+    dpkg -l | grep dockermanager
+  register: dockermanager_check
+  ignore_errors: yes
+
+- name: Download and install Docker Manager for cockpit
+  when: dockermanager_check.rc != 0
+  block:
+    - name: Download Cockpit Docker Manager 
+      ansible.builtin.get_url:
+        url: https://github.com/chrisjbawden/cockpit-dockermanager/releases/download/latest/dockermanager.deb
+        dest: /tmp/dockermanager.deb
+        mode: '0644'
+
+    - name: Install Cockpit Docker Manager
+      ansible.builtin.apt:
+        deb: /tmp/dockermanager.deb
+        state: present
+
+    - name: Clean up downloaded .deb file
+      ansible.builtin.file:
+        path: /tmp/dockermanager.deb
+        state: absent
+
+    - name: Enable and start cockpit.socket
+      ansible.builtin.systemd:
+        name: cockpit.socket
+        enabled: yes
+        state: started
+
+    - name: Restart Cockpit to load Docker Manager
+      ansible.builtin.systemd:
+        name: cockpit.socket
+        state: restarted
+
+- name: Enable and start cockpit.socket
+  ansible.builtin.systemd:
+    name: cockpit.socket
+    enabled: yes
+    state: started

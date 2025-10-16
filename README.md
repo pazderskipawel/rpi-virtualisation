@@ -27,14 +27,18 @@ GITHUB ACTIONS:
   
 RPI:
   - ANSIBLE (managing raspberry itself):
+
+    Roles tasks:
     - raspberry:
-      - updates apt
+      - updates apt packages
     - qemu:
       - Prepares and starts qemu, libvrt
     - docker:
       - installs and runs docker and docker compose
-    - klipper:
+    - klipper (managing 3d printer form RPI):
       - runs docker copose with services managing 3d-printer
+    - [cockpit](https://cockpit-project.org/applications) (Web-based interface for managing servers):
+      - UI for containers and vms
   - DOCKER:
     - compose file for managing 3d printer 
 ## Planned architecture
@@ -42,8 +46,6 @@ RPI:
 - ANSIBLE: 
   - haos
     - setup and run Home Assistant OS VM
-    - default task for managing existing VMs
 - DOCKER:
-  - some kind of ui for managing VMs and containers (Ansible Semaphore probably)
   - VPN to be able to connect to RPI remotelly (WireGuard probably)
   - SMB or FTP server

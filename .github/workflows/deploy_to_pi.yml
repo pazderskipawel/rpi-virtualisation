@@ -3,7 +3,7 @@ name: Deploy app to Pi
 on:
   push:
     paths-ignore:
-      - '**/README.md'
+      - '*README.md'
   workflow_dispatch:
 
 concurrency:
@@ -34,4 +34,4 @@ jobs:
             echo "Check passed, skipping install"
           fi
       - name: Run Ansible Playbook to set up host and run everything
-        run: ansible-playbook run_everything.yml -e run_klipper=true
+        run: ansible-playbook run_everything.yml -e run_klipper=true -e run_cockpit=true
