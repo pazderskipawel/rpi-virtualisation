@@ -115,11 +115,20 @@
           seconds: 2
         when: vm_created.changed
 
-      - name: Disable secure boot feature in firmware section on created XML 
-        ansible.builtin.replace:
-          path: "/etc/libvirt/qemu/{{ haos_vm_name }}.xml"
-          regexp: "<feature enabled='yes' name='secure-boot'/>" # This is overwriting loader.secure=no option, so with this secure boot is enabled anyway
-          replace: "<feature enabled='no' name='secure-boot'/>"
+      - name: Remove entire firmware block
+      # Removing secure-boot option from VM XML
+      # Original XML snippet:
+      #    ...
+      #    <firmware>
+      #     <feature enabled='yes' name='enrolled-keys'/>
+      #     <feature enabled='yes' name='secure-boot'/>
+      #   </firmware>
+      #   <loader readonly='yes' secure='no'
+      #   ...
+      # loader.secure=no is already set, but firmware block overrides it
+      # So we remove the entire firmware block to disable secure boot (enrolled-keys will not work without secure-boot)
+        ansible.builtin.shell: |
+          sed -i '/<firmware>/,/<\/firmware>/d' /etc/libvirt/qemu/{{ haos_vm_name }}.xml
         register: xml_fixed
 
       - name: Redefine VM with corrected XML
