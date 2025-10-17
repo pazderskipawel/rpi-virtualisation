@@ -115,11 +115,6 @@
           name: "{{ haos_vm_name }}"
           autostart: yes
 
-      - name: Start VM
-        community.libvirt.virt:
-          name: "{{ haos_vm_name }}"
-          state: running
-
       - name: Show new VM info
         ansible.builtin.debug:
           msg:
@@ -133,4 +128,8 @@
     when: haos_vm_name in existing_vms.list_vms
     ansible.builtin.debug:
       msg: "VM '{{ haos_vm_name }}' already exists and is {{ vm_status.status }}. Skipping creation."
-
+      
+  - name: Start VM
+    community.libvirt.virt:
+      name: "{{ haos_vm_name }}"
+      state: running
