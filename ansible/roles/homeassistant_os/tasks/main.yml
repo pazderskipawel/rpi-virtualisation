@@ -47,7 +47,7 @@
           
           - name: Set proper permissions on HAOS image
             file:
-              path: "{{ images_dir }}/{{ haos_image_filename }}"
+              path: "{{ images_dir }}/{{ haos_image_filename | regex_replace('\\.xz$', '') }}"
               owner: libvirt-qemu
               group: kvm
               mode: '0640'
