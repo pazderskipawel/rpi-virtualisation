@@ -11,3 +11,5 @@
       tags: [klipper] #only run this role if --tags klipper is specified
     - role: cockpit
       tags: [cockpit]
+    - role: homeassistant_os
+      tags: [haos]
