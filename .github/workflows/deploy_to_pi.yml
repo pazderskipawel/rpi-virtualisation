@@ -35,4 +35,4 @@ jobs:
             echo "Check passed, skipping install"
           fi
       - name: Run Ansible Playbook to set up host and run everything
-        run: ansible-playbook run_everything.yml --tags cockpit,klipper,haos
+        run: ansible-playbook run_everything.yml --tags cockpit,haos

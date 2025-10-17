@@ -44,6 +44,13 @@
             when: haos_image_filename.endswith('.xz')
             register: unxz_result
             changed_when: unxz_result.rc == 0
+          
+          - name: Set proper permissions on HAOS image
+            file:
+              path: "{{ images_dir }}/{{ haos_image_filename }}"
+              owner: libvirt-qemu
+              group: kvm
+              mode: '0640'
 
       - name: Set final image path
         ansible.builtin.set_fact:
