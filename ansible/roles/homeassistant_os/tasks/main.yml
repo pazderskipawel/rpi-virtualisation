@@ -103,6 +103,9 @@
             --import
             --graphics none
             --noautoconsole
+            --arch aarch64
+            --machine virt
+            --boot loader.secure=no
         args:
           creates: "/etc/libvirt/qemu/{{ haos_vm_name }}.xml"
 
