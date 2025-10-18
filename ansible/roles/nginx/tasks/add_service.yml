@@ -1,11 +1,11 @@
     - name: Ensure service network exists
       community.docker.docker_network:
-        name: "{{ service-name }}-net"
+        name: "{{ service_name }}-net"
         state: present
     
     - name: Connect nginx container to network
       community.docker.docker_network:
-        name: "{{ service-name }}-net"
+        name: "{{ service_name }}-net"
         connected:
           - nginx
 
