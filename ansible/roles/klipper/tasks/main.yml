@@ -1,4 +1,10 @@
+    - name: Add klipper config to nginx
+      include_tasks: ../nginx/tasks/add_service.yml
+      vars:
+        service_name: klipper
+        service_config_path: "{{ role_path }}/files/klipper.conf"
+
     - name: start klipper containers from docker-compose file
-      ansible.builtin.command:
-        chdir: "{{ role_path }}/files"
-        cmd: docker-compose up -d
+      community.docker.docker_compose_v2:
+        project_src: "{{ role_path }}/files"
+        state: present

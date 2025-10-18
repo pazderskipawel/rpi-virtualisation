@@ -25,11 +25,6 @@ services:
       - /home/rpi/printer_data/logs:/opt/printer_data/logs
     networks:
       - klipper-net
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.moonraker.loadbalancer.server.port=7125"
-      - "traefik.http.routers.moonraker.rule=PathPrefix(`/websocket`) || PathPrefix(`/printer`) || PathPrefix(`/api`) || PathPrefix(`/access`) || PathPrefix(`/machine`) || PathPrefix(`/server`)"
-      - "traefik.http.routers.moonraker.entrypoints=web"
     restart: unless-stopped
 
   fluidd: #web interface for klipper
@@ -39,28 +34,8 @@ services:
       - moonraker
     networks:
       - klipper-net
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.fluidd.loadbalancer.server.port=80"
-      - "traefik.http.routers.fluidd.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.fluidd.entrypoints=web"
-    restart: unless-stopped
-
-  traefik: #reverse proxy for comunication between moonraker and fluidd
-    image: traefik:v2.10
-    container_name: traefik
-    command:
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-    ports:
-      - "80:80"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - klipper-net
     restart: unless-stopped
 
 networks:
   klipper-net:
-    driver: bridge
+    external: true
