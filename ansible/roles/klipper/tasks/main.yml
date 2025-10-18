@@ -1,25 +1,9 @@
-    - name: Ensure klipper-net network exists
-      community.docker.docker_network:
-        name: klipper-net
-        state: present
-    
-    - name: Connect nginx container to klipper-net network
-      community.docker.docker_network:
-        name: klipper-net
-        connected:
-          - nginx
+    - name: Add klipper config to nginx
+      include_tasks: ../nginx/tasks/add_service.yml
+      vars:
+        service_name: klipper
+        service_config_path: "{{ role_path }}/files/klipper.conf"
 
-    - name: Copy klipper.conf into nginx directory
-      ansible.builtin.copy:
-        src: "{{ role_path }}/files/klipper.conf"
-        dest: /opt/nginx/conf.d/klipper.conf
-        mode: '0644'
-
-    - name: Reload nginx to apply config
-      community.docker.docker_container_exec:
-        container: nginx
-        command: nginx -s reload
-    
     - name: start klipper containers from docker-compose file
       community.docker.docker_compose_v2:
         project_src: "{{ role_path }}/files"
