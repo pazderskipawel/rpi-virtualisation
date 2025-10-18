@@ -16,7 +16,7 @@
 
     - name: Copy klipper.conf into nginx directory
       ansible.builtin.copy:
-        src: "{{ role_path }}/klipper.conf"
+        src: "{{ role_path }}/files/klipper.conf"
         dest: /opt/nginx/conf.d/klipper.conf
         mode: '0644'
     
