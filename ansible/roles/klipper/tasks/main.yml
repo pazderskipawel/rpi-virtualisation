@@ -2,3 +2,27 @@
       ansible.builtin.command:
         chdir: "{{ role_path }}/files"
         cmd: docker-compose up -d
+
+    - name: Ensure klipper-net network exists
+      community.docker.docker_network:
+        name: klipper-net
+        state: present
+    
+    - name: Connect nginx container to klipper-net network
+      community.docker.docker_network:
+        name: klipper-net
+        connected:
+          - nginx
+
+    - name: Copy klipper.conf into nginx container
+      community.docker.docker_container_copy_into:
+        container: nginx
+        path: "{{ role_path }}/files/klipper.conf"
+        container_path: /etc/nginx/conf.d/klipper.conf
+        mode: "0644"
+        follow: true
+    
+    - name: Reload nginx to apply config
+      community.docker.docker_container_exec:
+        container: nginx
+        command: nginx -s reload

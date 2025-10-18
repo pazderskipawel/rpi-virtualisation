@@ -7,6 +7,8 @@
       tags: [always]
     - role: qemu
       tags: [always]
+    - role: nginx
+      tags: [always]
     - role: klipper
       tags: [klipper] #only run this role if --tags klipper is specified
     - role: cockpit
