@@ -1,0 +1,21 @@
+      - name: Check if default network exists
+        community.libvirt.virt_net:
+          command: list_nets
+        register: libvirt_networks
+
+      - name: Define default network if missing
+        community.libvirt.virt_net:
+          command: define
+          name: default
+          xml: "{{ lookup('file', 'default-network.xml') }}"
+        when: "'default' not in libvirt_networks.list_nets"
+
+      - name: Start default network
+        community.libvirt.virt_net:
+          state: active
+          name: default
+
+      - name: Enable autostart for default network
+        community.libvirt.virt_net:
+          autostart: yes
+          name: default

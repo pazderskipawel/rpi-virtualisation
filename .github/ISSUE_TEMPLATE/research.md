@@ -4,6 +4,7 @@ about: Something to check or discover
 title: "[Research] (Theme) Title"
 labels: research
 assignees: pazderskipawel
+projects: ["pazderskipawel/1"]
 
 ---
 

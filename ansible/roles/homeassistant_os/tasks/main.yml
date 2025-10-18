@@ -56,41 +56,6 @@
         ansible.builtin.set_fact:
           final_image: "{{ images_dir }}/{{ haos_image_filename | regex_replace('\\.xz$', '') }}"
 
-      - name: Setup network
-        block:
-
-          - name: Check if default network exists
-            community.libvirt.virt_net:
-              command: list_nets
-            register: libvirt_networks
-
-          - name: Define default network if missing
-            community.libvirt.virt_net:
-              command: define
-              name: default
-              xml: |
-                <network>
-                  <name>default</name>
-                  <forward mode='nat'/>
-                  <bridge name='virbr0' stp='on' delay='0'/>
-                  <ip address='192.168.122.1' netmask='255.255.255.0'>
-                    <dhcp>
-                      <range start='192.168.122.2' end='192.168.122.254'/>
-                    </dhcp>
-                  </ip>
-                </network>
-            when: "'default' not in libvirt_networks.list_nets"
-
-          - name: Start default network
-            community.libvirt.virt_net:
-              state: active
-              name: default
-
-          - name: Enable autostart for default network
-            community.libvirt.virt_net:
-              autostart: yes
-              name: default
-
       - name: Create VM using virt-install
         ansible.builtin.command:
           cmd: >-
