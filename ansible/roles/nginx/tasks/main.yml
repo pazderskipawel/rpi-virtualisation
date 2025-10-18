@@ -1,9 +1,3 @@
-- name: Create nginx conf.d directory
-  ansible.builtin.file:
-    path: /opt/nginx/conf.d
-    state: directory
-    mode: '0755'
-
 - name: Start nginx container
   community.docker.docker_container:
     name: nginx
@@ -12,3 +6,5 @@
     restart_policy: unless-stopped
     ports:
       - "80:80"
+    volumes:
+      - /opt/nginx/conf.d:/etc/nginx/conf.d:ro

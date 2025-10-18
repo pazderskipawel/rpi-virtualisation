@@ -14,13 +14,11 @@
         connected:
           - nginx
 
-    - name: Copy klipper.conf into nginx container
-      community.docker.docker_container_copy_into:
-        container: nginx
-        path: "{{ role_path }}/files/klipper.conf"
-        container_path: /etc/nginx/conf.d/klipper.conf
-        mode: "0644"
-        follow: true
+    - name: Copy klipper.conf into nginx directory
+      ansible.builtin.copy:
+        src: "{{ role_path }}/klipper.conf"
+        dest: /opt/nginx/conf.d/klipper.conf
+        mode: '0644'
     
     - name: Reload nginx to apply config
       community.docker.docker_container_exec:
