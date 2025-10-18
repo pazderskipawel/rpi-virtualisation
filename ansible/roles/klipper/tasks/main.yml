@@ -1,7 +1,7 @@
     - name: start klipper containers from docker-compose file
-      ansible.builtin.command:
-        chdir: "{{ role_path }}/files"
-        cmd: docker-compose up -d
+      community.docker.docker_compose_v2:
+        project_src: "{{ role_path }}/files"
+        state: present
 
     - name: Ensure klipper-net network exists
       community.docker.docker_network:
@@ -19,14 +19,6 @@
         src: "{{ role_path }}/files/klipper.conf"
         dest: /opt/nginx/conf.d/klipper.conf
         mode: '0644'
-    
-    - name: Wait for moonraker to be ready
-      ansible.builtin.wait_for:
-        host: localhost
-        port: 7125
-        delay: 5
-        timeout: 60
-        msg: "Moonraker failed to start"
 
     - name: Reload nginx to apply config
       community.docker.docker_container_exec:
