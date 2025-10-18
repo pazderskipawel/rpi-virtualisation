@@ -38,4 +38,4 @@ services:
 
 networks:
   klipper-net:
-    extrernal: true
+    external: true
