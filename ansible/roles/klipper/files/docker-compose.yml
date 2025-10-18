@@ -38,4 +38,4 @@ services:
 
 networks:
   klipper-net:
-    driver: bridge
+    extrernal: true

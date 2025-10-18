@@ -1,8 +1,3 @@
-    - name: start klipper containers from docker-compose file
-      community.docker.docker_compose_v2:
-        project_src: "{{ role_path }}/files"
-        state: present
-
     - name: Ensure klipper-net network exists
       community.docker.docker_network:
         name: klipper-net
@@ -24,3 +19,8 @@
       community.docker.docker_container_exec:
         container: nginx
         command: nginx -s reload
+    
+    - name: start klipper containers from docker-compose file
+      community.docker.docker_compose_v2:
+        project_src: "{{ role_path }}/files"
+        state: present
