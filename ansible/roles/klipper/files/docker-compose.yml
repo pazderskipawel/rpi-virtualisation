@@ -36,8 +36,6 @@ services:
       - klipper-net
     restart: unless-stopped
 
-
 networks:
   klipper-net:
     driver: bridge
-    external: true
