@@ -71,6 +71,7 @@
             --import
             --graphics none
             --noautoconsole
+            --network network=haos_net,model=virtio
             --arch aarch64
             --machine virt
             --boot firmware=efi,firmware.feature0.name=secure-boot,firmware.feature0.enabled=no
