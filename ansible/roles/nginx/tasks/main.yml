@@ -4,7 +4,15 @@
     image: nginx:latest
     state: started
     restart_policy: unless-stopped
-    ports:
-      - "8080:80"
+    network_mode: host
     volumes:
       - /opt/nginx/conf.d:/etc/nginx/conf.d:ro
+
+- name: Verify nginx container is running
+  community.docker.docker_container_info:
+    name: nginx
+  register: nginx_info
+  retries: 5
+  delay: 2
+  until: nginx_info.container.State.Running
+  failed_when: not nginx_info.container.State.Running
