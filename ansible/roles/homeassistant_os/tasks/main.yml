@@ -5,20 +5,12 @@
     register: existing_vms
     changed_when: false
 
-  - name: Check VM status if exists
-    community.libvirt.virt:
-      name: "{{ haos_vm_name }}"
-      command: status
-    register: vm_status
-    when: haos_vm_name in existing_vms.list_vms
-    failed_when: false
-
-  - name: Setup network for HAOS VM
-    include_tasks: ../qemu/tasks/setup_network.yml # needed vars taken from defaults/main.yml
-
   - name: Create and setup HAOS VM if not exists
     when: haos_vm_name not in existing_vms.list_vms
     block:
+
+      - name: Setup network for HAOS VM
+        include_tasks: ../qemu/tasks/setup_network.yml # needed vars taken from defaults/main.yml
 
       - name: Create images directory
         ansible.builtin.file:
@@ -83,6 +75,11 @@
         community.libvirt.virt:
           name: "{{ haos_vm_name }}"
           autostart: yes
+      
+      - name: Restart VM to ensure DHCP lease
+        community.libvirt.virt:
+          command: reboot
+          name: homeassistant
 
       - name: Show new VM info
         ansible.builtin.debug:
@@ -93,12 +90,6 @@
             - "CPUs: {{ haos_vcpus }}"
             - "Disk: {{ haos_disk_gb }}GB"
 
-  - name: Show existing VM info
-    when: haos_vm_name in existing_vms.list_vms
-    ansible.builtin.debug:
-      msg: "VM '{{ haos_vm_name }}' already exists and is {{ vm_status.status }}. Skipping creation."
       
-  - name: Start VM
-    community.libvirt.virt:
-      name: "{{ haos_vm_name }}"
-      state: running
+
+  
