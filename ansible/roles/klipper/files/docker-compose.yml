@@ -19,7 +19,7 @@ services:
     depends_on:
       - klipper
     ports:
-      - "7125:7125"
+      - "127.0.0.1:7125:7125" # localhost "only"
     volumes:
       - /home/rpi/printer_data/config:/opt/printer_data/config
       - /home/rpi/printer_data/run:/opt/printer_data/run
@@ -35,7 +35,7 @@ services:
     depends_on:
       - moonraker
     ports:
-      - "8081:80"
+      - "127.0.0.1:8081:80"
     networks:
       - klipper-net
     restart: unless-stopped
