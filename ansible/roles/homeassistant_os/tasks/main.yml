@@ -77,9 +77,8 @@
           autostart: yes
       
       - name: Restart VM to ensure DHCP lease
-        community.libvirt.virt:
-          command: reboot
-          name: homeassistant
+        ansible.builtin.command:
+          cmd: "virsh reboot {{ haos_vm_name }}"
 
       - name: Show new VM info
         ansible.builtin.debug:
