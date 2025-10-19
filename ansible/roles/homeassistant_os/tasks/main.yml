@@ -14,11 +14,8 @@
     failed_when: false
 
   - name: Setup network for HAOS VM
-    include_tasks: ../qemu/tasks/setup_network.yml
-    vars:
-      network_name: "{{ network_name }}"
-      network_config_file: "{{ network_config_file }}"
-  
+    include_tasks: ../qemu/tasks/setup_network.yml # needed vars taken from defaults/main.yml
+
   - name: Create and setup HAOS VM if not exists
     when: haos_vm_name not in existing_vms.list_vms
     block:
