@@ -19,3 +19,7 @@
   community.libvirt.virt_net:
     autostart: yes
     name: "{{ network_name }}"
+  
+- name: Wait for network to be fully active
+  ansible.builtin.pause:
+    seconds: 5
