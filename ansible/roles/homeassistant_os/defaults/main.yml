@@ -12,8 +12,8 @@ haos_image_filename: "haos_generic-aarch64-16.2.qcow2.xz"
 images_dir: "/var/lib/libvirt/images"
 
 # Network settings
-network_name: "default"
-network_type: "network"
+network_name: "haos_net"
+network_config_file: "{{ role_path }}/files/haos_net.xml"
 
 # Whether to enable autostart
 enable_autostart: false
