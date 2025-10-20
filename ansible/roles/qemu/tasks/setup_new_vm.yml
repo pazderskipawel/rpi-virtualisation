@@ -23,6 +23,10 @@
           name: "{{ vm_name }}"
           autostart: yes
       
+      - name: Wait for VM to start
+        ansible.builtin.pause:
+          seconds: 10
+
       - name: Restart VM to ensure DHCP lease
         ansible.builtin.command:
           cmd: "virsh reboot {{ vm_name }}"
