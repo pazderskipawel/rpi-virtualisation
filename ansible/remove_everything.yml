@@ -5,7 +5,7 @@
     vms_to_remove:
       - homeassistant
     vm_networks_to_remove:
-      - haos-net
+      - haos_net
     containers_to_remove:
       - nginx
       - klipper

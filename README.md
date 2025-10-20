@@ -18,6 +18,9 @@ This repository documents and contains supporting material for running virtual m
 - Ansible, Docker
 - GitHub Actions runner (optional, for running simple pipeline)
 
+## Planned architecture
+Github Projcet for this repo - [LINK](https://github.com/users/pazderskipawel/projects/1) 
+
 ## Current architecture
 GITHUB ACTIONS:
   - CICD:
@@ -52,5 +55,14 @@ RPI:
       - file with network configuration for vm
     - playbook tu run all services
     - playbook to remove all services and its files
-## Planned architecture
-Github Projcet for this repo - [LINK](https://github.com/users/pazderskipawel/projects/1) 
+
+## Current netwokring
+```
+PC              Raspberry Pi
+
+rpi_ip:8080 --> nginx --> localhost:8081 --> docker --> :80 on fluidd container
+
+rpi_ip:9090 --> localhost:9090 --> cockpit service
+
+rpi_ip:8123 --> nginx --> localhost:8123 --> haos_vm_ip:8123 --> haos vm
+```
