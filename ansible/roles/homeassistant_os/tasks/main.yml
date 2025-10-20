@@ -43,7 +43,7 @@
 
       - name: Set final image path
         ansible.builtin.set_fact:
-          final_image: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
+          vm_image: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
 
       - name: Create VM using qemu role
         ansible.builtin.include_tasks: ../../qemu/tasks/setup_new_vm.yml
