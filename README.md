@@ -50,5 +50,7 @@ RPI:
       - file with variables
       - playbook which downloads image and runs qemu tasks to create vm and network
       - file with network configuration for vm
+    - playbook tu run all services
+    - playbook to remove all services and its files
 ## Planned architecture
 Github Projcet for this repo - [LINK](https://github.com/users/pazderskipawel/projects/1) 

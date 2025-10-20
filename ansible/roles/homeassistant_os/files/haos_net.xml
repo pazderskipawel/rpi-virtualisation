@@ -4,7 +4,8 @@
   <bridge name='virbr_haos_net' stp='on' delay='0'/>
   <ip address='192.168.122.1' netmask='255.255.255.0'>
     <dhcp>
-      <range start='192.168.122.50' end='192.168.122.50'/>
+      <range start='192.168.122.2' end='192.168.122.10'/>
+      <host mac='52:54:00:aa:bb:cc' name='haos' ip='192.168.122.2'/>
     </dhcp>
   </ip>
 </network>
