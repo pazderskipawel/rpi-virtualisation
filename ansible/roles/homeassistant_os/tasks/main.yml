@@ -9,7 +9,13 @@
     when: vm_name not in existing_vms.list_vms
     block:
 
-      - name: Setup network for HAOS VM
+      - name: setup nginx reverse proxy for HAOS
+        include_tasks: ../nginx/tasks/add_service.yml
+        vars:
+          service_name: haos
+          service_config_path: "{{ role_path }}/files/haos.conf"
+
+      - name: Setup libvirt network for HAOS VM
         include_tasks: ../qemu/tasks/setup_network.yml # needed vars taken from defaults/main.yml
 
       - name: Check if image already exists

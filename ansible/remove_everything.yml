@@ -11,8 +11,6 @@
       - klipper
       - moonraker
       - fluidd
-    contaainer_networks_to_remove:
-      - klipper-net
       
   tasks:
     - name: Stop and destroy VMs
@@ -51,12 +49,6 @@
       ansible.builtin.command:
         cmd: "docker rm -f {{ item }}"
       loop: "{{ containers_to_remove }}"
-      ignore_errors: yes
-
-    - name: Remove container networks
-      ansible.builtin.command:    
-        cmd: "docker network rm {{ item }}"
-      loop: "{{ contaainer_networks_to_remove }}"
       ignore_errors: yes
 
     - name: Remove nginx configs
