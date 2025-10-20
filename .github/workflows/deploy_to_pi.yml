@@ -34,5 +34,7 @@ jobs:
           else
             echo "Check passed, skipping install"
           fi
-      - name: Run Ansible Playbook to set up host and run everything
+      - name: Remove existing setup
+        run: ansible-playbook remove_everything.yml
+      - name: Run full setup
         run: ansible-playbook run_everything.yml --tags cockpit,klipper,haos

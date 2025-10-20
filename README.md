@@ -33,19 +33,22 @@ RPI:
       - updates apt packages
     - qemu:
       - Prepares and starts qemu, libvrt
+      - shared task to create new vm
+      - shared task to create vm network
     - docker:
       - installs and runs docker and docker compose
+    - nginx: 
+      - runs docker container with network mode: host to controll networking
+      - shared task to add new service config file to nginx
     - klipper (managing 3d printer form RPI):
-      - runs docker copose with services managing 3d-printer
+      - playbook to run docker copose from file with services managing 3d-printer (klipper/mooraker/fliudd)
+      - config file for nginx (applied using shared nginx task)
     - [cockpit](https://cockpit-project.org/applications) (Web-based interface for managing servers):
-      - UI for containers and vms
-  - DOCKER:
-    - compose file for managing 3d printer 
+      - UI app to manage server config, containers and vms
+      - config file for nginx (applied using shared nginx task)
+    - home assistant vm 
+      - file with variables
+      - playbook which downloads image and runs qemu tasks to create vm and network
+      - file with network configuration for vm
 ## Planned architecture
-RPI:
-- ANSIBLE: 
-  - haos
-    - setup and run Home Assistant OS VM
-- DOCKER:
-  - VPN to be able to connect to RPI remotelly (WireGuard probably)
-  - SMB or FTP server
+Github Projcet for this repo - [LINK](https://github.com/users/pazderskipawel/projects/1) 

@@ -1,0 +1,37 @@
+      - name: Create VM using virt-install
+        ansible.builtin.command:
+          cmd: >-
+            virt-install
+            --name {{ vm_name }}
+            --os-variant=generic
+            --ram={{ memory_mb }}
+            --vcpus={{ vcpus }}
+            --disk {{ image }},bus=virtio
+            --import
+            --graphics none
+            --noautoconsole
+            --network network=haos_net
+            --arch aarch64
+            --machine virt
+            --boot firmware=efi,firmware.feature0.name=secure-boot,firmware.feature0.enabled=no
+        args:
+          creates: "/etc/libvirt/qemu/{{ vm_name }}.xml"
+        register: vm_created
+
+      - name: Enable autostart for VM
+        community.libvirt.virt:
+          name: "{{ vm_name }}"
+          autostart: yes
+      
+      - name: Restart VM to ensure DHCP lease
+        ansible.builtin.command:
+          cmd: "virsh reboot {{ vm_name }}"
+
+      - name: Show new VM info
+        ansible.builtin.debug:
+          msg:
+            - "Home Assistant OS VM created successfully:"
+            - "Name: {{ vm_name }}"
+            - "Memory: {{ memory_mb }}MB"
+            - "CPUs: {{ vcpus }}"
+            - "Disk: {{ disk_gb }}GB"

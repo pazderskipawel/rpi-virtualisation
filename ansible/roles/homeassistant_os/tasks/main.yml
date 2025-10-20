@@ -6,21 +6,15 @@
     changed_when: false
 
   - name: Create and setup HAOS VM if not exists
-    when: haos_vm_name not in existing_vms.list_vms
+    when: vm_name not in existing_vms.list_vms
     block:
 
       - name: Setup network for HAOS VM
         include_tasks: ../qemu/tasks/setup_network.yml # needed vars taken from defaults/main.yml
 
-      - name: Create images directory
-        ansible.builtin.file:
-          path: "{{ images_dir }}"
-          state: directory
-          mode: '0755'
-
       - name: Check if image already exists
         ansible.builtin.stat:
-          path: "{{ images_dir }}/{{ haos_image_filename | regex_replace('\\.xz$', '') }}"
+          path: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
         register: image_file
 
       - name: Download image if not present
@@ -29,65 +23,30 @@
 
           - name: Download HAOS image
             ansible.builtin.get_url:
-              url: "{{ haos_image_url }}"
-              dest: "{{ images_dir }}/{{ haos_image_filename }}"
+              url: "{{ image_url }}"
+              dest: "{{ images_dir }}/{{ image_filename }}"
               mode: '0644'
 
           - name: Extract image if compressed
             ansible.builtin.command:
-              cmd: "unxz {{ images_dir }}/{{ haos_image_filename }}"
-            when: haos_image_filename.endswith('.xz')
+              cmd: "unxz {{ images_dir }}/{{ image_filename }}"
+            when: image_filename.endswith('.xz')
             register: unxz_result
             changed_when: unxz_result.rc == 0
           
           - name: Set proper permissions on HAOS image
             file:
-              path: "{{ images_dir }}/{{ haos_image_filename | regex_replace('\\.xz$', '') }}"
+              path: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
               owner: libvirt-qemu
               group: kvm
               mode: '0640'
 
       - name: Set final image path
         ansible.builtin.set_fact:
-          final_image: "{{ images_dir }}/{{ haos_image_filename | regex_replace('\\.xz$', '') }}"
+          final_image: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
 
-      - name: Create VM using virt-install
-        ansible.builtin.command:
-          cmd: >-
-            virt-install
-            --name {{ haos_vm_name }}
-            --os-variant=generic
-            --ram={{ haos_memory_mb }}
-            --vcpus={{ haos_vcpus }}
-            --disk {{ final_image }},bus=virtio
-            --import
-            --graphics none
-            --noautoconsole
-            --network network=haos_net
-            --arch aarch64
-            --machine virt
-            --boot firmware=efi,firmware.feature0.name=secure-boot,firmware.feature0.enabled=no
-        args:
-          creates: "/etc/libvirt/qemu/{{ haos_vm_name }}.xml"
-        register: vm_created
-
-      - name: Enable autostart for VM
-        community.libvirt.virt:
-          name: "{{ haos_vm_name }}"
-          autostart: yes
-      
-      - name: Restart VM to ensure DHCP lease
-        ansible.builtin.command:
-          cmd: "virsh reboot {{ haos_vm_name }}"
-
-      - name: Show new VM info
-        ansible.builtin.debug:
-          msg:
-            - "Home Assistant OS VM created successfully:"
-            - "Name: {{ haos_vm_name }}"
-            - "Memory: {{ haos_memory_mb }}MB"
-            - "CPUs: {{ haos_vcpus }}"
-            - "Disk: {{ haos_disk_gb }}GB"
+      - name: Create VM using qemu role
+        ansible.builtin.include_tasks: ../../qemu/tasks/setup_new_vm.yml
 
       
 
