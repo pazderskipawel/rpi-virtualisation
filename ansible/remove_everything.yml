@@ -24,7 +24,7 @@
 
     - name: Undefine VMs with storage removal
       ansible.builtin.command:
-        cmd: "virsh undefine {{ item }} --remove-all-storage"
+        cmd: "virsh undefine {{ item }} --remove-all-storage --nvram"
       loop: "{{ vms_to_remove }}"
       ignore_errors: yes
 
