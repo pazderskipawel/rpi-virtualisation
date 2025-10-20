@@ -3,7 +3,7 @@
   become: true
   vars:
     vms_to_remove:
-      - homeassistant
+      - haos
     vm_networks_to_remove:
       - haos_net
     containers_to_remove:
