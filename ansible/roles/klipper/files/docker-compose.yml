@@ -18,6 +18,8 @@ services:
     container_name: moonraker
     depends_on:
       - klipper
+    ports:
+      - "127.0.0.1:7125:7125" # localhost "only"
     volumes:
       - /home/rpi/printer_data/config:/opt/printer_data/config
       - /home/rpi/printer_data/run:/opt/printer_data/run
@@ -32,10 +34,12 @@ services:
     container_name: fluidd
     depends_on:
       - moonraker
+    ports:
+      - "127.0.0.1:8081:80"
     networks:
       - klipper-net
     restart: unless-stopped
 
 networks:
-  klipper-net:
-    external: true
+  klipper-net: # network for klipper <--> moonraker
+    driver: bridge

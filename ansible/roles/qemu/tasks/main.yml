@@ -29,6 +29,3 @@
         path: /var/lib/libvirt/images
         state: directory
         mode: '0755'
-
-    - name: Include default network setup
-      include_tasks: default_network.yml

@@ -1,19 +1,19 @@
 # Default values for HAOS setup
-haos_vm_name: "homeassistant"
-haos_memory_mb: 4096
-haos_vcpus: 2
-haos_disk_gb: 32
+vm_name: "haos"
+memory_mb: 4096
+vcpus: 2
+disk_gb: 32
 
 # Latest HAOS image URL - update as needed
-haos_image_url: "https://github.com/home-assistant/operating-system/releases/download/16.2/haos_generic-aarch64-16.2.qcow2.xz"
-haos_image_filename: "haos_generic-aarch64-16.2.qcow2.xz"
+image_url: "https://github.com/home-assistant/operating-system/releases/download/16.2/haos_generic-aarch64-16.2.qcow2.xz"
+image_filename: "haos_generic-aarch64-16.2.qcow2.xz"
 
 # Directory for images
 images_dir: "/var/lib/libvirt/images"
 
 # Network settings
-network_name: "default"
-network_type: "network"
+network_name: "haos_net"
+network_config_file: "{{ role_path }}/files/haos_net.xml"
 
 # Whether to enable autostart
 enable_autostart: false
