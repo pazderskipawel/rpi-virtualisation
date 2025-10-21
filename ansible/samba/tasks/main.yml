@@ -1,65 +1,14 @@
-  tasks:
-
-    - name: Install Samba packages
-      become: true
-      package:
+    - name: Create and start Samba container
+      community.docker.docker_container:
         name: samba
-        state: present
-      register: samba_install
-
-    - name: Copy samba configuration from template
-      become: true
-      copy:
-        src: "{{ role_path }}/files/smb.conf"
-        dest: /etc/samba/smb.conf
-      when: samba_install.changed
-
-    - name: Check if pexpect is installed
-      command: python -c "import pexpect"
-      register: pexpect_check
-      ignore_errors: true
-      when: samba_install.changed
-
-    - name: Install pexpect if not present
-      pip:
-        name: pexpect
-      when: pexpect_check.changed
-
-    - name: Set Samba user
-      become: true
-      expect:
-        command: "smbpasswd -a {{ samba_user_name }}"
-        responses:
-          "New SMB password:": "{{ samba_user_password }}"
-          "Retype new SMB password:": "{{ samba_user_password }}"
-      when: samba_install.changed
-
-    - name: Enable smb service
-      become: true
-      service:
-        name: smb
-        enabled: yes
+        image: dockurr/samba
         state: started
-      when: samba_install.changed
-      
-####
-#    - name: Configure firewall to allow Samba
-#      become: true
-#      firewalld:
-#        service: samba
-#        permanent: yes
-#        state: enabled
-#      when: samba_install.changed
-#
-#    - name: Reload firewall configuration (firewalld)
-#      command: firewall-cmd --reload
-#      become: true
-#      when: samba_install.changed
-#
-#    - name: Restart smb service
-#      become: true
-#      service:
-#        name: smb
-#        state: restarted
-#      when: samba_install.changed
-####
+        restart_policy: unless-stopped
+        ports:
+          - "445:445"
+        volumes:
+          - "{{ role_path }}/files/smb.conf:/etc/samba/smb.conf:ro"
+          - "/home/rpi/printer_data/gcodes:/gcodes"
+        env:
+          - NAME: "{{ samba_user_name }}"
+          - PASS: "{{ samba_user_password }}"
