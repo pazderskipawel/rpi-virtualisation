@@ -1,15 +1,12 @@
 # Home Assistant OS configuration and onboarding
 
-- name: Ensure VM is stopped for configuration
-  community.libvirt.virt:
-    name: "{{ vm_name }}"
-    state: shutdown
-    uri: "qemu:///system"
-  become: yes
-
-- name: Wait for VM to fully stop
-  ansible.builtin.pause:
-    seconds: 30
+- name: Wait for VM to completely stop
+  ansible.builtin.command:
+    cmd: virsh -c qemu:///system domstate {{ vm_name }}
+  register: vm_state
+  until: vm_state.stdout == "shut off"
+  retries: 3
+  delay: 15
 
 - name: Copy configuration.yaml to VM
   ansible.builtin.shell: |
