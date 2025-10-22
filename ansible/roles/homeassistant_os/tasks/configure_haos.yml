@@ -3,16 +3,15 @@
 - name: Shutdown VM for configuration
   ansible.builtin.shell: |
     LANG=C virsh -c qemu:///system shutdown {{ vm_name }}
-  register: vm_shutdown
   failed_when: false
 
 - name: Wait for VM to completely stop
   ansible.builtin.shell: |
-    LANG=C virsh -c qemu:///system domstate {{ vm_name }}
+    virsh -c qemu:///system domstate {{ vm_name }}
   register: vm_state
-  until: vm_state.stdout == "shut off"
-  retries: 10
-  delay: 10
+  until: vm_state.stdout == "wyłączone" # system is in Polish
+  retries: 3
+  delay: 60
   changed_when: false
 
 - name: Copy configuration.yaml to VM
@@ -24,9 +23,10 @@
     name: "{{ vm_name }}"
     state: running
     uri: "qemu:///system"
+
 - name: Wait for VM to boot and get DHCP address
   ansible.builtin.pause:
-    seconds: 30
+    seconds: 60
 
 - name: Get VM IP from network DHCP status
   shell: |

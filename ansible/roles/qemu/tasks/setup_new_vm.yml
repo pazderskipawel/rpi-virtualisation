@@ -28,7 +28,7 @@
 
 - name: Wait for VM to initialize
   ansible.builtin.pause:
-    seconds: 10
+    seconds: 60
 
 - name: Show new VM info
   ansible.builtin.debug:
@@ -37,11 +37,3 @@
       - "Name: {{ vm_name }}"
       - "Memory: {{ memory_mb }}MB"
       - "CPUs: {{ vcpus }}"
-
-- name: Ensure VM is stopped for post-creation configuration
-  community.libvirt.virt:
-    name: "{{ vm_name }}"
-    state: shutdown
-    uri: "qemu:///system"
-  when: vm_created.changed
-  failed_when: false
