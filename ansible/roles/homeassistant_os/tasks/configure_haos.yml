@@ -86,7 +86,20 @@
 
 - name: Copy configuration.yaml to VM
   ansible.builtin.shell: |
-    virt-copy-in -d {{ vm_name }} {{ role_path }}/files/configuration.yaml /config/
+    virt-copy-in -d {{ vm_name }} {{ role_path }}/files/configuration.yaml /supervisor/homeassistant/:/dev/sda8
+  #
+  # configuration file is in homeassistant-data partition in supervisor/homeassistant directory
+  #
+  #  rpi@rpi:~ $ virt-filesystems -c qemu:///system -d haos -l
+  #  Name      Type       VFS      Label          Size       Parent
+  # ...
+  #  /dev/sda8 filesystem ext4     hassos-data    5582213120 -
+  #  rpi@rpi:~ $ virt-ls -c qemu:///system -d haos -m /dev/sda8 /supervisor/homeassistant
+  #  ...
+  #  configuration.yaml
+  #  ...
+  #
+  
 
 - name: Start VM with configuration deployed
   community.libvirt.virt:
