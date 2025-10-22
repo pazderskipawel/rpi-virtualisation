@@ -1,19 +1,13 @@
 - name: run necessary roles to set up the system
   hosts: localhost
   roles:
-    - role: raspberry #runs /roles/raspberry/tasks/main.yml
-      tags: [always] #always run this role
+    - role: raspberry
+      tags: [always]
     - role: docker
       tags: [always]
     - role: qemu
       tags: [always]
     - role: nginx
       tags: [always]
-    - role: klipper
-      tags: [klipper] #only run this role if --tags klipper is specified
     - role: cockpit
       tags: [always]
-    - role: homeassistant_os
-      tags: [haos]
-    - role: samba
-      tags: [samba]
