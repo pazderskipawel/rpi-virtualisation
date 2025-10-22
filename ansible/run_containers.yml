@@ -1,0 +1,7 @@
+- name: run containers roles to set up services
+  hosts: localhost
+  roles:
+    - role: klipper
+      tags: [klipper] #only run this role if --tags klipper is specified
+    - role: samba
+      tags: [samba]

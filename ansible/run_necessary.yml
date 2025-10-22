@@ -1,4 +1,4 @@
-- name: Raspberry Pi for virtualization
+- name: run necessary roles to set up the system
   hosts: localhost
   roles:
     - role: raspberry #runs /roles/raspberry/tasks/main.yml
@@ -12,6 +12,8 @@
     - role: klipper
       tags: [klipper] #only run this role if --tags klipper is specified
     - role: cockpit
-      tags: [cockpit]
+      tags: [always]
     - role: homeassistant_os
       tags: [haos]
+    - role: samba
+      tags: [samba]
