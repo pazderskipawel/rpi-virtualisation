@@ -86,7 +86,7 @@
 
 - name: Copy configuration.yaml to VM
   ansible.builtin.shell: |
-    virt-copy-in -d {{ vm_name }} {{ role_path }}/files/configuration.yaml /supervisor/homeassistant/:/dev/sda8
+    virt-copy-in -d {{ vm_name }} -m /dev/sda8:/ {{ role_path }}/files/configuration.yaml /supervisor/homeassistant/
   #
   # configuration file is in homeassistant-data partition in supervisor/homeassistant directory
   #
