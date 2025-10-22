@@ -1,4 +1,4 @@
-- name: Raspberry Pi for virtualization
+- name: run necessary roles to set up the system
   hosts: localhost
   roles:
     - role: raspberry #runs /roles/raspberry/tasks/main.yml

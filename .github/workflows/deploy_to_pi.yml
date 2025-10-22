@@ -51,8 +51,8 @@ jobs:
         working-directory: /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/ansible
     steps:
       - name: Run needed roles
-        run: ansible-playbook run_everything.yml
+        run: ansible-playbook run_necessary.yml
       - name: Run docker containers roles
-        run: ansible-playbook run_everything.yml --tags samba,klipper
+        run: ansible-playbook run_containers.yml --tags samba,klipper
       - name: Run VM roles
-        run: ansible-playbook run_everything.yml --tags haos
+        run: ansible-playbook run_vms.yml --tags haos

@@ -1,0 +1,5 @@
+- name: run vms
+  hosts: localhost
+  roles:
+    - role: homeassistant_os
+      tags: [haos]
