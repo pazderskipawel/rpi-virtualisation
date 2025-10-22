@@ -5,15 +5,6 @@
     LANG=C virsh -c qemu:///system shutdown {{ vm_name }}
   failed_when: false
 
-- name: Wait for VM to completely stop
-  ansible.builtin.shell: |
-    virsh -c qemu:///system domstate {{ vm_name }}
-  register: vm_state
-  until: vm_state.stdout == "wyłączone" # system is in Polish
-  retries: 3
-  delay: 60
-  changed_when: false
-
 - name: Copy configuration.yaml to VM
   ansible.builtin.shell: |
     virt-copy-in -d {{ vm_name }} {{ role_path }}/files/configuration.yaml /config/
