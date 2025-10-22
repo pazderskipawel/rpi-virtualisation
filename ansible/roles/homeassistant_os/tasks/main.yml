@@ -54,8 +54,8 @@
       - name: Create VM using qemu role
         include_tasks: ../../qemu/tasks/setup_new_vm.yml
 
-      - name: Configure HAOS after VM creation
-        include_tasks: configure_haos.yml
+      #- name: Configure HAOS after VM creation
+      #  include_tasks: configure_haos.yml
 
       
 
