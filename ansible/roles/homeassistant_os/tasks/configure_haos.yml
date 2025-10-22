@@ -1,80 +1,72 @@
-    - name: Get VM IP from network DHCP status
-      shell: |
-        cat /var/lib/libvirt/dnsmasq/virbr_haos_net.status | grep -oP '"ip-address":\s*"\K[^"]+' | head -1
-      register: vm_ip_status
-      retries: 5
-      delay: 5
-      until: vm_ip_status.stdout != ""
-      failed_when: false
-      changed_when: false
+- name: Get VM IP from network DHCP status
+  shell: |
+    cat /var/lib/libvirt/dnsmasq/virbr_{{ network_name }}.status | grep -oP '"ip-address":\s*"\K[^"]+' | head -1
+  register: vm_ip_status
+  become: yes
+  failed_when: false
+  changed_when: false
+  retries: 30
+  delay: 10
+  until: vm_ip_status.stdout != ""
 
-    - name: Determine final VM IP
-      ansible.builtin.set_fact:
-        vm_ip_address: "{{ vm_ip_status.stdout | default('') }}"
+- name: Set VM IP
+  ansible.builtin.set_fact:
+    vm_ip_address: "{{ vm_ip_status.stdout }}"
 
-    - name: Fail if no IP found
-      ansible.builtin.fail:
-        msg: |
-          Could not detect VM IP address!
-      when: vm_ip_address == ""
+- name: Fail if no IP found
+  ansible.builtin.fail:
+    msg: "Could not detect VM IP address!"
+  when: vm_ip_address == ""
 
-    - name: Display detected IP
-      ansible.builtin.debug:
-        msg: 
-          - "Home Assistant VM IP: {{ vm_ip_address }}"
-          - "Network: {{ network_name }}"
+- name: Quick API ready check (max 2 minutes)
+  ansible.builtin.uri:
+    url: "http://{{ vm_ip_address }}:8123/api/onboarding"
+    method: GET
+    status_code: 200
+    timeout: 5
+  register: onboarding_check
+  until: onboarding_check.status == 200
+  retries: 12  # Just 2 minutes instead of 20
+  delay: 10
 
-    - name: Wait for Home Assistant API (15-20 minutes)
-      ansible.builtin.uri:
-        url: "http://{{ vm_ip_address }}:8123/api/"
-        method: GET
-        status_code: 200
-        timeout: 5
-      register: api_check
-      until: api_check.status == 200
-      retries: 120
-      delay: 10
+- name: Create admin user
+  ansible.builtin.uri:
+    url: "http://{{ vm_ip_address }}:8123/api/onboarding/users"
+    method: POST
+    body_format: json
+    body:
+      client_id: "http://{{ vm_ip_address }}:8123"
+      name: "Administrator"
+      username: "{{ ha_admin_username }}"
+      password: "{{ ha_admin_password }}"
+      language: "en"
+    status_code: [200, 400]
+  register: user_created
+  failed_when: false
 
-    - name: Create admin user
-      ansible.builtin.uri:
-        url: "http://{{ vm_ip_address }}:8123/api/onboarding/users"
-        method: POST
-        body_format: json
-        body:
-          client_id: "http://{{ vm_ip_address }}:8123"
-          name: "Administrator"
-          username: "{{ ha_admin_username }}"
-          password: "{{ ha_admin_password }}"
-          language: "en"
-        status_code: [200, 400]
-      register: user_created
-      failed_when: false
+- name: Save auth token
+  ansible.builtin.set_fact:
+    ha_auth_token: "{{ user_created.json.auth_token }}"
+  when: 
+    - user_created.status == 200
+    - user_created.json.auth_token is defined
 
-    - name: Save auth token
-      ansible.builtin.set_fact:
-        ha_auth_token: "{{ user_created.json.auth_token }}"
-      when: 
-        - user_created.status == 200
-        - user_created.json.auth_token is defined
+- name: Complete onboarding
+  ansible.builtin.uri:
+    url: "http://{{ vm_ip_address }}:8123/api/onboarding/integration"
+    method: POST
+    body_format: json
+    body: {}
+    headers:
+      Authorization: "Bearer {{ ha_auth_token }}"
+    status_code: [200, 400]
+  when: ha_auth_token is defined
+  failed_when: false
 
-    - name: Complete onboarding
-      ansible.builtin.uri:
-        url: "http://{{ vm_ip_address }}:8123/api/onboarding/integration"
-        method: POST
-        body_format: json
-        body: {}
-        headers:
-          Authorization: "Bearer {{ ha_auth_token }}"
-        status_code: [200, 400]
-      when: ha_auth_token is defined
-      failed_when: false
-
-    - name: Display completion info
-      ansible.builtin.debug:
-        msg:
-          - "=========================================="
-          - "Home Assistant Onboarding Complete!"
-          - "=========================================="
-          - "VM IP: http://{{ vm_ip_address }}:8123"
-          - "Username: {{ ha_admin_username }}"
-          - "Auth Token: {{ ha_auth_token | default('not captured') }}"
+- name: Display completion info
+  ansible.builtin.debug:
+    msg:
+      - "Home Assistant Ready!"
+      - "URL: http://{{ vm_ip_address }}:8123"
+      - "Username: {{ ha_admin_username }}"
+      - "Token: {{ ha_auth_token | default('not captured') }}"
