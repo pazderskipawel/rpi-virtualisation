@@ -1,8 +1,10 @@
     - name: Get VM IP from network DHCP status
       shell: |
-        cat /var/lib/libvirt/dnsmasq/virbr_{{ network_name }}.status | \
-        grep -oP '"ip-address":\s*"\K[^"]+' | head -1
+        cat /var/lib/libvirt/dnsmasq/virbr_{{ network_name }}.status | grep -oP '"ip-address":\s*"\K[^"]+' | head -1
       register: vm_ip_status
+      retries: 10
+      delay: 15
+      until: vm_ip_status.stdout != ""
       failed_when: false
       changed_when: false
 
