@@ -1,0 +1,11 @@
+# Home Assistant Configuration
+
+default_config:
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.0.171      # Raspberry Pi host
+    - 192.168.0.0/24     # Entire subnet
+    - 172.16.0.0/12      # Docker networks
+    - 127.0.0.1          # Localhost

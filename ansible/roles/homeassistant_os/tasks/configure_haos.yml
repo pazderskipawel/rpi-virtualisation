@@ -63,10 +63,72 @@
   when: ha_auth_token is defined
   failed_when: false
 
+- name: Wait for Home Assistant to initialize
+  ansible.builtin.pause:
+    seconds: 30
+  when: ha_auth_token is defined
+
+- name: Shutdown VM to copy configuration file
+  community.libvirt.virt:
+    name: "{{ vm_name }}"
+    state: shutdown
+    uri: "qemu:///system"
+  become: yes
+  when: ha_auth_token is defined
+
+- name: Wait for VM to shutdown completely
+  ansible.builtin.pause:
+    seconds: 15
+
+- name: Copy configuration.yaml to VM using virt-copy-in
+  ansible.builtin.shell: |
+    virt-copy-in -d {{ vm_name }} -a {{ role_path }}/files/configuration.yaml /config/
+  become: yes
+  when: ha_auth_token is defined
+  register: config_copied
+
+- name: Start VM
+  community.libvirt.virt:
+    name: "{{ vm_name }}"
+    state: running
+    uri: "qemu:///system"
+  become: yes
+  when: ha_auth_token is defined
+
+- name: Wait for Home Assistant to restart
+  ansible.builtin.pause:
+    seconds: 60
+
+- name: Wait for HA API to be ready
+  ansible.builtin.uri:
+    url: "http://{{ vm_ip_address }}:8123/api/"
+    method: GET
+    status_code: [200, 401]
+    timeout: 5
+  register: api_ready
+  until: api_ready.status in [200, 401]
+  retries: 30
+  delay: 10
+
+- name: Verify proxy access works
+  ansible.builtin.uri:
+    url: "http://192.168.0.171:8123/api/"
+    method: GET
+    status_code: [200, 401]
+    timeout: 10
+  register: proxy_test
+  retries: 5
+  delay: 10
+  failed_when: false
+
 - name: Display completion info
   ansible.builtin.debug:
     msg:
-      - "Home Assistant Ready!"
-      - "URL: http://{{ vm_ip_address }}:8123"
+      - "=========================================="
+      - "Home Assistant Setup Complete!"
+      - "=========================================="
+      - "Direct VM: http://{{ vm_ip_address }}:8123"
+      - "Proxy: http://192.168.0.171:8123"
       - "Username: {{ ha_admin_username }}"
-      - "Token: {{ ha_auth_token | default('not captured') }}"
+      - ""
+      - "Proxy Status: {{ 'Working!' if proxy_test.status | default(0) in [200, 401] else 'Check manually' }}"
