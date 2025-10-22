@@ -9,7 +9,7 @@
 
 - name: Wait for VM to fully stop
   ansible.builtin.pause:
-    seconds: 15
+    seconds: 30
 
 - name: Copy configuration.yaml to VM
   ansible.builtin.shell: |
