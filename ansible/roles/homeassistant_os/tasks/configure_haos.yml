@@ -114,8 +114,8 @@
     status_code: [200, 401]
     timeout: 10
   register: proxy_test
-  retries: 5
-  delay: 5
+  retries: 10
+  delay: 10
   failed_when: false
 
 - name: Display completion info
