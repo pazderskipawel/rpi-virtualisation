@@ -19,7 +19,7 @@
         include_tasks: ../qemu/tasks/setup_network.yml # needed vars taken from defaults/main.yml
 
       - name: Check if image already exists
-        ansible.builtin.stat:
+        stat:
           path: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
         register: image_file
 
@@ -28,13 +28,13 @@
         block:
 
           - name: Download HAOS image
-            ansible.builtin.get_url:
+            get_url:
               url: "{{ image_url }}"
               dest: "{{ images_dir }}/{{ image_filename }}"
               mode: '0644'
 
           - name: Extract image if compressed
-            ansible.builtin.command:
+            command:
               cmd: "unxz {{ images_dir }}/{{ image_filename }}"
             when: image_filename.endswith('.xz')
             register: unxz_result
@@ -48,11 +48,14 @@
               mode: '0640'
 
       - name: Set final image path
-        ansible.builtin.set_fact:
+        set_fact:
           vm_image: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
 
       - name: Create VM using qemu role
-        ansible.builtin.include_tasks: ../../qemu/tasks/setup_new_vm.yml
+        include_tasks: ../../qemu/tasks/setup_new_vm.yml
+
+      - name: Configure HAOS after VM creation
+        include_tasks: configure_haos.yml
 
       
 

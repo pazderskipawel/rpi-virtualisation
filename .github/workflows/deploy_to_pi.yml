@@ -11,6 +11,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true 
 
+defaults:
+  run:
+    working-directory: /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/ansible  
+
 jobs:   
   checkout-code:
     runs-on: self-hosted
@@ -20,9 +24,6 @@ jobs:
   check-ansible:
     needs: checkout-code
     runs-on: self-hosted
-    defaults:
-      run:
-        working-directory: /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/ansible
     steps:
       - name: ensure Ansible present and expected config
         run: |
@@ -37,22 +38,24 @@ jobs:
   remove-existing-setup:
     needs: check-ansible
     runs-on: self-hosted
-    defaults:
-      run:
-        working-directory: /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/ansible
     steps:  
       - name: Remove existing setup
         run: ansible-playbook remove_everything.yml
-  deploy-full-setup:
+  deploy-necessary:
     needs: remove-existing-setup
     runs-on: self-hosted
-    defaults: 
-      run:
-        working-directory: /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/ansible
     steps:
       - name: Run needed roles
         run: ansible-playbook run_necessary.yml
+  deploy-containers:
+    needs: deploy-necessary
+    runs-on: self-hosted
+    steps:
       - name: Run docker containers roles
         run: ansible-playbook run_containers.yml --tags samba,klipper
+  deploy-vms:
+    needs: deploy-necessary
+    runs-on: self-hosted
+    steps:    
       - name: Run VM roles
         run: ansible-playbook run_vms.yml --tags haos

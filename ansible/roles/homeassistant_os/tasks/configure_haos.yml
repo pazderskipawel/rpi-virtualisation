@@ -1,0 +1,64 @@
+    - name: Get VM IP address
+      shell: |
+        virsh domifaddr {{ vm_name }} | grep -oP '(\d+\.){3}\d+' | head -1
+      register: vm_ip
+      retries: 30
+      delay: 10
+      until: vm_ip.stdout != ""
+      changed_when: false
+
+    - name: Set VM IP
+      set_fact:
+        vm_ip_address: "{{ vm_ip.stdout }}"
+
+    - name: Wait for Home Assistant API (15-20 minutes)
+      uri:
+        url: "http://{{ vm_ip_address }}:8123/api/"
+        method: GET
+        status_code: 200
+      register: api_check
+      until: api_check.status == 200
+      retries: 120
+      delay: 10
+
+    - name: Create admin user
+      uri:
+        url: "http://{{ vm_ip_address }}:8123/api/onboarding/users"
+        method: POST
+        body_format: json
+        body:
+          client_id: "http://{{ vm_ip_address }}:8123"
+          name: "Administrator"
+          username: "{{ ha_admin_username }}"
+          password: "{{ ha_admin_password }}"
+          language: "en"
+        status_code: [200, 400]
+      register: user_created
+      failed_when: false
+
+    - name: Save auth token
+      set_fact:
+        ha_auth_token: "{{ user_created.json.auth_token }}"
+      when: 
+        - user_created.status == 200
+        - user_created.json.auth_token is defined
+
+    - name: Complete onboarding (skip optional steps)
+      uri:
+        url: "http://{{ vm_ip_address }}:8123/api/onboarding/integration"
+        method: POST
+        body_format: json
+        body: {}
+        headers:
+          Authorization: "Bearer {{ ha_auth_token }}"
+        status_code: [200, 400]
+      when: ha_auth_token is defined
+      failed_when: false
+
+    - name: Display login info
+      debug:
+        msg:
+          - "Home Assistant Ready!"
+          - "URL: http://{{ vm_ip_address }}:8123"
+          - "Username: {{ ha_admin_username }}"
+          - "You can configure location/timezone later in the UI"

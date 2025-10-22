@@ -17,3 +17,7 @@ network_config_file: "{{ role_path }}/files/haos_net.xml"
 
 # Whether to enable autostart
 enable_autostart: false
+
+# Home Assistant admin user credentials
+ha_admin_username: "admin"
+ha_admin_password: "ChangeMe123!"
