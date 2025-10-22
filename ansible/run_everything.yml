@@ -15,3 +15,5 @@
       tags: [cockpit]
     - role: homeassistant_os
       tags: [haos]
+    - role: samba
+      tags: [samba]
