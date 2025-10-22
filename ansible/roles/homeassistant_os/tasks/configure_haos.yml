@@ -1,25 +1,29 @@
 # Home Assistant OS configuration and onboarding
 
+- name: Shutdown VM for configuration
+  ansible.builtin.shell: |
+    LANG=C virsh -c qemu:///system shutdown {{ vm_name }}
+  register: vm_shutdown
+  failed_when: false
+
 - name: Wait for VM to completely stop
-  ansible.builtin.command:
-    cmd: virsh -c qemu:///system domstate {{ vm_name }}
+  ansible.builtin.shell: |
+    LANG=C virsh -c qemu:///system domstate {{ vm_name }}
   register: vm_state
   until: vm_state.stdout == "shut off"
-  retries: 3
-  delay: 15
+  retries: 10
+  delay: 5
+  changed_when: false
 
 - name: Copy configuration.yaml to VM
   ansible.builtin.shell: |
     virt-copy-in -d {{ vm_name }} {{ role_path }}/files/configuration.yaml /config/
-  become: yes
 
 - name: Start VM with configuration deployed
   community.libvirt.virt:
     name: "{{ vm_name }}"
     state: running
     uri: "qemu:///system"
-  become: yes
-
 - name: Wait for VM to boot and get DHCP address
   ansible.builtin.pause:
     seconds: 30
@@ -28,7 +32,6 @@
   shell: |
     cat /var/lib/libvirt/dnsmasq/virbr_{{ network_name }}.status | grep -oP '"ip-address":\s*"\K[^"]+' | head -1
   register: vm_ip_status
-  become: yes
   retries: 30
   delay: 10
   until: vm_ip_status.stdout != ""
