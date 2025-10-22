@@ -12,7 +12,7 @@
   register: vm_state
   until: vm_state.stdout == "shut off"
   retries: 10
-  delay: 5
+  delay: 10
   changed_when: false
 
 - name: Copy configuration.yaml to VM
