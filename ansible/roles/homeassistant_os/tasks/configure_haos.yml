@@ -47,6 +47,13 @@
   register: user_created
   failed_when: false
 
+- name: Debug full API response
+  ansible.builtin.debug:
+    msg:
+      - "Status: {{ user_created.status }}"
+      - "JSON: {{ user_created.json }}"
+      - "Full response: {{ user_created }}"
+      
 - name: Save auth token
   ansible.builtin.set_fact:
     ha_auth_token: "{{ user_created.json.auth_token | default('') }}"
@@ -126,5 +133,5 @@
       - "Direct VM Access: http://{{ vm_ip_address }}:8123"
       - "Nginx Proxy Access: http://{{ ansible_default_ipv4.address }}:8123"
       - "Username: {{ ha_admin_username }}"
-      - ""
+      - "Auth token: {{ ha_auth_token }}"
       - "Proxy Status: {{ 'Working!' if proxy_test.status | default(0) in [200, 401] else 'Check manually' }}"
