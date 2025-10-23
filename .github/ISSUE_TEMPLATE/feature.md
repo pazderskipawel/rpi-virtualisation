@@ -1,8 +1,8 @@
 ---
 name: Feature
 about: Suggest an idea for this project
-title: "[Feature] (Theme) Title"
-labels: planned_work
+title: "(Theme) Title"
+labels: feature
 assignees: pazderskipawel
 projects: ["pazderskipawel/1"]
 

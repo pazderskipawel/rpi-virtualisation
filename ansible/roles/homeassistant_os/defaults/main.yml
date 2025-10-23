@@ -13,7 +13,11 @@ images_dir: "/var/lib/libvirt/images"
 
 # Network settings
 network_name: "haos_net"
-network_config_file: "{{ role_path }}/files/haos_net.xml"
+network_config_file: "{{ role_path }}/files/haos_libvirt_net.xml"
 
 # Whether to enable autostart
 enable_autostart: false
+
+# Home Assistant admin user credentials
+ha_admin_username: "admin"
+ha_admin_password: "password"

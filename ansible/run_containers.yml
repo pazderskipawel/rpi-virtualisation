@@ -2,6 +2,6 @@
   hosts: localhost
   roles:
     - role: klipper
-      tags: [klipper] #only run this role if --tags klipper is specified
+      tags: [klipper]
     - role: samba
       tags: [samba]

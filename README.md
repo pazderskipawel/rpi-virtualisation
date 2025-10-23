@@ -65,4 +65,7 @@ rpi_ip:8080 --> nginx --> localhost:8081 --> docker --> :80 on fluidd container
 rpi_ip:9090 --> localhost:9090 --> cockpit service
 
 rpi_ip:8123 --> nginx --> localhost:8123 --> haos_vm_ip:8123 --> haos vm
+
+samba directories
+\\rpi_ip\directory_name --> docker --> :445 on samba container --> smb.conf --> /directory_name in docker container --> /rpi_directory mounted docker volume 
 ```

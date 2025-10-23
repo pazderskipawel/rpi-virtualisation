@@ -1,59 +1,60 @@
-# Setup tasks for HAOS - downloads image and creates VM
-  - name: Check if VM already exists
-    community.libvirt.virt:
-      command: list_vms
-    register: existing_vms
-    changed_when: false
+# Main tasks for Home Assistant OS role
 
-  - name: Create and setup HAOS VM if not exists
-    when: vm_name not in existing_vms.list_vms
-    block:
+- name: Check if VM already exists
+  community.libvirt.virt:
+    command: list_vms
+    uri: "qemu:///system"
+  register: existing_vms
+  changed_when: false
 
-      - name: setup nginx reverse proxy for HAOS
-        include_tasks: ../nginx/tasks/add_service.yml
-        vars:
-          service_name: haos
-          service_config_path: "{{ role_path }}/files/haos.conf"
+- name: Create and setup HAOS VM if not exists
+  when: vm_name not in existing_vms.list_vms
+  block:
 
-      - name: Setup libvirt network for HAOS VM
-        include_tasks: ../qemu/tasks/setup_network.yml # needed vars taken from defaults/main.yml
+    - name: Setup nginx reverse proxy for HAOS
+      include_tasks: ../nginx/tasks/add_service.yml
+      vars:
+        service_name: haos
+        service_config_path: "{{ role_path }}/files/haos_nginx.conf"
 
-      - name: Check if image already exists
-        ansible.builtin.stat:
-          path: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
-        register: image_file
+    - name: Setup libvirt network for HAOS VM
+      include_tasks: ../qemu/tasks/setup_network.yml
 
-      - name: Download image if not present
-        when: not image_file.stat.exists
-        block:
+    - name: Check if image already exists
+      stat:
+        path: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
+      register: image_file
 
-          - name: Download HAOS image
-            ansible.builtin.get_url:
-              url: "{{ image_url }}"
-              dest: "{{ images_dir }}/{{ image_filename }}"
-              mode: '0644'
+    - name: Download image if not present
+      when: not image_file.stat.exists
+      block:
 
-          - name: Extract image if compressed
-            ansible.builtin.command:
-              cmd: "unxz {{ images_dir }}/{{ image_filename }}"
-            when: image_filename.endswith('.xz')
-            register: unxz_result
-            changed_when: unxz_result.rc == 0
-          
-          - name: Set proper permissions on HAOS image
-            file:
-              path: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
-              owner: libvirt-qemu
-              group: kvm
-              mode: '0640'
+        - name: Download HAOS image
+          get_url:
+            url: "{{ image_url }}"
+            dest: "{{ images_dir }}/{{ image_filename }}"
+            mode: '0644'
 
-      - name: Set final image path
-        ansible.builtin.set_fact:
-          vm_image: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
+        - name: Extract image if compressed
+          command:
+            cmd: "unxz {{ images_dir }}/{{ image_filename }}"
+          when: image_filename.endswith('.xz')
+          register: unxz_result
+          changed_when: unxz_result.rc == 0
+        
+        - name: Set proper permissions on HAOS image
+          file:
+            path: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
+            owner: libvirt-qemu
+            group: kvm
+            mode: '0640'
 
-      - name: Create VM using qemu role
-        ansible.builtin.include_tasks: ../../qemu/tasks/setup_new_vm.yml
+    - name: Set final image path
+      set_fact:
+        vm_image: "{{ images_dir }}/{{ image_filename | regex_replace('\\.xz$', '') }}"
 
-      
+    - name: Create VM using qemu role
+      include_tasks: ../../qemu/tasks/setup_new_vm.yml
 
-  
+    - name: Configure HAOS after VM creation
+      include_tasks: configure_haos.yml
