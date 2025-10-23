@@ -56,10 +56,31 @@
       
 - name: Save auth code
   ansible.builtin.set_fact:
-    ha_auth_token: "{{ user_created.json.auth_code | default('') }}"
+    ha_auth_code: "{{ user_created.json.auth_code | default('') }}"
   when: 
     - user_created.status is defined
     - user_created.status == 200
+    
+- name: Exchange auth code for access token
+  ansible.builtin.uri:
+    url: "http://{{ vm_ip_address }}:8123/auth/token"
+    method: POST
+    body_format: form-urlencoded
+    body:
+      grant_type: "authorization_code"
+      code: "{{ ha_auth_code }}"
+      client_id: "http://{{ vm_ip_address }}:8123"
+    status_code: [200]
+  register: token_response
+  when: ha_auth_code is defined and ha_auth_code != ''
+
+- name: Save access token
+  ansible.builtin.set_fact:
+    ha_auth_token: "{{ token_response.json.access_token }}"
+  when: 
+    - token_response is defined
+    - token_response.status == 200
+    - token_response.json.access_token is defined
 
 - name: Set location and unit system
   ansible.builtin.uri:
