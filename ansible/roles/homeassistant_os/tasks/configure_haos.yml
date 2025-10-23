@@ -54,14 +54,33 @@
       - "JSON: {{ user_created.json }}"
       - "Full response: {{ user_created }}"
       
-- name: Save auth token
+- name: Save auth code
   ansible.builtin.set_fact:
-    ha_auth_token: "{{ user_created.json.auth_token | default('') }}"
+    ha_auth_token: "{{ user_created.json.auth_code | default('') }}"
   when: 
     - user_created.status is defined
     - user_created.status == 200
 
-- name: Complete onboarding
+- name: Set location and unit system
+  ansible.builtin.uri:
+    url: "http://{{ vm_ip_address }}:8123/api/onboarding/core_config"
+    method: POST
+    body_format: json
+    body:
+      latitude: 53.1235
+      longitude: 18.0076
+      elevation: 60
+      unit_system: metric
+      time_zone: "Europe/Warsaw"
+      currency: "PLN"
+      country: "PL"
+    headers:
+      Authorization: "Bearer {{ ha_auth_token }}"
+    status_code: [200, 400]
+  when: ha_auth_token is defined and ha_auth_token != ''
+  failed_when: false
+
+- name: Complete onboarding - integration
   ansible.builtin.uri:
     url: "http://{{ vm_ip_address }}:8123/api/onboarding/integration"
     method: POST
