@@ -15,7 +15,7 @@
       include_tasks: ../nginx/tasks/add_service.yml
       vars:
         service_name: haos
-        service_config_path: "{{ role_path }}/files/haos.conf"
+        service_config_path: "{{ role_path }}/files/haos_nginx.conf"
 
     - name: Setup libvirt network for HAOS VM
       include_tasks: ../qemu/tasks/setup_network.yml

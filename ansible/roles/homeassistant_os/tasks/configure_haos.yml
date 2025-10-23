@@ -100,7 +100,6 @@
   #  ...
   #
   
-
 - name: Start VM with configuration deployed
   community.libvirt.virt:
     name: "{{ vm_name }}"
