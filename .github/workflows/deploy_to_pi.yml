@@ -36,6 +36,7 @@ jobs:
             echo "Check passed, skipping install"
           fi
   remove-existing-setup:
+    if: github.ref != 'refs/heads/main'  #not on main branch
     needs: check-ansible
     runs-on: self-hosted
     steps:  

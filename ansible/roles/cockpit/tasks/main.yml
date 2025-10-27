@@ -50,3 +50,10 @@
     name: cockpit.socket
     enabled: yes
     state: started
+
+- name: Allow cockpit through firewall
+  community.general.ufw:
+    rule: allow
+    port: 9090
+    proto: tcp
+    comment: 'cockpit'

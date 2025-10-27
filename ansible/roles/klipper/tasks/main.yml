@@ -1,10 +1,10 @@
-    - name: Add klipper config to nginx
-      include_tasks: ../nginx/tasks/add_service.yml
-      vars:
-        service_name: klipper
-        service_config_path: "{{ role_path }}/files/klipper_nginx.conf"
+- name: Add klipper config to nginx
+  include_tasks: ../nginx/tasks/add_service.yml
+  vars:
+    service_name: klipper
+    service_config_path: "{{ role_path }}/files/klipper_nginx.conf"
 
-    - name: start klipper containers from docker-compose file
-      community.docker.docker_compose_v2:
-        project_src: "{{ role_path }}/files"
-        state: present
+- name: start klipper containers from docker-compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ role_path }}/files"
+    state: present
