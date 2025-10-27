@@ -1,5 +1,15 @@
-- name: Restart samba
+- name: Restart samba container
   community.docker.docker_container:
     name: samba
     state: started
     restart: yes
+  listen: Restart samba
+
+- name: Wait for Samba to be ready
+  wait_for:
+    host: localhost
+    port: 445
+    delay: 2
+    timeout: 30
+    state: started
+  listen: Restart samba
