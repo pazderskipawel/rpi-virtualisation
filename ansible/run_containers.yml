@@ -5,3 +5,5 @@
       tags: [klipper]
     - role: samba
       tags: [samba]
+    - role: vpn
+      tags: [vpn]
