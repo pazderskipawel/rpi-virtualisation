@@ -7,8 +7,8 @@
     ports:
       - "445:445"
     volumes:
+      - "/opt:/opt"
       - "/opt/samba/smb.conf:/etc/samba/smb.conf:ro"
-      - "/home/rpi/printer_data/gcodes:/gcodes"
     env:
       USER: "{{ samba_user_name }}"
       PASS: "{{ samba_user_password }}"
