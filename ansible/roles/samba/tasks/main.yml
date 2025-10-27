@@ -1,3 +1,9 @@
+- name: Move main samba config to porper path
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/smb.conf"
+    dest: "/opt/samba/smb.conf"
+    mode: '0644'
+    
 - name: Create and start Samba container
   community.docker.docker_container:
     name: samba
