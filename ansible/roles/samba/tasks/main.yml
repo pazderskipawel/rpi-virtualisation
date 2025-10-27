@@ -4,12 +4,6 @@
     state: directory
     mode: '0755'
 
-- name: Move main samba config to porper path
-  ansible.builtin.copy:
-    src: "{{ role_path }}/files/smb.conf"
-    dest: "/opt/samba/smb.conf"
-    mode: '0644'
-
 - name: Create and start Samba container
   community.docker.docker_container:
     name: samba
@@ -20,10 +14,12 @@
       - "445:445"
     volumes:
       - "/opt:/opt"
-      - "/opt/samba/smb.conf:/etc/samba/smb.conf:ro"
     env:
       USER: "{{ samba_user_name }}"
       PASS: "{{ samba_user_password }}"
+    command: >
+      sh -c "ln -sf /opt/samba/smb.conf /etc/samba/smb.conf && 
+             exec smbd --foreground --no-process-group"
 
 - name: Allow smb through firewall
   community.general.ufw:
