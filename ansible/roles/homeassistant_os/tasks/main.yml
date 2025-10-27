@@ -66,17 +66,6 @@
         proto: tcp
         comment: 'homeassistant VM'
 
-    - name: Verify proxy access works
-      ansible.builtin.uri:
-        url: "http://{{ ansible_default_ipv4.address }}:8123/api/"
-        method: GET
-        status_code: [200, 401]
-        timeout: 10
-      register: proxy_test
-      retries: 30
-      delay: 10
-      failed_when: false
-
     - name: Display completion info
       ansible.builtin.debug:
         msg:
@@ -87,4 +76,3 @@
           - "Nginx Proxy Access: http://{{ ansible_default_ipv4.address }}:8123"
           - "Username: {{ ha_admin_username }}"
           - "Auth token: {{ ha_auth_token }}"
-          - "Proxy Status: {{ 'Working!' if proxy_test.status | default(0) in [200, 401] else 'Check manually' }}"
