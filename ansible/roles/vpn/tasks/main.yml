@@ -60,7 +60,7 @@ tasks:
         - "Remember to forward UDP port 51820 on your router to this Pi"
   
   - name: Allow WireGuard through firewall
-    community.general.ufw:
+    ufw:
       rule: allow
       port: 51820
       proto: udp
