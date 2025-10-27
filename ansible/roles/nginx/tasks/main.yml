@@ -1,3 +1,11 @@
+- name: Ensure directory exists
+  ansible.builtin.file:
+    path: /home/rpi/files/nginx
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
 - name: Start nginx container
   community.docker.docker_container:
     name: nginx
@@ -6,7 +14,7 @@
     restart_policy: unless-stopped
     network_mode: host
     volumes:
-      - /home/rpi/nginx/conf.d:/etc/nginx/conf.d:ro
+      - /home/rpi/files/nginx:/etc/nginx/conf.d:ro
 
 - name: Verify nginx container is running
   community.docker.docker_container_info:

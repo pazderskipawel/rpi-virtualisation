@@ -10,6 +10,14 @@
     state: present
     update_cache: yes
 
+- name: Ensure directory exists
+  ansible.builtin.file:
+    path: /home/rpi/files/wireguard
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
 - name: Deploy WireGuard container
   docker_container:
     name: wireguard
@@ -30,7 +38,7 @@
       ALLOWEDIPS: "0.0.0.0/0"
       INTERNAL_SUBNET: "10.13.13.0"
     volumes:
-      - "/home/rpi/wireguard/config:/opt/wireguard/config"
+      - "/home/rpi/files/wireguard/config:/opt/wireguard/config"
       - "/lib/modules:/lib/modules"
     ports:
       - "51820:51820/udp"
@@ -43,10 +51,10 @@
 
 - name: Add Samba share for WireGuard configs
   blockinfile:
-    path: /home/rpi/samba/smb.conf
+    path: /home/rpi/files/samba/smb.conf
     block: |
       [wireguard]
-      path = /home/rpi/wireguard/config
+      path = /files/wireguard/config
       browseable = yes
       read only = yes
       guest ok = no

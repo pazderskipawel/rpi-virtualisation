@@ -55,20 +55,20 @@
 
     - name: Remove nginx configs
       ansible.builtin.file:
-        path: /home/rpi/nginx
+        path: /home/rpi/files/nginx
         state: absent
     
     - name: Remove klipper configs
       ansible.builtin.file:
-        path: /home/rpi/printer_data
+        path: /home/rpi/files/printer_data
         state: absent
     
     - name: remove wireguard configs
       ansible.builtin.file:
-        path: /home/rpi/wireguard
+        path: /home/rpi/files/wireguard
         state: absent
 
     - name: remove samba configs
       ansible.builtin.file:
-        path: /home/rpi/samba
+        path: /home/rpi/files/samba
         state: absent
