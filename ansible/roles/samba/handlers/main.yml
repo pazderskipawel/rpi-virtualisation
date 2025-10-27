@@ -4,12 +4,13 @@
     state: started
     restart: yes
   listen: Restart samba
+  notify: Samba restarted
 
-- name: Wait for Samba to be ready
-  wait_for:
-    host: localhost
-    port: 445
-    delay: 2
-    timeout: 30
-    state: started
-  listen: Restart samba
+- name: Wait for container to be running
+  community.docker.docker_container_info:
+    name: samba
+  register: samba_info
+  until: samba_info.container.State.Running
+  retries: 10
+  delay: 3
+  listen: Samba restarted
