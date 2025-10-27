@@ -17,11 +17,18 @@
     mode: '0644'
   notify: Restart samba service
 
-- name: Create Samba user
-  shell: |
-    (pdbedit -L | grep {{ samba_user_name }}) || \
-    (echo '{{ samba_user_password }}'; echo '{{ samba_user_password }}') | smbpasswd -a -s {{ samba_user_name }}
+- name: Check if Samba user exists
+  shell: pdbedit -L | grep -q "^{{ ansible_user }}:"
+  register: samba_user_exists
+  failed_when: false
   changed_when: false
+  become: yes
+
+- name: Add ansible user to Samba
+  shell: |
+    (echo '{{ samba_user_password }}'; echo '{{ samba_user_password }}') | smbpasswd -a -s {{ ansible_user }}
+  when: samba_user_exists.rc != 0
+  become: yes
 
 - name: Enable and start Samba service
   systemd:
