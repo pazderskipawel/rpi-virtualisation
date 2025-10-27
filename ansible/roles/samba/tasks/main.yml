@@ -5,7 +5,7 @@
     mode: '0755'
 
 - name: Copy smb config to opt directory
-  ansible.builtin.file:
+  ansible.builtin.copy:
     src: "{{ role_path }}/files/smb.conf"
     dest: "/opt/samba/smb.conf"
     mode: '0644'
