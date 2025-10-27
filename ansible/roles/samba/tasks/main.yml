@@ -1,5 +1,5 @@
 - name: Create directory
-  ansible.builtin.directory:
+  ansible.builtin.file:
     path: "/opt/samba"
     state: directory
     mode: '0755'
