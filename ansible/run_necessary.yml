@@ -1,7 +1,7 @@
 - name: run necessary roles to set up the system
   hosts: localhost
   roles:
-    - role: raspberry
+    - role: firewall
       tags: [always]
     - role: docker
       tags: [always]

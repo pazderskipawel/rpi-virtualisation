@@ -1,6 +1,6 @@
 # Default values for HAOS setup
 vm_name: "haos"
-memory_mb: 4096
+memory_mb: 2048
 vcpus: 2
 disk_gb: 32
 

@@ -16,3 +16,10 @@
   delay: 2
   until: nginx_info.container.State.Running
   failed_when: not nginx_info.container.State.Running
+
+- name: Allow HTTP through firewall
+  community.general.ufw:
+    rule: allow
+    port: 8080
+    proto: tcp
+    comment: 'nginx HTTP'

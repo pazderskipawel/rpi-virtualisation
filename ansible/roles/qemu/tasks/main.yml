@@ -1,32 +1,32 @@
-    - name: Install QEMU and libvirt packages
-      ansible.builtin.apt:
-        name:
-          - qemu-system-aarch64
-          - qemu-utils
-          - qemu-efi-aarch64
-          - libvirt-daemon-system
-          - libvirt-clients
-          - virtinst
-          - libguestfs-tools
-        state: present
+- name: Install QEMU and libvirt packages
+  ansible.builtin.apt:
+    name:
+      - qemu-system-aarch64
+      - qemu-utils
+      - qemu-efi-aarch64
+      - libvirt-daemon-system
+      - libvirt-clients
+      - virtinst
+      - libguestfs-tools
+    state: present
 
-    - name: Add user to libvirt groups
-      ansible.builtin.user:
-        name: "{{ ansible_user }}"
-        groups:
-          - libvirt
-          - libvirt-qemu
-          - kvm
-        append: yes
+- name: Add user to libvirt groups
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups:
+      - libvirt
+      - libvirt-qemu
+      - kvm
+    append: yes
 
-    - name: Enable and start libvirtd service
-      ansible.builtin.systemd:
-        name: libvirtd
-        enabled: yes
-        state: started
+- name: Enable and start libvirtd service
+  ansible.builtin.systemd:
+    name: libvirtd
+    enabled: yes
+    state: started
     
-    - name: Create VM storage directory
-      ansible.builtin.file:
-        path: /var/lib/libvirt/images
-        state: directory
-        mode: '0755'
+- name: Create VM storage directory
+  ansible.builtin.file:
+    path: /var/lib/libvirt/images
+    state: directory
+    mode: '0755'
