@@ -1,6 +1,6 @@
 - name: Create directory
   ansible.builtin.file:
-    path: "/opt/samba"
+    path: "/srv/samba"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     state: directory
@@ -9,7 +9,7 @@
 - name: Copy smb config to opt directory
   ansible.builtin.copy:
     src: "{{ role_path }}/files/smb.conf"
-    dest: "/opt/samba/smb.conf"
+    dest: "/srv/samba/smb.conf"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
@@ -28,7 +28,7 @@
       USER: "{{ samba_user_name }}"
       PASS: "{{ samba_user_password }}"
     command: >
-      sh -c "ln -sf /opt/samba/smb.conf /etc/samba/smb.conf && 
+      sh -c "ln -sf /srv/samba/smb.conf /etc/samba/smb.conf && 
              exec smbd --foreground --no-process-group"
 
 - name: Allow smb through firewall

@@ -55,20 +55,20 @@
 
     - name: Remove nginx configs
       ansible.builtin.file:
-        path: /opt/nginx
+        path: /srv/nginx
         state: absent
     
     - name: Remove klipper configs
       ansible.builtin.file:
-        path: /opt/printer_data
+        path: /srv/printer_data
         state: absent
     
     - name: remove wireguard configs
       ansible.builtin.file:
-        path: /opt/wireguard
+        path: /srv/wireguard
         state: absent
 
     - name: remove samba configs
       ansible.builtin.file:
-        path: /opt/samba
+        path: /srv/samba
         state: absent
