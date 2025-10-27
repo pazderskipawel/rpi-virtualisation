@@ -19,6 +19,7 @@
     name: samba
     image: dockurr/samba
     state: started
+    recreate: yes
     restart_policy: unless-stopped
     ports:
       - "445:445"

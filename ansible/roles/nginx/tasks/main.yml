@@ -12,6 +12,7 @@
     image: nginx:latest
     state: started
     restart_policy: unless-stopped
+    recreate: yes
     network_mode: host
     volumes:
       - /home/rpi/files/nginx:/etc/nginx/conf.d:ro
