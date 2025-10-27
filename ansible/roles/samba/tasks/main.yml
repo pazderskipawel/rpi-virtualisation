@@ -23,7 +23,7 @@
     ports:
       - "445:445"
     volumes:
-      - "/home/files:/files"
+      - "/home/rpi/files:/files"
     env:
       USER: "{{ samba_user_name }}"
       PASS: "{{ samba_user_password }}"
