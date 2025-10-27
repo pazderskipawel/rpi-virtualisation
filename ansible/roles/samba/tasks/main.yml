@@ -1,6 +1,8 @@
 - name: Create directory
   ansible.builtin.file:
     path: "/opt/samba"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     state: directory
     mode: '0755'
 
@@ -8,6 +10,8 @@
   ansible.builtin.copy:
     src: "{{ role_path }}/files/smb.conf"
     dest: "/opt/samba/smb.conf"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: '0644'
 
 - name: Create and start Samba container
