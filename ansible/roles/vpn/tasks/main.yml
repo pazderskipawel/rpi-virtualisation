@@ -51,7 +51,7 @@
 
 - name: Add Samba share for WireGuard configs
   blockinfile:
-    path: /home/rpi/files/samba/smb.conf
+    path: /etc/samba/smb.conf
     block: |
       [wireguard]
       path = /files/wireguard/config
