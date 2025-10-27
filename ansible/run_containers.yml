@@ -1,9 +1,10 @@
 - name: run containers roles to set up services
   hosts: localhost
   roles:
+    - role: samba
+      tags: [samba] 
     - role: vpn
       tags: [vpn]
     - role: klipper
       tags: [klipper]
-    - role: samba #samba is started last so it can get latest config
-      tags: [samba] 
+
