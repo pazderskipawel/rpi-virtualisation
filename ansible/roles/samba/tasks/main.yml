@@ -19,15 +19,17 @@
     name: samba
     image: dockurr/samba
     state: started
-    recreate: yes
     restart_policy: unless-stopped
+    comparisons:
+      volumes: strict
     ports:
       - "445:445"
     volumes:
-      - /home/rpi/files:/files
+      - /home/rpi/files:/files:rw
     env:
       USER: "{{ samba_user_name }}"
       PASS: "{{ samba_user_password }}"
+
 
 - name: Create symlink for samba config inside container
   command: docker exec samba sh -c "ln -sf /files/samba/smb.conf /etc/samba/smb.conf"
