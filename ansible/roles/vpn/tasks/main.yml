@@ -54,6 +54,7 @@
       create mask = 0664
       directory mask = 0775
     marker: "# {mark} ANSIBLE MANAGED BLOCK - WireGuard"
+  notify: Restart samba
 
 - name: Display instructions
   debug:

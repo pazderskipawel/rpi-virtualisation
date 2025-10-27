@@ -21,4 +21,6 @@
       valid users = sambauser
       create mask = 0664
       directory mask = 0775
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - Klipper"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Klipper"\
+  notify: Restart samba
+  
