@@ -4,6 +4,12 @@
     state: directory
     mode: '0755'
 
+- name: Copy smb config to opt directory
+  ansible.builtin.file:
+    src: "{{ role_path }}/files/smb.conf"
+    dest: "/opt/samba/smb.conf"
+    mode: '0644'
+
 - name: Create and start Samba container
   community.docker.docker_container:
     name: samba
