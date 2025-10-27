@@ -1,73 +1,72 @@
-tasks:
-  - name: Install required packages
-    apt:
-      name:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - gnupg
-        - lsb-release
-        - python3-pip
-      state: present
-      update_cache: yes
+- name: Install required packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - python3-pip
+    state: present
+    update_cache: yes
 
-  - name: Deploy WireGuard container
-    docker_container:
-      name: wireguard
-      image: linuxserver/wireguard
-      state: started
-      restart_policy: unless-stopped
-      capabilities:
-        - NET_ADMIN
-        - SYS_MODULE
-      env:
-        PUID: "1000"
-        PGID: "1000"
-        TZ: "Europe/Warsaw"
-        SERVERURL: "{{ ansible_default_ipv4.address }}"
-        SERVERPORT: "51820"
-        PEERS: "1"
-        PEERDNS: "auto"
-        ALLOWEDIPS: "0.0.0.0/0"
-        INTERNAL_SUBNET: "10.13.13.0"
-      volumes:
-        - "/opt/wireguard/config:/config"
-        - "/lib/modules:/lib/modules"
-      ports:
-        - "51820:51820/udp"
-      sysctls:
-        net.ipv4.conf.all.src_valid_mark: "1"
+- name: Deploy WireGuard container
+  docker_container:
+    name: wireguard
+    image: linuxserver/wireguard
+    state: started
+    restart_policy: unless-stopped
+    capabilities:
+      - NET_ADMIN
+      - SYS_MODULE
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Europe/Warsaw"
+      SERVERURL: "{{ ansible_default_ipv4.address }}"
+      SERVERPORT: "51820"
+      PEERS: "1"
+      PEERDNS: "auto"
+      ALLOWEDIPS: "0.0.0.0/0"
+      INTERNAL_SUBNET: "10.13.13.0"
+    volumes:
+      - "/opt/wireguard/config:/config"
+      - "/lib/modules:/lib/modules"
+    ports:
+      - "51820:51820/udp"
+    sysctls:
+      net.ipv4.conf.all.src_valid_mark: "1"
 
-  - name: Wait for WireGuard to initialize and create configs
-    pause:
-      seconds: 15
+- name: Wait for WireGuard to initialize and create configs
+  pause:
+    seconds: 15
 
-  - name: Add Samba share for WireGuard configs
-    blockinfile:
-      path: /opt/samba/smb.conf
-      block: |
-        [wireguard-configs]
-        path = /opt/wireguard/config
-        browseable = yes
-        read only = yes
-        guest ok = no
-        valid users = {{ ansible_user }}
+- name: Add Samba share for WireGuard configs
+  blockinfile:
+    path: /opt/samba/smb.conf
+    block: |
+      [wireguard-configs]
+      path = /opt/wireguard/config
+      browseable = yes
+      read only = yes
+      guest ok = no
+      valid users = {{ ansible_user }}
 
-  - name: Display instructions
-    debug:
-      msg:
-        - "WireGuard is now running!"
-        - "Remember to forward UDP port 51820 on your router to this Pi"
+- name: Display instructions
+  debug:
+    msg:
+      - "WireGuard is now running!"
+      - "Remember to forward UDP port 51820 on your router to this Pi"
   
-  - name: Allow WireGuard through firewall
-    ufw:
-      rule: allow
-      port: 51820
-      proto: udp
-      comment: 'wireguard'
+- name: Allow WireGuard through firewall
+  ufw:
+    rule: allow
+    port: 51820
+    proto: udp
+    comment: 'wireguard'
   
-  - name: Allow traffic on WireGuard interface
-    ufw:
-      rule: allow
-      interface: wg0
-      direction: in
+- name: Allow traffic on WireGuard interface
+  ufw:
+    rule: allow
+    interface: wg0
+    direction: in
