@@ -8,3 +8,16 @@
   community.docker.docker_compose_v2:
     project_src: "{{ role_path }}/files"
     state: present
+
+  - name: Add Samba share for gcodes
+    blockinfile:
+      path: /opt/samba/smb.conf
+      block: |
+        [gcodes]
+        path = /gcodes
+        browseable = yes
+        read only = no
+        guest ok = no
+        valid users = sambauser
+        careate mask = 0664
+        directory mask = 0775

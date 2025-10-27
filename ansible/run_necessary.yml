@@ -11,3 +11,5 @@
       tags: [always]
     - role: cockpit
       tags: [always]
+    - role: vpn
+      tags: [always]

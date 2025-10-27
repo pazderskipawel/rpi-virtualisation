@@ -12,6 +12,7 @@
       - moonraker
       - fluidd
       - samba
+      - vpn
       
   tasks:
     - name: Stop and destroy VMs

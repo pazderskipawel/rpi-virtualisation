@@ -7,7 +7,7 @@
     ports:
       - "445:445"
     volumes:
-      - "{{ role_path }}/files/smb.conf:/etc/samba/smb.conf:ro"
+      - "/opt/samba/smb.conf:/etc/samba/smb.conf:ro"
       - "/home/rpi/printer_data/gcodes:/gcodes"
     env:
       USER: "{{ samba_user_name }}"
