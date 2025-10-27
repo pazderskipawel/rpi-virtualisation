@@ -51,8 +51,9 @@
       read only = yes
       guest ok = no
       valid users = sambauser
-      careate mask = 0664
+      create mask = 0664
       directory mask = 0775
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - WireGuard"
 
 - name: Display instructions
   debug:
