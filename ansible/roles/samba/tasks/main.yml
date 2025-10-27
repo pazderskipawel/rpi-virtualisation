@@ -1,41 +1,33 @@
-- name: Create directory
-  ansible.builtin.file:
-    path: "/home/rpi/files/samba"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+- name: Install Samba
+  apt:
+    name: samba
+    state: present
+    update_cache: yes
+
+- name: Create Samba config directory
+  file:
+    path: /etc/samba
     state: directory
     mode: '0755'
 
-- name: Copy smb config to opt directory
-  ansible.builtin.copy:
+- name: Copy base Samba configuration
+  copy:
     src: "{{ role_path }}/files/smb.conf"
-    dest: "/home/rpi/files/samba/smb.conf"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    dest: /etc/samba/smb.conf
     mode: '0644'
+  notify: Restart samba service
 
-- name: Create and start Samba container
-  community.docker.docker_container:
-    name: samba
-    image: dockurr/samba
+- name: Create Samba user
+  shell: |
+    (pdbedit -L | grep {{ samba_user_name }}) || \
+    (echo '{{ samba_user_password }}'; echo '{{ samba_user_password }}') | smbpasswd -a -s {{ samba_user_name }}
+  changed_when: false
+
+- name: Enable and start Samba service
+  systemd:
+    name: smbd
+    enabled: yes
     state: started
-    restart_policy: unless-stopped
-    comparisons:
-      volumes: strict
-    ports:
-      - "445:445"
-    volumes:
-      - /home/rpi/files:/files:rw
-    env:
-      USER: "{{ samba_user_name }}"
-      PASS: "{{ samba_user_password }}"
-
-
-- name: Create symlink for samba config inside container
-  command: docker exec samba sh -c "ln -sf /files/samba/smb.conf /etc/samba/smb.conf"
-  register: symlink_result
-  failed_when: symlink_result.rc != 0 and 'File exists' not in symlink_result.stderr
-  notify: Restart samba
 
 - name: Allow smb through firewall
   community.general.ufw:

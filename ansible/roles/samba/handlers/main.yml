@@ -1,16 +1,6 @@
-- name: Restart samba container
-  community.docker.docker_container:
-    name: samba
-    state: started
-    restart: yes
+- name: Restart samba service
+  systemd:
+    name: smbd
+    state: restarted
+  become: yes
   listen: Restart samba
-  notify: Samba restarted
-
-- name: Wait for container to be running
-  community.docker.docker_container_info:
-    name: samba
-  register: samba_info
-  until: samba_info.container.State.Running
-  retries: 10
-  delay: 3
-  listen: Samba restarted
