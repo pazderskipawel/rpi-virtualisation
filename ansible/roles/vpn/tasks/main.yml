@@ -30,7 +30,7 @@
       ALLOWEDIPS: "0.0.0.0/0"
       INTERNAL_SUBNET: "10.13.13.0"
     volumes:
-      - "/srv/wireguard/config:/opt/wireguard/config"
+      - "/home/rpi/wireguard/config:/opt/wireguard/config"
       - "/lib/modules:/lib/modules"
     ports:
       - "51820:51820/udp"
@@ -43,10 +43,10 @@
 
 - name: Add Samba share for WireGuard configs
   blockinfile:
-    path: /srv/samba/smb.conf
+    path: /home/rpi/samba/smb.conf
     block: |
       [wireguard]
-      path = /srv/wireguard/config
+      path = /home/rpi/wireguard/config
       browseable = yes
       read only = yes
       guest ok = no

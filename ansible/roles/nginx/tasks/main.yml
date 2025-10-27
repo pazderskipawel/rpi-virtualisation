@@ -6,7 +6,7 @@
     restart_policy: unless-stopped
     network_mode: host
     volumes:
-      - /srv/nginx/conf.d:/etc/nginx/conf.d:ro
+      - /home/rpi/nginx/conf.d:/etc/nginx/conf.d:ro
 
 - name: Verify nginx container is running
   community.docker.docker_container_info:

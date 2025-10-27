@@ -1,7 +1,7 @@
     - name: Copy {{ service_name }}.conf into nginx directory
       ansible.builtin.copy:
         src: "{{ service_config_path }}"
-        dest: /srv/nginx/conf.d/{{ service_name }}.conf
+        dest: /home/rpi/nginx/conf.d/{{ service_name }}.conf
         mode: '0644'
 
     - name: Reload nginx to apply config

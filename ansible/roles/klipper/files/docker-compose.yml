@@ -4,10 +4,10 @@ services:
     container_name: klipper
     privileged: true
     volumes:
-      - /srv/printer_data/config:/opt/printer_data/config
-      - /srv/printer_data/run:/opt/printer_data/run
-      - /srv/printer_data/gcodes:/opt/printer_data/gcodes
-      - /srv/printer_data/logs:/opt/printer_data/logs
+      - /home/rpi/printer_data/config:/opt/printer_data/config
+      - /home/rpi/printer_data/run:/opt/printer_data/run
+      - /home/rpi/printer_data/gcodes:/opt/printer_data/gcodes
+      - /home/rpi/printer_data/logs:/opt/printer_data/logs
       - /dev:/dev
     networks:
       - klipper-net
@@ -21,10 +21,10 @@ services:
     ports:
       - "127.0.0.1:7125:7125" # localhost "only"
     volumes:
-      - /srv/printer_data/config:/opt/printer_data/config
-      - /srv/printer_data/run:/opt/printer_data/run
-      - /srv/printer_data/gcodes:/opt/printer_data/gcodes
-      - /srv/printer_data/logs:/opt/printer_data/logs
+      - /home/rpi/printer_data/config:/opt/printer_data/config
+      - /home/rpi/printer_data/run:/opt/printer_data/run
+      - /home/rpi/printer_data/gcodes:/opt/printer_data/gcodes
+      - /home/rpi/printer_data/logs:/opt/printer_data/logs
     networks:
       - klipper-net
     restart: unless-stopped

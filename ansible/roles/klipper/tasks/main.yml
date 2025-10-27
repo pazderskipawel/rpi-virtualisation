@@ -11,10 +11,10 @@
 
 - name: Add Samba share for gcodes
   blockinfile:
-    path: /srv/samba/smb.conf
+    path: /home/rpi/samba/smb.conf
     block: |
       [gcodes]
-      path = /srv/printer_data/gcodes
+      path = /home/rpi/printer_data/gcodes
       browseable = yes
       read only = no
       guest ok = no
