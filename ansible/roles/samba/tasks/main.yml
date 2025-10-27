@@ -27,9 +27,12 @@
     env:
       USER: "{{ samba_user_name }}"
       PASS: "{{ samba_user_password }}"
-    command: >
-      sh -c "ln -sf /files/samba/smb.conf /etc/samba/smb.conf && 
-             exec smbd --foreground --no-process-group"
+
+- name: Create symlink for samba config inside container
+  command: docker exec samba sh -c "ln -sf /files/samba/smb.conf /etc/samba/smb.conf"
+  register: symlink_result
+  failed_when: symlink_result.rc != 0 and 'File exists' not in symlink_result.stderr
+  notify: Restart samba
 
 - name: Allow smb through firewall
   community.general.ufw:
