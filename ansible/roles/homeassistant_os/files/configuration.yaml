@@ -17,6 +17,7 @@ http:
     - 192.168.0.171      # Pi_ip
     - 192.168.0.0/24     # Entire subnet
     - 172.16.0.0/12      # Docker networks
+    - 192.168.100.0/30   # Libvirt bridge for Home Assistant
     - 127.0.0.1          # Localhost
 
 # Automations (created via UI)
