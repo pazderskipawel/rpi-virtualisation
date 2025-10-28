@@ -95,5 +95,5 @@
     port: 51820
     proto: udp
     comment: 'wireguard'
-    interface: wg0
-    direction: wlan0
+    interface: wlan0
+    direction: in
