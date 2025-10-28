@@ -29,10 +29,9 @@
     state: started
 
 - name: Check if Samba user exists
-  shell: pdbedit -L 2>&1 | grep -q "^{{ ansible_user }}:" && echo "found" || echo "notfound"
+  shell: |
+    pdbedit -L 2>&1 | grep -q "^{{ ansible_user }}:" && echo "found" || echo "notfound"
   register: samba_user_exists
-  changed_when: false
-  failed_when: false
 
 - name: Add ansible user to Samba
   expect: 
