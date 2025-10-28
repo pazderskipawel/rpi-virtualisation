@@ -48,7 +48,6 @@
           language: "en"
         status_code: [200, 400]
       register: user_created
-      failed_when: false
 
     - name: Debug full API response
       ansible.builtin.debug:
@@ -102,7 +101,6 @@
           Authorization: "Bearer {{ ha_auth_token }}"
         status_code: [200, 400]
       when: ha_auth_token is defined and ha_auth_token != ''
-      failed_when: false
 
     - name: Complete onboarding - integration
       ansible.builtin.uri:
@@ -114,7 +112,6 @@
           Authorization: "Bearer {{ ha_auth_token }}"
         status_code: [200, 400]
       when: ha_auth_token is defined and ha_auth_token != ''
-      failed_when: false
 
     - name: Disable analytics
       ansible.builtin.uri:
@@ -131,7 +128,6 @@
           Authorization: "Bearer {{ ha_auth_token }}"
         status_code: [200, 400]
       when: ha_auth_token is defined and ha_auth_token != ''
-      failed_when: false
 
     - name: Wait for configuration to be loaded
       ansible.builtin.pause:
@@ -143,7 +139,6 @@
     - name: Shutdown VM for configuration
       ansible.builtin.shell: |
         virsh -c qemu:///system shutdown {{ vm_name }}
-      failed_when: false
 
     - name: Wait for VM to completely stop
       ansible.builtin.shell: |

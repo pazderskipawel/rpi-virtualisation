@@ -4,6 +4,10 @@
     state: present
     update_cache: yes
 
+- name: Install pexpect if not present
+  pip:
+    name: pexpect
+
 - name: Create Samba config directory
   file:
     path: /etc/samba
@@ -17,29 +21,31 @@
     mode: '0644'
   notify: Restart samba service
 
-- name: Check if Samba user exists
-  shell: pdbedit -L | grep -q "^{{ ansible_user }}:"
-  register: samba_user_exists
-  failed_when: false
-  changed_when: false
-  become: yes
-
-- name: Add ansible user to Samba
-  shell: |
-    smbpasswd -a -s {{ ansible_user }}
-  when: samba_user_exists.rc != 0
-  become: yes
-
 - name: Enable and start Samba service
   systemd:
     name: smbd
     enabled: yes
     state: started
 
+- name: Check if Samba user exists
+  shell: pdbedit -L | grep -q "^{{ ansible_user }}:"
+  register: samba_user_exists
+  changed_when: false
+  failed_when: false
+
+- name: Add ansible user to Samba
+  expect: 
+    command: "smbpasswd -a {{ ansible_user }}"
+  responses:
+    "New SMB password:": "password"
+    "Retype new SMB password:": "password"
+  when: samba_user_exists.rc != 0
+  no_log: true
+
 - name: Allow smb through firewall
   ufw:
     rule: allow
-    port: " {{ item }}"
+    port: "{{ item }}"
     proto: tcp
     comment: 'samba ports'
   loop:
