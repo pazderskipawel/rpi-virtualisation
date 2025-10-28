@@ -23,6 +23,7 @@
     name: wireguard
     image: linuxserver/wireguard
     state: started
+    network_mode: host
     restart_policy: unless-stopped
     capabilities:
       - NET_ADMIN
