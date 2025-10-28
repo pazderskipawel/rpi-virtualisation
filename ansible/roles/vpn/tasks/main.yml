@@ -78,6 +78,8 @@
       valid users = {{ ansible_user }}
       create mask = 0664
       directory mask = 0775
+      follow symlinks = yes
+      wide links = yes
     marker: "# {mark} ANSIBLE MANAGED BLOCK - WireGuard"
   notify: Restart samba
 
