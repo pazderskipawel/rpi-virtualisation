@@ -54,7 +54,7 @@
     path: /etc/samba/smb.conf
     block: |
       [wireguard]
-      path = /files/wireguard/config
+      path = /home/rpi/files/wireguard/config
       browseable = yes
       read only = yes
       guest ok = no

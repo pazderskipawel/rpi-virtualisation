@@ -14,7 +14,7 @@
     path: /etc/samba/smb.conf
     block: |
       [gcodes]
-      path = /files/printer_data/gcodes
+      path = /home/rpi/files/printer_data/gcodes
       browseable = yes
       read only = no
       guest ok = no
