@@ -28,14 +28,14 @@
     enabled: yes
     state: started
 
-- name: Check if Samba user exists
-  shell: |
-    pdbedit -L 2>&1 | grep -q "rpi" && echo "found" || echo "notfound"
+- name: Check if Samba user exists # this command works in system but not in ansible
+  shell: | 
+    pdbedit -L 2>&1 | grep -q "{{ ansible_user }}" && echo "found" || echo "notfound"
   register: samba_user_exists
 
-- name: Debug output
+- name: Debug
   debug:
-    var: samba_user_exists.stdout
+    msg: "stdout='{{ samba_user_exists.stdout }}', stdout_lines={{ samba_user_exists.stdout_lines }}"
 
 - name: Add ansible user to Samba
   expect: 
@@ -43,7 +43,7 @@
     responses:
       "New SMB password:": "password"
       "Retype new SMB password:": "password"
-  when: "'notfound' in samba_user_exists.stdout" 
+  when: samba_user_exists.stdout == "notfound"
   no_log: true
 
 - name: Allow smb through firewall
