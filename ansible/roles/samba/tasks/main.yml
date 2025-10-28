@@ -29,7 +29,7 @@
     state: started
 
 - name: Check if Samba user exists
-  shell: pdbedit -L | grep -q "^{{ ansible_user }}:"
+  shell: pdbedit -L 2>/dev/null | grep -q "^{{ ansible_user }}:"
   register: samba_user_exists
   changed_when: false
   failed_when: false
