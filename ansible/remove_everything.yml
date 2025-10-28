@@ -11,7 +11,6 @@
       - klipper
       - moonraker
       - fluidd
-      - wireguard
       
   tasks:
     - name: Stop and destroy VMs
@@ -52,22 +51,7 @@
       loop: "{{ containers_to_remove }}"
       ignore_errors: yes
 
-    - name: Remove nginx configs
+    - name: Remove configs
       ansible.builtin.file:
-        path: /home/rpi/files/nginx
-        state: absent
-    
-    - name: Remove klipper configs
-      ansible.builtin.file:
-        path: /home/rpi/files/printer_data
-        state: absent
-    
-    - name: remove wireguard configs
-      ansible.builtin.file:
-        path: /home/rpi/files/wireguard
-        state: absent
-
-    - name: remove samba configs
-      ansible.builtin.file:
-        path: /home/rpi/files/samba
+        path: /home/rpi/files
         state: absent
