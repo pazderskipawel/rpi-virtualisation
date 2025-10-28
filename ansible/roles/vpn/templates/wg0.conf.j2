@@ -8,5 +8,5 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACC
 # Peer 1
 [Peer]
 PublicKey = {{ client_public_key.stdout }}
-PresharedKey = {{ client_preshared_key.stdout }}
+PresharedKey = {{ client_preshared_key }}
 AllowedIPs = 10.13.13.2/32
