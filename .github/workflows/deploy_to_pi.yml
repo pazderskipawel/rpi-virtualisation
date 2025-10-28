@@ -47,16 +47,4 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Run needed roles
-        run: ansible-playbook run_necessary.yml
-  deploy-containers:
-    needs: deploy-necessary
-    runs-on: self-hosted
-    steps:
-      - name: Run docker containers roles
-        run: ansible-playbook run_containers.yml --tags samba,vpn,klipper
-  deploy-vms:
-    needs: deploy-necessary
-    runs-on: self-hosted
-    steps:    
-      - name: Run VM roles
-        run: ansible-playbook run_vms.yml --tags haos
+        run: ansible-playbook run_everything.yml --tags samba,vpn,klipper,haos

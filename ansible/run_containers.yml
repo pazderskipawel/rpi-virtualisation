@@ -1,8 +1,0 @@
-- name: run containers roles to set up services
-  hosts: localhost
-  roles:
-    - role: vpn
-      tags: [vpn]
-    - role: klipper
-      tags: [klipper]
-
