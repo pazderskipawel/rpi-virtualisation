@@ -46,4 +46,4 @@
     - '445'
     - '139'
   loop_control:
-    - pause: 1
+    pause: 1
