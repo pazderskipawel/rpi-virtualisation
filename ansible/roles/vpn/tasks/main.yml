@@ -1,144 +1,181 @@
-- name: Install required packages
+- name: Install WireGuard
   apt:
     name:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - gnupg
-      - lsb-release
-      - python3-pip
+      - wireguard
+      - wireguard-tools
+      - qrencode
     state: present
     update_cache: yes
 
-- name: Ensure directory exists
-  ansible.builtin.file:
-    path: /home/rpi/files/wireguard
+- name: Enable IPv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: yes
+
+- name: Enable IPv6 forwarding
+  sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: '1'
+    state: present
+    reload: yes
+
+- name: Enable source validation mark (for WireGuard)
+  sysctl:
+    name: net.ipv4.conf.all.src_valid_mark
+    value: '1'
+    state: present
+    reload: yes
+
+- name: Create WireGuard config directory
+  file:
+    path: /etc/wireguard
+    state: directory
+    mode: '0700'
+
+- name: Generate server private key
+  shell: wg genkey
+  register: server_private_key
+  args:
+    creates: /etc/wireguard/server_private.key
+  changed_when: false
+
+- name: Save server private key
+  copy:
+    content: "{{ server_private_key.stdout }}"
+    dest: /etc/wireguard/server_private.key
+    mode: '0600'
+  when: server_private_key.stdout is defined
+
+- name: Read server private key
+  slurp:
+    src: /etc/wireguard/server_private.key
+  register: server_private_key_file
+
+- name: Generate server public key
+  shell: echo "{{ server_private_key_file.content | b64decode | trim }}" | wg pubkey
+  register: server_public_key
+  changed_when: false
+
+- name: Generate client private key
+  shell: wg genkey
+  register: client_private_key
+  changed_when: false
+
+- name: Generate client public key
+  shell: echo "{{ client_private_key.stdout }}" | wg pubkey
+  register: client_public_key
+  changed_when: false
+
+- name: Generate client preshared key
+  shell: wg genpsk
+  register: client_preshared_key
+  changed_when: false
+
+- name: Get server public IPv6 address
+  set_fact:
+    server_endpoint: "{{ ansible_default_ipv6.address }}"
+  when: ansible_default_ipv6.address is defined
+
+- name: Fallback to IPv4 if no IPv6
+  set_fact:
+    server_endpoint: "{{ ansible_default_ipv4.address }}"
+  when: server_endpoint is not defined
+
+- name: Create WireGuard server config
+  template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    mode: '0600'
+
+- name: Configure UFW to allow IP forwarding
+  lineinfile:
+    path: /etc/default/ufw
+    regexp: '^DEFAULT_FORWARD_POLICY='
+    line: 'DEFAULT_FORWARD_POLICY="ACCEPT"'
+    backup: yes
+
+- name: Add NAT rules to UFW before.rules
+  blockinfile:
+    path: /etc/ufw/before.rules
+    insertbefore: '^# Don.t delete these required lines'
+    block: |
+      # NAT table rules for WireGuard
+      *nat
+      :POSTROUTING ACCEPT [0:0]
+      -A POSTROUTING -s 10.13.13.0/24 -o wlan0 -j MASQUERADE
+      COMMIT
+    marker: "# {mark} ANSIBLE MANAGED - WireGuard NAT"
+    backup: yes
+
+- name: Reload UFW to apply NAT rules
+  shell: ufw reload
+
+- name: Allow WireGuard through firewall
+  ufw:
+    rule: allow
+    port: "51820"
+    proto: udp
+    comment: 'WireGuard'
+
+- name: Allow traffic on WireGuard interface
+  ufw:
+    rule: allow
+    interface: wg0
+    direction: in
+
+- name: Enable and start WireGuard
+  systemd:
+    name: wg-quick@wg0
+    enabled: yes
+    state: started
+
+- name: Create directory for client configs
+  file:
+    path: /home/{{ ansible_user }}/files/wg-peers
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
 
-- name: Deploy WireGuard container
-  docker_container:
-    name: wireguard
-    image: linuxserver/wireguard
-    state: started
-    network_mode: host
-    restart_policy: unless-stopped
-    capabilities:
-      - NET_ADMIN
-      - SYS_MODULE
-    env:
-      PUID: "1000"
-      PGID: "1000"
-      TZ: "Europe/Warsaw"
-      SERVERURL: "{{ ansible_default_ipv6.address }}"
-      SERVERPORT: "51820"
-      PEERS: "1"
-      PEERDNS: "192.168.0.1"
-      ALLOWEDIPS: "0.0.0.0/0, ::/0"
-      INTERNAL_SUBNET: "10.13.13.0"
-    volumes:
-      - "/home/rpi/files/wireguard:/config"
-      - "/lib/modules:/lib/modules"
+- name: Create client config
+  template:
+    src: peer1.conf.j2
+    dest: /home/{{ ansible_user }}/files/wg-peers/peer1.conf
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
 
-- name: Wait for WireGuard to initialize and create configs
-  pause:
-    seconds: 15
+- name: Generate QR code for client
+  shell: qrencode -t ansiutf8 < /home/{{ ansible_user }}/files/wg-peers/peer1.conf > /home/{{ ansible_user }}/files/wg-peers/peer1-qr.txt
+  args:
+    creates: /home/{{ ansible_user }}/files/wg-peers/peer1-qr.txt
 
-- name: Networking for VPN
-  block:
-    - name: Enable IPv4 forwarding
-      sysctl:
-        name: net.ipv4.ip_forward
-        value: '1'
-        state: present
-        reload: yes
+- name: Generate QR code PNG
+  shell: qrencode -t png -o /home/{{ ansible_user }}/files/wg-peers/peer1.png < /home/{{ ansible_user }}/files/wg-peers/peer1.conf
+  args:
+    creates: /home/{{ ansible_user }}/files/wg-peers/peer1.png
 
-    - name: Enable IPv6 forwarding
-      sysctl:
-        name: net.ipv6.conf.all.forwarding
-        value: '1'
-        state: present
-        reload: yes
-
-    - name: Configure UFW to allow IP forwarding
-      lineinfile:
-        path: /etc/default/ufw
-        regexp: '^DEFAULT_FORWARD_POLICY='
-        line: 'DEFAULT_FORWARD_POLICY="ACCEPT"'
-        backup: yes
-
-    - name: Add NAT rules to UFW before.rules
-      blockinfile:
-        path: /etc/ufw/before.rules
-        insertbefore: '^# Don.t delete these required lines'
-        block: |
-          # NAT table rules for WireGuard
-          *nat
-          :POSTROUTING ACCEPT [0:0]
-          -A POSTROUTING -s 10.13.13.0/24 -o wlan0 -j MASQUERADE
-          COMMIT
-        marker: "# {mark} ANSIBLE MANAGED - WireGuard NAT"
-        backup: yes
-
-    - name: Reload UFW to apply NAT rules
-      shell: ufw reload
-      args:
-        executable: /bin/bash
-    
-    - name: Allow WireGuard through firewall
-      ufw:
-        rule: allow
-        port: "51820"
-        proto: udp
-        comment: 'wireguard'
-
-    - name: Allow traffic on WireGuard interface
-      ufw:
-        rule: allow
-        interface: wg0
-        direction: in
-
-- name: Share VPN configs with samba
-  block:
-    - name: Create directory for peer configs
-      file:
-        path: /home/rpi/files/wg-peers
-        state: directory
-        mode: '0755'
-
-    - name: Create symlinks for WireGuard peer configs
-      shell: |
-        rm -rf /home/rpi/files/wg-peers/*
-        for peer in /home/rpi/files/wireguard/peer[0-9]*; do
-          if [ -d "$peer" ]; then 
-            ln -s "$peer" /home/rpi/files/wg-peers/
-          fi
-        done
-      args:
-        executable: /bin/bash
-
-    - name: Add Samba share for WireGuard peer configs
-      blockinfile:
-        path: /etc/samba/smb.conf
-        block: |
-          [wireguard]
-          path = /home/rpi/files/wg-peers
-          browseable = yes
-          read only = yes
-          guest ok = no
-          valid users = {{ ansible_user }}
-          create mask = 0664
-          directory mask = 0775
-          follow symlinks = yes
-          wide links = yes
-          unix extensions = no
-        marker: "# {mark} ANSIBLE MANAGED BLOCK - WireGuard"
-      notify: Restart samba
+- name: Add Samba share for WireGuard peer configs
+  blockinfile:
+    path: /etc/samba/smb.conf
+    block: |
+      [wireguard]
+      path = /home/{{ ansible_user }}/files/wg-peers
+      browseable = yes
+      read only = yes
+      guest ok = no
+      valid users = {{ ansible_user }}
+      create mask = 0664
+      directory mask = 0775
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - WireGuard"
+  notify: Restart samba
 
 - name: Display instructions
   debug:
     msg:
       - "WireGuard is now running!"
+      - "Server public key: {{ server_public_key.stdout }}"
+      - "Client config: /home/{{ ansible_user }}/files/wg-peers/peer1.conf"
       - "Remember to forward UDP port 51820 on your router to this Pi"
