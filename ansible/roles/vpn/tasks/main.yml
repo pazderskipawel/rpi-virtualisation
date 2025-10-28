@@ -30,11 +30,11 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "Europe/Warsaw"
-      SERVERURL: "{{ ansible_default_ipv4.address }}"
+      SERVERURL: "{{ ansible_default_ipv6.address }}"
       SERVERPORT: "51820"
-      PEERS: "1"
+      PEERS: "2"
       PEERDNS: "auto"
-      ALLOWEDIPS: "0.0.0.0/0"
+      ALLOWEDIPS: "0.0.0.0/0, ::/0"
       INTERNAL_SUBNET: "10.13.13.0"
     volumes:
       - "/home/rpi/files/wireguard:/config"
@@ -95,9 +95,5 @@
     port: 51820
     proto: udp
     comment: 'wireguard'
-  
-- name: Allow traffic on WireGuard interface
-  ufw:
-    rule: allow
     interface: wg0
-    direction: in
+    direction: wlan0
