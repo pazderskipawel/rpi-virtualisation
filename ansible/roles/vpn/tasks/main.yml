@@ -32,7 +32,7 @@
       TZ: "Europe/Warsaw"
       SERVERURL: "{{ ansible_default_ipv6.address }}"
       SERVERPORT: "51820"
-      PEERS: "2"
+      PEERS: "1"
       PEERDNS: "auto"
       ALLOWEDIPS: "0.0.0.0/0, ::/0"
       INTERNAL_SUBNET: "10.13.13.0"
