@@ -37,11 +37,12 @@
     group: root
   become: true
 
-- name: Check if Samba user exists # this command works in system but not in ansible
+- name: Check if Samba user exists
   shell: | 
     shell: pdbedit -L 2>/dev/null | grep -q "^{{ ansible_user }}:"
   become: true
   register: samba_user_exists
+  failed_when: false
 
 - name: Debug
   debug:
