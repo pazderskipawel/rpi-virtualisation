@@ -35,7 +35,7 @@
       SERVERURL: "{{ ansible_default_ipv6.address }}"
       SERVERPORT: "51820"
       PEERS: "1"
-      PEERDNS: "auto"
+      PEERDNS: "192.168.0.1"
       ALLOWEDIPS: "0.0.0.0/0, ::/0"
       INTERNAL_SUBNET: "10.13.13.0"
     volumes:
