@@ -34,19 +34,19 @@
     state: directory
     mode: '0700'
 
-- name: Generate server private key
-  shell: wg genkey
-  register: server_private_key
-  args:
-    creates: /etc/wireguard/server_private.key
-  changed_when: false
+- name: Check if server private key exists
+  stat:
+    path: /etc/wireguard/server_private.key
+  register: server_key_stat
 
-- name: Save server private key
-  copy:
-    content: "{{ server_private_key.stdout }}"
-    dest: /etc/wireguard/server_private.key
+- name: Generate server private key
+  shell: wg genkey > /etc/wireguard/server_private.key
+  when: not server_key_stat.stat.exists
+
+- name: Set correct permissions on server private key
+  file:
+    path: /etc/wireguard/server_private.key
     mode: '0600'
-  when: server_private_key.stdout is defined
 
 - name: Read server private key
   slurp:
@@ -58,20 +58,54 @@
   register: server_public_key
   changed_when: false
 
+# Client key handling - make persistent
+- name: Check if client private key exists
+  stat:
+    path: /etc/wireguard/client_private.key
+  register: client_key_stat
+
 - name: Generate client private key
-  shell: wg genkey
-  register: client_private_key
-  changed_when: false
+  shell: wg genkey > /etc/wireguard/client_private.key
+  when: not client_key_stat.stat.exists
+
+- name: Set correct permissions on client private key
+  file:
+    path: /etc/wireguard/client_private.key
+    mode: '0600'
+
+- name: Read client private key
+  slurp:
+    src: /etc/wireguard/client_private.key
+  register: client_private_key_file
 
 - name: Generate client public key
-  shell: echo "{{ client_private_key.stdout }}" | wg pubkey
+  shell: echo "{{ client_private_key_file.content | b64decode | trim }}" | wg pubkey
   register: client_public_key
   changed_when: false
 
-- name: Generate client preshared key
-  shell: wg genpsk
-  register: client_preshared_key
-  changed_when: false
+# Preshared key - make persistent
+- name: Check if preshared key exists
+  stat:
+    path: /etc/wireguard/client_preshared.key
+  register: preshared_key_stat
+
+- name: Generate preshared key
+  shell: wg genpsk > /etc/wireguard/client_preshared.key
+  when: not preshared_key_stat.stat.exists
+
+- name: Set correct permissions on preshared key
+  file:
+    path: /etc/wireguard/client_preshared.key
+    mode: '0600'
+
+- name: Read preshared key
+  slurp:
+    src: /etc/wireguard/client_preshared.key
+  register: client_preshared_key_file
+
+- name: Set preshared key variable
+  set_fact:
+    client_preshared_key: "{{ client_preshared_key_file.content | b64decode | trim }}"
 
 - name: Get server public IPv6 address
   set_fact:
@@ -88,6 +122,7 @@
     src: wg0.conf.j2
     dest: /etc/wireguard/wg0.conf
     mode: '0600'
+  notify: Restart WireGuard
 
 - name: Configure UFW to allow IP forwarding
   lineinfile:
@@ -125,6 +160,22 @@
     interface: wg0
     direction: in
 
+- name: Check if wg0 interface exists
+  shell: ip link show wg0
+  register: wg0_exists
+  failed_when: false
+  changed_when: false
+
+- name: Remove old WireGuard interface
+  shell: ip link delete wg0
+  when: wg0_exists.rc == 0
+
+- name: Stop and remove WireGuard Docker container if exists
+  docker_container:
+    name: wireguard
+    state: absent
+  ignore_errors: yes
+
 - name: Enable and start WireGuard
   systemd:
     name: wg-quick@wg0
@@ -147,7 +198,7 @@
     group: "{{ ansible_user }}"
     mode: '0644'
 
-- name: Generate QR code for client
+- name: Generate QR code for client (text)
   shell: qrencode -t ansiutf8 < /home/{{ ansible_user }}/files/wg-peers/peer1.conf > /home/{{ ansible_user }}/files/wg-peers/peer1-qr.txt
   args:
     creates: /home/{{ ansible_user }}/files/wg-peers/peer1-qr.txt
