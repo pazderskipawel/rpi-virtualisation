@@ -36,9 +36,9 @@
 - name: Add ansible user to Samba
   expect: 
     command: "smbpasswd -a {{ ansible_user }}"
-  responses:
-    "New SMB password:": "password"
-    "Retype new SMB password:": "password"
+    responses:
+      "New SMB password:": "password"
+      "Retype new SMB password:": "password"
   when: samba_user_exists.rc != 0
   no_log: true
 
