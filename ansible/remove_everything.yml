@@ -11,7 +11,7 @@
       - klipper
       - moonraker
       - fluidd
-      - vpn
+      - wireguard
       
   tasks:
     - name: Stop and destroy VMs
