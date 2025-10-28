@@ -58,7 +58,7 @@
 - name: Create symlinks for WireGuard peer configs
   shell: |
     rm -rf /home/rpi/files/wireguard/peers/*
-    for peer in /home/rpi/files/wireguard/peer*; do
+    for peer in /home/rpi/files/wireguard/peer[0-9]*; do
       [ -d "$peer" ] && ln -s "$peer" /home/rpi/files/wireguard/peers/
     done
   args:
