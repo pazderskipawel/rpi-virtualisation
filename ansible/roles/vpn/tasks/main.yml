@@ -95,5 +95,9 @@
     port: 51820
     proto: udp
     comment: 'wireguard'
-    interface: wlan0
+
+- name: Allow traffic on WireGuard interface
+  ufw:
+    rule: allow
+    interface: wg0
     direction: in
