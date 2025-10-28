@@ -26,7 +26,7 @@
 
 - name: Add ansible user to Samba
   shell: |
-    (echo '{{ samba_user_password }}'; echo '{{ samba_user_password }}') | smbpasswd -a -s {{ ansible_user }}
+    smbpasswd -a -s {{ ansible_user }}
   when: samba_user_exists.rc != 0
   become: yes
 
