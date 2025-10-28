@@ -1,3 +1,8 @@
+- name: Stop CoreDNS temporarily to allow libvirt network setup
+  systemd:
+    name: coredns
+    state: stopped
+
 - name: Check if {{ network_name }} network exists
   community.libvirt.virt_net:
     command: list_nets
@@ -19,3 +24,8 @@
   community.libvirt.virt_net:
     autostart: yes
     name: "{{ network_name }}"
+
+- name: Start CoreDNS again
+  systemd:
+    name: coredns
+    state: started
