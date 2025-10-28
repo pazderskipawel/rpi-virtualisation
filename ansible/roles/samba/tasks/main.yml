@@ -4,9 +4,10 @@
     state: present
     update_cache: yes
 
-- name: Install pexpect if not present
-  pip:
-    name: pexpect
+- name: Install pexpect
+  apt:
+    name: python3-pexpect
+    state: present
 
 - name: Create Samba config directory
   file:
