@@ -1,0 +1,12 @@
+[Interface]
+Address = 10.13.13.1/24
+ListenPort = 51820
+PrivateKey = {{ server_private_key_file.content | b64decode | trim }}
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT
+
+# Peer 1
+[Peer]
+PublicKey = {{ client_public_key.stdout }}
+PresharedKey = {{ client_preshared_key.stdout }}
+AllowedIPs = 10.13.13.2/32
