@@ -51,25 +51,16 @@
 
 - name: Create directory for peer symlinks
   file:
-    path: /home/rpi/files/wireguard/peers
+    path: /home/rpi/files/wg-peers
     state: directory
     mode: '0755'
-
-- name: Create symlinks for WireGuard peer configs
-  shell: |
-    rm -rf /home/rpi/files/wireguard/peers/*
-    for peer in /home/rpi/files/wireguard/peer[0-9]*; do
-      [ -d "$peer" ] && ln -s "$peer" /home/rpi/files/wireguard/peers/
-    done
-  args:
-    executable: /bin/bash
 
 - name: Add Samba share for WireGuard peer configs
   blockinfile:
     path: /etc/samba/smb.conf
     block: |
       [wireguard]
-      path = /home/rpi/files/wireguard/peers
+      path = /home/rpi/files/wg-peers
       browseable = yes
       read only = yes
       guest ok = no
@@ -78,6 +69,18 @@
       directory mask = 0775
     marker: "# {mark} ANSIBLE MANAGED BLOCK - WireGuard"
   notify: Restart samba
+
+- name: Create symlinks for WireGuard peer configs
+  shell: |
+    rm -rf /home/rpi/files/wg-peers/*
+    for peer in /home/rpi/files/wireguard/peer[0-9]*; do
+      if [ -d "$peer" ]; then 
+        ln -s "$peer" /home/rpi/files/wg-peers/
+      fi
+    done
+    exit 0
+  args:
+    executable: /bin/bash
 
 - name: Display instructions
   debug:
