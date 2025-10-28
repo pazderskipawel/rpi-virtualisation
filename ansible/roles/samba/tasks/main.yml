@@ -37,8 +37,13 @@
     state: started
 
 - name: Allow smb through firewall
-  community.general.ufw:
+  ufw:
     rule: allow
-    port: 455
+    port: " {{ item }}"
     proto: tcp
-    comment: 'samba'
+    comment: 'samba ports'
+  loop:
+    - '445'
+    - '139'
+  loop_control:
+    - pause: 1
