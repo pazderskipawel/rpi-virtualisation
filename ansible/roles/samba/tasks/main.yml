@@ -30,7 +30,7 @@
 
 - name: Check if Samba user exists
   shell: | 
-    shell: pdbedit -L 2>/dev/null | grep -q "^{{ ansible_user }}:"
+    pdbedit -L 2>/dev/null | grep -q "^{{ ansible_user }}:"
   become: true # had to add this even when whole playbook has it already
   register: samba_user_exists
   failed_when: false
@@ -42,6 +42,7 @@
       "New SMB password:": "password"
       "Retype new SMB password:": "password"
   when: samba_user_exists.rc != 0
+  become: true
   no_log: true
 
 - name: Allow smb through firewall
