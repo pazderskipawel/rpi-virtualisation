@@ -30,7 +30,7 @@
 
 - name: Check if Samba user exists
   shell: |
-    pdbedit -L 2>&1 | grep -q "^{{ ansible_user }}:" && echo "found" || echo "notfound"
+    pdbedit -L 2>&1 | grep -q "{{ ansible_user }}" && echo "found" || echo "notfound"
   register: samba_user_exists
 
 - name: Debug output
