@@ -33,6 +33,10 @@
     pdbedit -L 2>&1 | grep -q "^{{ ansible_user }}:" && echo "found" || echo "notfound"
   register: samba_user_exists
 
+- name: Debug output
+  debug:
+    var: samba_user_exists.stdout
+
 - name: Add ansible user to Samba
   expect: 
     command: "smbpasswd -a {{ ansible_user }}"
