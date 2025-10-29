@@ -13,7 +13,8 @@ images_dir: "/var/lib/libvirt/images"
 
 # Network settings
 network_name: "haos_net"
-network_config_file: "{{ role_path }}/files/haos_libvirt_net.xml"
+network_address: "192.168.100.1"
+vm_ip_address: "192.168.100.2"
 
 # Whether to enable autostart
 enable_autostart: false

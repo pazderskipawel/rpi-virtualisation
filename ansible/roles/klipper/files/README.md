@@ -13,3 +13,8 @@ The setup consists of the following containers:
 - **Fluidd**: A modern web interface for Klipper that provides a user-friendly way to control and monitor your 3D printer. It communicates with Moonraker to provide real-time status updates and control.
 
 - **Traefik**: A reverse proxy that handles routing between the different services, particularly managing the web-based connections between Moonraker and Fluidd.
+
+Config files used here are combined files from:
+https://github.com/bootuz-dinamon/ender3-v3-se-full-klipper/
+and 
+https://github.com/shubham0x13/ender-3-v3-se-klipper

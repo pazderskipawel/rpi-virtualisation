@@ -18,7 +18,9 @@
         service_config_path: "{{ role_path }}/files/haos_nginx.conf"
 
     - name: Setup libvirt network for HAOS VM
-      include_tasks: ../qemu/tasks/setup_network.yml
+      include_role: 
+        name: qemu
+        tasks_from: setup_network
 
     - name: Check if image already exists
       stat:
