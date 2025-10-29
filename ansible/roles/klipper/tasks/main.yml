@@ -4,6 +4,34 @@
     service_name: klipper
     service_config_path: "{{ role_path }}/files/klipper_nginx.conf"
 
+- name: Ensure directories for containers exists
+  ansible.builtin.file:
+    path: /home/rpi/files/printer_data/{{ item }}
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+  loop:
+    - config
+    - run
+    - gcodes
+    - logs
+
+- name: Check if any config files exist in directory
+  ansible.builtin.find:
+    paths: /home/rpi/files/printer_data/config/
+    file_type: file
+  register: existing_config_files
+
+- name: Copy configs if directory is empty
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/config/*"
+    dest: /home/rpi/files/printer_data/config/
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+  when: existing_config_files.matched == 0
+
 - name: start klipper containers from docker-compose file
   community.docker.docker_compose_v2:
     project_src: "{{ role_path }}/files"
