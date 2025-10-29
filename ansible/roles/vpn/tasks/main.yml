@@ -187,23 +187,12 @@
         direction: in
 
 
-- name: Setup WireGuard service
-  block:
-    - name: Check if wg0 interface exists
-      shell: ip link show wg0
-      register: wg0_exists
-      failed_when: false
-      changed_when: false
-
-    - name: Remove old WireGuard interface
-      shell: ip link delete wg0
-      when: wg0_exists.rc == 0
-
-    - name: Enable and start WireGuard
-      systemd:
-        name: wg-quick@wg0
-        enabled: yes
-        state: started
+- name: Enable and restart WireGuard
+  systemd:
+    name: wg-quick@wg0
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
 
 
 - name: Generate client configuration
