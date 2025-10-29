@@ -7,7 +7,7 @@
   community.libvirt.virt_net:
     command: define
     name: "{{ network_name }}"
-    xml: "{{ lookup('file', vm_networkl.xml.j2) }}"
+    xml: "{{ lookup('file', 'vm_network.xml.j2') }}"
   when: "network_name not in libvirt_networks.list_nets"
 
 - name: Start {{ network_name }} network
