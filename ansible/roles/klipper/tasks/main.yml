@@ -20,7 +20,7 @@
 - name: Check if any config files exist in directory
   ansible.builtin.find:
     paths: /home/rpi/files/printer_data/config/
-    file_type: file
+    patterns: "*.cfg,*.conf"
   register: existing_config_files
 
 - name: Copy configs if directory is empty
