@@ -35,15 +35,15 @@ jobs:
           else
             echo "Check passed, skipping install"
           fi
-  remove-existing-setup:
-    if: github.ref != 'refs/heads/main'  #not on main branch
-    needs: check-ansible
-    runs-on: self-hosted
-    steps:  
-      - name: Remove existing setup
-        run: ansible-playbook remove_everything.yml
+#  remove-existing-setup:
+#    if: github.ref != 'refs/heads/main'  #not on main branch
+#    needs: check-ansible
+#    runs-on: self-hosted
+#    steps:  
+#      - name: Remove existing setup
+#        run: ansible-playbook remove_everything.yml
   deploy-necessary:
-    needs: remove-existing-setup
+    needs: check-ansible
     runs-on: self-hosted
     steps:
       - name: Run needed roles

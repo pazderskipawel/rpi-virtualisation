@@ -1,0 +1,10 @@
+<network>
+  <name>{{ network_name }}</name>
+  <forward mode='nat'/>
+  <bridge name='virbr_{{ network_name }}' stp='on' delay='0'/>
+  <ip address='{{ network_address }}' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='{{ vm_ip_address }}' end='{{ vm_ip_address }}'/>
+    </dhcp>
+  </ip>
+</network>
