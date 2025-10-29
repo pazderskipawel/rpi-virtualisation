@@ -1,21 +1,58 @@
-- name: Create and start Samba container
-  community.docker.docker_container:
+- name: Install Samba
+  apt:
     name: samba
-    image: dockurr/samba
+    state: present
+    update_cache: yes
+
+- name: Install pexpect
+  apt:
+    name: python3-pexpect
+    state: present
+
+- name: Create Samba config directory
+  file:
+    path: /etc/samba
+    state: directory
+    mode: '0755'
+
+- name: Copy base Samba configuration
+  copy:
+    src: "{{ role_path }}/files/smb.conf"
+    dest: /etc/samba/smb.conf
+    mode: '0644'
+  notify: Restart samba service
+
+- name: Enable and start Samba service
+  systemd:
+    name: smbd
+    enabled: yes
     state: started
-    restart_policy: unless-stopped
-    ports:
-      - "445:445"
-    volumes:
-      - "{{ role_path }}/files/smb.conf:/etc/samba/smb.conf:ro"
-      - "/home/rpi/printer_data/gcodes:/gcodes"
-    env:
-      USER: "{{ samba_user_name }}"
-      PASS: "{{ samba_user_password }}"
+
+- name: Check if Samba user exists
+  shell: | 
+    pdbedit -L 2>/dev/null | grep -q "{{ ansible_user }}"
+  become: true # had to add this even when whole playbook has it already
+  register: samba_user_exists
+  failed_when: false
+
+- name: Add ansible user to Samba
+  expect: 
+    command: "smbpasswd -a {{ ansible_user }}"
+    responses:
+      "New SMB password:": "password"
+      "Retype new SMB password:": "password"
+  when: samba_user_exists.rc != 0
+  become: true
+  no_log: true
 
 - name: Allow smb through firewall
-  community.general.ufw:
+  ufw:
     rule: allow
-    port: 455
+    port: "{{ item }}"
     proto: tcp
-    comment: 'samba'
+    comment: 'samba ports'
+  loop:
+    - '445'
+    - '139'
+  loop_control:
+    pause: 1

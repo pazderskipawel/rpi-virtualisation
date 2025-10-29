@@ -11,3 +11,11 @@
       tags: [always]
     - role: cockpit
       tags: [always]
+    - role: samba
+      tags: [always]
+    - role: klipper
+      tags: [klipper]
+    - role: homeassistant_os
+      tags: [haos]
+    - role: vpn # needs to be started at the end
+      tags: [vpn]
