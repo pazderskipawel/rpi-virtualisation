@@ -1,0 +1,14 @@
+- name: Add Samba share for {{ share_name }}
+  blockinfile:
+    path: /etc/samba/smb.conf
+    block: |
+      [{{ share_name }}]
+      path = /home/rpi/files/{{ share_path }}
+      browseable = yes
+      read only = no
+      guest ok = no
+      valid users = {{ ansible_user }}
+      create mask = 0664
+      directory mask = 0775
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ share_service_name }}"
+  notify: Restart samba

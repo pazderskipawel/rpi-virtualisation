@@ -9,18 +9,11 @@
     project_src: "{{ role_path }}/files"
     state: present
 
-- name: Add Samba share for gcodes
-  blockinfile:
-    path: /etc/samba/smb.conf
-    block: |
-      [gcodes]
-      path = /home/rpi/files/printer_data/gcodes
-      browseable = yes
-      read only = no
-      guest ok = no
-      valid users = {{ ansible_user }}
-      create mask = 0664
-      directory mask = 0775
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - Klipper"
-  notify: Restart samba
+- name: Add Samba share
+  include_role: samba
+  tasks_from: add_samba_share
+  vars:
+    share_name: gcodes
+    share_path: printer_data/gcodes
+    share_service_name: klipper
   
