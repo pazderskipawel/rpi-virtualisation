@@ -232,8 +232,9 @@
             creates: /home/{{ ansible_user }}/files/wg-peers/peer1.png
 
 - name: Add Samba share
-  include_role: samba
-  tasks_from: add_samba_share
+  include_role: 
+    name: samba
+    tasks_from: add_samba_share
   vars:
     share_name: wireguard
     share_path: wg-peers

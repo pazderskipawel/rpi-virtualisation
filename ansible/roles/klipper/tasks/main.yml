@@ -10,8 +10,9 @@
     state: present
 
 - name: Add Samba share
-  include_role: samba
-  tasks_from: add_samba_share
+  include_role: 
+    name: samba
+    tasks_from: add_samba_share
   vars:
     share_name: gcodes
     share_path: printer_data/gcodes
