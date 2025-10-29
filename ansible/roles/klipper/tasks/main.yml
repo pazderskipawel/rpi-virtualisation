@@ -25,8 +25,8 @@
 
 - name: Copy configs if directory is empty
   ansible.builtin.copy:
-    src: "{{ role_path }}/files/config/*"
-    dest: /home/rpi/files/printer_data/config/
+    src: "{{ role_path }}/files/config/"
+    dest: /home/rpi/printer_data/config/
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
