@@ -50,22 +50,29 @@ RPI:
       - UI app to manage server config, containers and vms
       - config file for nginx (applied using shared nginx task)
     - home assistant vm 
-      - file with variables
       - playbook which downloads image and runs qemu tasks to create vm and network
       - file with network configuration for vm
+    - samba - allows creating network disk mount to specific files in pi
+    - vpn - remote access to rpi using WireGuard
+    - ufw - firewall to block unused ports
     - playbook tu run all services
-    - playbook to remove all services and its files
 
 ## Current netwokring
 ```
-PC              Raspberry Pi
+WireGuard VPN -> rpi_ipv6:51820 -> remote access for anything below
 
+
+PC              Raspberry Pi
 rpi_ip:8080 --> nginx --> localhost:8081 --> docker --> :80 on fluidd container
 
 rpi_ip:9090 --> localhost:9090 --> cockpit service
 
 rpi_ip:8123 --> nginx --> localhost:8123 --> haos_vm_ip:8123 --> haos vm
 
-samba directories
-\\rpi_ip\directory_name --> docker --> :445 on samba container --> smb.conf --> /directory_name in docker container --> /rpi_directory mounted docker volume 
+samba directories:
+\\rpi_ip\directory_name --> :445 --> smb.conf --> /directory_name in docker container --> /shared_directory
+
+\\rpi_ip\gcodes -> ~/files/printer_data/gcodes
+
+\\rpi_ip\wireguard -> ~/files/wg-peers (directory containing only config files for peer)
 ```
