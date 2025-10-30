@@ -63,7 +63,7 @@ jobs:
         run: ansible-playbook run_vms.yml --tags haos
 
   deploy-vpn:
-    needs: check-ansible
+    needs: detect-and-deploy-modified-services
     runs-on: self-hosted
     steps:
       - name: Run needed roles
