@@ -67,4 +67,4 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Run needed roles
-        run: ansible-playbook run-vpn.yml
+        run: ansible-playbook run_vpn.yml
