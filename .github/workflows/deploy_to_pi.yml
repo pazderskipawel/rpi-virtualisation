@@ -52,7 +52,7 @@ jobs:
         with:
           filters: | #has to be absolute path in repo (aka 'working-directory' does not work here)
             run-containers:
-              - 'ansible/roles/klipper*' 
+              - 'ansible/roles/klipper/*' 
             run-vms:
               - 'ansible/roles/homeassistant_os/*'
       - name: run containers

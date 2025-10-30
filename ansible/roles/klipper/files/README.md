@@ -14,7 +14,7 @@ The setup consists of the following containers:
 
 - **Traefik**: A reverse proxy that handles routing between the different services, particularly managing the web-based connections between Moonraker and Fluidd.
 
-Config files used here are combined files from:
-https://github.com/bootuz-dinamon/ender3-v3-se-full-klipper/
-and 
-https://github.com/shubham0x13/ender-3-v3-se-klipper
+## Config files used here are combined files from:
+
+- https://github.com/bootuz-dinamon/ender3-v3-se-full-klipper/
+- https://github.com/shubham0x13/ender-3-v3-se-klipper
