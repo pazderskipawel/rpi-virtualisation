@@ -1,0 +1,11 @@
+- name: run roles which needs to run on the system
+  hosts: localhost
+  roles:
+    - role: firewall
+      tags: [always]
+    - role: nginx
+      tags: [always]
+    - role: cockpit
+      tags: [always]
+    - role: samba
+      tags: [always]

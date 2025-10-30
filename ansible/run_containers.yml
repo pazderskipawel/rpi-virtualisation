@@ -1,0 +1,7 @@
+- name: run containers 
+  hosts: localhost
+  roles:
+    - role: docker
+      tags: [always]
+    - role: klipper
+      tags: [klipper]

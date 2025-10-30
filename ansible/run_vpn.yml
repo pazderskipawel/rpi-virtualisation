@@ -1,0 +1,4 @@
+- name: run vpn
+  hosts: localhost
+  roles:
+    - role: vpn

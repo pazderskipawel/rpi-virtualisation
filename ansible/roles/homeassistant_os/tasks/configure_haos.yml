@@ -1,5 +1,3 @@
-# Home Assistant OS configuration and onboarding
-
 - name: Wait for VM to boot and get DHCP address
   ansible.builtin.pause:
     seconds: 60
@@ -16,10 +14,6 @@
 - name: Set VM IP
   ansible.builtin.set_fact:
     vm_ip_address: "{{ vm_ip_status.stdout }}"
-
-- name: Display detected IP
-  ansible.builtin.debug:
-    msg: "Home Assistant VM IP: {{ vm_ip_address }}"
 
 - name: Complete onboarding
   block:
