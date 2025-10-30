@@ -13,7 +13,7 @@ concurrency:
 
 defaults:
   run:
-    working-directory: /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/ansible  
+    working-directory: ansible  
 
 jobs:   
   checkout-code:
@@ -50,11 +50,11 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
-          filters: |
+          filters: | #has to be absolute path in repo (aka 'working-directory' does not work here)
             run-containers:
-              - 'roles/klipper*'
+              - 'ansible/roles/klipper*' 
             run-vms:
-              - 'roles/homeassistant_os/*'
+              - 'ansible/roles/homeassistant_os/*'
       - name: run containers
         if: steps.filter.outputs.run-containers == 'true'
         run: ansible-playbook run_containers.yml --tags klipper
