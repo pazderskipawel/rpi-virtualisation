@@ -16,5 +16,5 @@ The setup consists of the following containers:
 
 ## Config files used here are combined files from:
 
-- https://github.com/bootuz-dinamon/ender3-v3-se-full-klipper/
-- https://github.com/shubham0x13/ender-3-v3-se-klipper
+- https://github.com/bootuz-dinamon/ender3-v3-se-full-klipper/ - base for configs
+    - https://github.com/shubham0x13/ender-3-v3-se-klipper - modifications
