@@ -1,0 +1,7 @@
+- name: run vms
+  hosts: localhost
+  roles:
+    - role: qemu
+      tags: [always]
+    - role: homeassistant_os
+      tags: [haos]

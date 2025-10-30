@@ -35,16 +35,36 @@ jobs:
           else
             echo "Check passed, skipping install"
           fi
-#  remove-existing-setup:
-#    if: github.ref != 'refs/heads/main'  #not on main branch
-#    needs: check-ansible
-#    runs-on: self-hosted
-#    steps:  
-#      - name: Remove existing setup
-#        run: ansible-playbook remove_everything.yml
-  deploy-necessary:
+
+  deploy-basic-services:
     needs: check-ansible
     runs-on: self-hosted
     steps:
       - name: Run needed roles
-        run: ansible-playbook run_everything.yml --tags samba,vpn,klipper,haos
+        run: ansible-playbook run_basic.yml
+  
+  detect-and-deploy-modified-services:
+    needs: deploy-basic-services
+    runs-on: self-hosted
+    steps:
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            run-containers:
+              - 'roles/klipper*'
+            run-vms:
+              - 'roles/homeassistant_os/*'
+      - name: run containers
+        if: steps.filter.outputs.run-containers == 'true'
+        run: ansible-playbook run_containers.yml --tags klipper
+      - name: run VMs
+        if: steps.filter.outputs.run-vms == 'true'
+        run: ansible-playbook run_vms.yml --tags haos
+
+  deploy-vpn:
+    needs: check-ansible
+    runs-on: self-hosted
+    steps:
+      - name: Run needed roles
+        run: ansible-playbook run-vpn.yml
