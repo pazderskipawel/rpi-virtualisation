@@ -1,0 +1,27 @@
+- name: Install Playwright dependencies
+  apt:
+    name:
+      - python3-pip
+    state: present
+
+- name: Install Playwright
+  pip:
+    name:
+      - playwright
+    state: present
+
+- name: Install Playwright browsers
+  command: playwright install chromium
+  args:
+    creates: /root/.cache/ms-playwright
+
+- name: Run n8n setup automation
+  command: >
+    python3 /tmp/setup_n8n.py
+    "http://localhost:{{ n8n_port }}/setup"
+    "{{ n8n_owner_email }}"
+    "{{ n8n_owner_first_name }}"
+    "{{ n8n_owner_last_name }}"
+    "{{ n8n_owner_password }}"
+  register: setup_result
+  failed_when: setup_result.rc != 0

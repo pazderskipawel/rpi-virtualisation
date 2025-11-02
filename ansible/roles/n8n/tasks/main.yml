@@ -57,3 +57,6 @@
   debug:
     msg: "n8n is running and healthy at http://{{ ansible_default_ipv4.address }}:{{ n8n_port }}"
   when: n8n_proxy_health is succeeded
+
+- name: Setup user for n8n
+  include_tasks: setup_n8n.yml
