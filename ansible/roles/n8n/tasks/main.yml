@@ -21,6 +21,8 @@
     volumes:
       - "{{ n8n_files_path }}:/home/node/.n8n"
     network_mode: host
+    env:
+      N8N_SECURE_COOKIE: "false"
 
 - name: Open n8n port on UFW
   community.general.ufw:
@@ -30,7 +32,7 @@
 
 - name: Verify n8n localhost health
   uri:
-    url: "http://localhost:{{ n8n_port }}/api/v1/health"
+    url: "http://localhost:{{ n8n_port }}/"
     method: GET
     status_code: 200
   retries: 5
@@ -44,7 +46,7 @@
 
 - name: Verify n8n proxy health
   uri:
-    url: "http://{{ ansible_default_ipv4.address }}:{{ n8n_port }}/api/v1/health"
+    url: "http://{{ ansible_default_ipv4.address }}:{{ n8n_port }}/"
     method: GET
     status_code: 200
   retries: 5
