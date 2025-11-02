@@ -9,6 +9,8 @@
     path: "{{ n8n_files_path }}"
     state: directory
     mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
 
 - name: Start n8n container
   community.docker.docker_container:
@@ -16,12 +18,9 @@
     image: "n8nio/n8n:latest"
     state: started
     restart_policy: "unless-stopped"
-    ports:
-      - "127.0.0.1:{{ n8n_port }}:5678"
     volumes:
       - "{{ n8n_files_path }}:/home/node/.n8n"
     network_mode: host
-    user: "1000:1000"
 
 - name: Open n8n port on UFW
   community.general.ufw:
