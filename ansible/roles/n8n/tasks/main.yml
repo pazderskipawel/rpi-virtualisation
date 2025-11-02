@@ -22,8 +22,6 @@
     volumes:
       - "/home/rpi/files/n8n:/home/node/.n8n"
     network_mode: host
-  notify: 
-   - verify n8n health
 
 - name: Open n8n port on UFW
   community.general.ufw:
