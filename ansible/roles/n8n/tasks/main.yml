@@ -2,12 +2,12 @@
   include_tasks: ../nginx/tasks/add_service.yml
   vars:
     service_name: n8n
-    service_config_path: "{{ role_path }}/files/n8n_nginx.conf"
+    service_config_path: "{{ n8n_nginx_path }}"
 
 
 - name: Create n8n data directory
   file:
-    path: "/home/rpi/files/n8n"
+    path: "{{ n8n_files_path }}"
     state: directory
     mode: '0755'
 
@@ -18,15 +18,15 @@
     state: started
     restart_policy: "unless-stopped"
     ports:
-      - "127.0.0.1:5678:5678"
+      - "127.0.0.1:{{ n8n_port }}:5678"
     volumes:
-      - "/home/rpi/files/n8n:/home/node/.n8n"
+      - "{{ n8n_files_path }}:/home/node/.n8n"
     network_mode: host
 
 - name: Open n8n port on UFW
   community.general.ufw:
     rule: allow
-    port: "5678"
+    port: "{{ n8n_port }}"
     proto: tcp
 
 - name: verify n8n health

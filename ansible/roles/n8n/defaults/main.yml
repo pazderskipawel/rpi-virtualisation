@@ -1,0 +1,3 @@
+n8n_port: "5678"
+n8n_nginx_path: "{{ role_path }}/files/n8n_nginx.conf"
+n8n_files_path: "/home/rpi/files/n8n"
