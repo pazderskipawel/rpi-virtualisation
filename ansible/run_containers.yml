@@ -5,3 +5,5 @@
       tags: [always]
     - role: klipper
       tags: [klipper]
+    - role: n8n
+      tags: [n8n]
