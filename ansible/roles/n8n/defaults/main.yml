@@ -5,4 +5,4 @@ n8n_files_path: "/home/rpi/files/n8n"
 n8n_owner_email: admin@example.com
 n8n_owner_first_name:  admin 
 n8n_owner_last_name: user
-n8n_owner_password: password
+n8n_owner_password: Password1

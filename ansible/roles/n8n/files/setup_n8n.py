@@ -12,9 +12,6 @@ def setup_n8n(url, email, first_name, last_name, password):
             page.goto(url)
             page.wait_for_load_state('networkidle')
             
-            print("Page loaded, looking for form fields...")
-            page.screenshot(path='/tmp/n8n_setup_before.png')
-            
             # Fill the form fields
             print(f"Filling email: {email}")
             page.fill('input[name="email"]', email)
@@ -27,9 +24,6 @@ def setup_n8n(url, email, first_name, last_name, password):
             
             print(f"Filling password")
             page.fill('input[name="password"]', password)
-            
-            page.screenshot(path='/tmp/n8n_setup_filled.png')
-            print("Form filled, screenshot saved")
             
             # Click the "Next" button using data-test-id
             print("Clicking Next button")
