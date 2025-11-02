@@ -1,23 +1,26 @@
-- name: Install Playwright dependencies
+- name: Install Python venv
   apt:
-    name:
-      - python3-pip
+    name: python3-venv
     state: present
 
-- name: Install Playwright
+- name: Create virtual environment for n8n setup
+  command: python3 -m venv /opt/n8n-setup-venv
+  args:
+    creates: /opt/n8n-setup-venv
+
+- name: Install Playwright in venv
   pip:
-    name:
-      - playwright
-    state: present
+    name: playwright
+    virtualenv: /opt/n8n-setup-venv
 
 - name: Install Playwright browsers
-  command: playwright install chromium
+  command: /opt/n8n-setup-venv/bin/playwright install chromium
   args:
-    creates: /root/.cache/ms-playwright
+    creates: /root/.cache/ms-playwright/chromium-*
 
 - name: Run n8n setup automation
   command: >
-    python3 /tmp/setup_n8n.py
+    /opt/n8n-setup-venv/bin/python {{ role_path }}/files/setup_n8n.py
     "http://localhost:{{ n8n_port }}/setup"
     "{{ n8n_owner_email }}"
     "{{ n8n_owner_first_name }}"
