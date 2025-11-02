@@ -4,7 +4,6 @@
     service_name: n8n
     service_config_path: "{{ n8n_nginx_path }}"
 
-
 - name: Create n8n data directory
   file:
     path: "{{ n8n_files_path }}"
@@ -22,6 +21,7 @@
     volumes:
       - "{{ n8n_files_path }}:/home/node/.n8n"
     network_mode: host
+    user: "1000:1000"
 
 - name: Open n8n port on UFW
   community.general.ufw:
@@ -29,7 +29,7 @@
     port: "{{ n8n_port }}"
     proto: tcp
 
-- name: verify n8n health
+- name: Verify n8n localhost health
   uri:
     url: "http://localhost:{{ n8n_port }}/api/v1/health"
     method: GET
@@ -38,21 +38,21 @@
   delay: 5
   register: n8n_health
 
-- name: display n8n status
+- name: Display n8n localhost status
   debug:
     msg: "n8n is running and healthy at http://localhost:{{ n8n_port }}"
   when: n8n_health is succeeded
 
-- name: verify proxy health
+- name: Verify n8n proxy health
   uri:
-    url: "http://{{{ ansible_default_ipv4.address }}}:{{ n8n_port }}/api/v1/health"
+    url: "http://{{ ansible_default_ipv4.address }}:{{ n8n_port }}/api/v1/health"
     method: GET
     status_code: 200
   retries: 5
   delay: 5
   register: n8n_proxy_health
 
-- name: display n8n status
+- name: Display n8n proxy status
   debug:
     msg: "n8n is running and healthy at http://{{ ansible_default_ipv4.address }}:{{ n8n_port }}"
-  when: n8n_health is succeeded
+  when: n8n_proxy_health is succeeded
