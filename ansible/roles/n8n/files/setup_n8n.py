@@ -4,7 +4,7 @@ import sys
 
 def setup_n8n(url, email, first_name, last_name, password):
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)  # Set to False to see browser
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         
         try:
