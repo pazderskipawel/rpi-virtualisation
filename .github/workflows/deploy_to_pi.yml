@@ -50,7 +50,7 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
-          base: ${{ github.event.before }} #compares with previous commit, by default it compares with main
+          #base: ${{ github.event.before }} #compares with previous commit, by default it compares with main
           filters: | #has to be absolute path in repo (aka 'working-directory' does not work here)
             run-containers:
               - 'ansible/roles/klipper/**' 
