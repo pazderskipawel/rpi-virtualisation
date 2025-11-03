@@ -72,7 +72,7 @@ rpi_ip:8123 --> nginx --> localhost:8123 --> haos_vm_ip:8123 --> haos vm
 samba directories:
 \\rpi_ip\directory_name --> :445 --> smb.conf --> /directory_name in docker container --> /shared_directory
 
-\\rpi_ip\gcodes -> ~/files/printer_data/gcodes
+\\rpi_ip\gcodes -> /actions-runner/files/printer_data/gcodes
 
-\\rpi_ip\wireguard -> ~/files/wg-peers (directory containing only config files for peer)
+\\rpi_ip\wireguard -> /actions-runner/files/wg-peers (directory containing only config files for peer)
 ```

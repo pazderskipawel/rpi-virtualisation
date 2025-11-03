@@ -9,4 +9,4 @@ all:
         ansible_ssh_private_key_file: ~/.ssh/id_ed25519
   vars:
     ansible_user: rpi
-    path_to_repo: /home/{{ ansible_user }}/actions_repos/rpi-virtualisation/rpi-virtualisation/
+    path_to_repo: /actions-runner/repos/rpi-virtualisation-infra-ansible/rpi-virtualisation-infra-ansible/

@@ -199,7 +199,7 @@
   block:
     - name: Check if client config exists
       stat:
-        path: /home/{{ ansible_user }}/files/wg-peers/peer1.conf
+        path: /actions-runner/files/wg-peers/peer1.conf
       register: client_config_stat
 
     - name: Create client config and QR codes
@@ -207,7 +207,7 @@
       block:
         - name: Create directory for client configs
           file:
-            path: /home/{{ ansible_user }}/files/wg-peers
+            path: /actions-runner/files/wg-peers
             state: directory
             owner: "{{ ansible_user }}"
             group: "{{ ansible_user }}"
@@ -216,20 +216,20 @@
         - name: Create client config from template
           template:
             src: peer1.conf.j2
-            dest: /home/{{ ansible_user }}/files/wg-peers/peer1.conf
+            dest: /actions-runner/files/wg-peers/peer1.conf
             owner: "{{ ansible_user }}"
             group: "{{ ansible_user }}"
             mode: '0644'
 
         - name: Generate QR code for client (text)
-          shell: qrencode -t ansiutf8 < /home/{{ ansible_user }}/files/wg-peers/peer1.conf > /home/{{ ansible_user }}/files/wg-peers/peer1-qr.txt
+          shell: qrencode -t ansiutf8 < /actions-runner/files/wg-peers/peer1.conf > /actions-runner/files/wg-peers/peer1-qr.txt
           args:
-            creates: /home/{{ ansible_user }}/files/wg-peers/peer1-qr.txt
+            creates: /actions-runner/files/wg-peers/peer1-qr.txt
 
         - name: Generate QR code PNG
-          shell: qrencode -t png -o /home/{{ ansible_user }}/files/wg-peers/peer1.png < /home/{{ ansible_user }}/files/wg-peers/peer1.conf
+          shell: qrencode -t png -o /actions-runner/files/wg-peers/peer1.png < /actions-runner/files/wg-peers/peer1.conf
           args:
-            creates: /home/{{ ansible_user }}/files/wg-peers/peer1.png
+            creates: /actions-runner/files/wg-peers/peer1.png
 
 - name: Add Samba share
   include_role: 
@@ -245,5 +245,5 @@
     msg:
       - "WireGuard is now running!"
       - "Server public key: {{ server_public_key.stdout }}"
-      - "Client config: /home/{{ ansible_user }}/files/wg-peers/peer1.conf"
+      - "Client config: /actions-runner/files/wg-peers/peer1.conf"
       - "Remember to forward UDP port 51820 on your router to this Pi"
