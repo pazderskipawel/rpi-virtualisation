@@ -6,7 +6,7 @@
 
 - name: Ensure directories for containers exists
   ansible.builtin.file:
-    path: /actions-runners/files/printer_data/{{ item }}
+    path: /actions-runner/files/printer_data/{{ item }}
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
@@ -19,14 +19,14 @@
 
 - name: Check if any config files exist in directory
   ansible.builtin.find:
-    paths: /actions-runners/files/printer_data/config/
+    paths: /actions-runner/files/printer_data/config/
     patterns: "*.cfg,*.conf"
   register: existing_config_files
 
 - name: Copy configs if directory is empty
   ansible.builtin.copy:
     src: "{{ role_path }}/files/config/"
-    dest: /actions-runners/files/printer_data/config/
+    dest: /actions-runner/files/printer_data/config/
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'

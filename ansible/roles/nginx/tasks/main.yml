@@ -1,6 +1,6 @@
 - name: Ensure directory exists
   ansible.builtin.file:
-    path: /actions-runners/files/nginx
+    path: /actions-runner/files/nginx
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
@@ -14,7 +14,7 @@
     restart_policy: unless-stopped
     network_mode: host
     volumes:
-      - /actions-runners/files/nginx:/etc/nginx/conf.d:ro
+      - /actions-runner/files/nginx:/etc/nginx/conf.d:ro
 
 - name: Verify nginx container is running
   community.docker.docker_container_info:

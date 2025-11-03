@@ -71,10 +71,5 @@
     - name: Display completion info
       ansible.builtin.debug:
         msg:
-          - "=========================================="
           - "Home Assistant Setup Complete!"
-          - "=========================================="
-          - "Direct VM Access: http://{{ vm_ip_address }}:8123"
-          - "Nginx Proxy Access: http://{{ ansible_default_ipv4.address }}:8123"
-          - "Username: {{ ha_admin_username }}"
-          - "Auth token: {{ ha_auth_token }}"
+          - "Proxy Access: http://{{ ansible_default_ipv4.address }}:8123"

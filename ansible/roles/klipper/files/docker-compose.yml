@@ -4,10 +4,10 @@ services:
     container_name: klipper
     privileged: true
     volumes:
-      - /actions-runners/files/printer_data/config:/opt/printer_data/config
-      - /actions-runners/files/printer_data/run:/opt/printer_data/run
-      - /actions-runners/files/printer_data/gcodes:/opt/printer_data/gcodes
-      - /actions-runners/files/printer_data/logs:/opt/printer_data/logs
+      - /actions-runner/files/printer_data/config:/opt/printer_data/config
+      - /actions-runner/files/printer_data/run:/opt/printer_data/run
+      - /actions-runner/files/printer_data/gcodes:/opt/printer_data/gcodes
+      - /actions-runner/files/printer_data/logs:/opt/printer_data/logs
       - /dev:/dev
     networks:
       - klipper-net
@@ -21,10 +21,10 @@ services:
     ports:
       - "127.0.0.1:7125:7125" # localhost "only"
     volumes:
-      - /actions-runners/files/printer_data/config:/opt/printer_data/config
-      - /actions-runners/files/printer_data/run:/opt/printer_data/run
-      - /actions-runners/files/printer_data/gcodes:/opt/printer_data/gcodes
-      - /actions-runners/files/printer_data/logs:/opt/printer_data/logs
+      - /actions-runner/files/printer_data/config:/opt/printer_data/config
+      - /actions-runner/files/printer_data/run:/opt/printer_data/run
+      - /actions-runner/files/printer_data/gcodes:/opt/printer_data/gcodes
+      - /actions-runner/files/printer_data/logs:/opt/printer_data/logs
     networks:
       - klipper-net
     restart: unless-stopped
