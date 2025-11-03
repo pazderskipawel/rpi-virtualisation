@@ -1,0 +1,62 @@
+- name: Add n8n config to nginx
+  include_tasks: ../nginx/tasks/add_service.yml
+  vars:
+    service_name: n8n
+    service_config_path: "{{ n8n_nginx_path }}"
+
+- name: Create n8n data directory
+  file:
+    path: "{{ n8n_files_path }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Start n8n container
+  community.docker.docker_container:
+    name: "n8n"
+    image: "n8nio/n8n:latest"
+    state: started
+    restart_policy: "unless-stopped"
+    volumes:
+      - "{{ n8n_files_path }}:/home/node/.n8n"
+    network_mode: host
+    env:
+      N8N_SECURE_COOKIE: "false"
+
+- name: Open n8n port on UFW
+  community.general.ufw:
+    rule: allow
+    port: "{{ n8n_port }}"
+    proto: tcp
+
+- name: Verify n8n localhost health
+  uri:
+    url: "http://localhost:{{ n8n_port }}/"
+    method: GET
+    status_code: 200
+  retries: 5
+  delay: 5
+  register: n8n_health
+
+- name: Display n8n localhost status
+  debug:
+    msg: "n8n is running and healthy at http://localhost:{{ n8n_port }}"
+  when: n8n_health is succeeded
+
+- name: Verify n8n proxy health
+  uri:
+    url: "http://{{ ansible_default_ipv4.address }}:{{ n8n_port }}/"
+    method: GET
+    status_code: 200
+  retries: 5
+  delay: 5
+  register: n8n_proxy_health
+
+- name: Display n8n proxy status
+  debug:
+    msg: "n8n is running and healthy at http://{{ ansible_default_ipv4.address }}:{{ n8n_port }}"
+  when: n8n_proxy_health is succeeded
+
+- name: Setup user for n8n
+  include_tasks: setup_n8n.yml
