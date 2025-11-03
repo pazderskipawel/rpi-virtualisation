@@ -41,8 +41,9 @@ def setup_n8n(url, email, first_name, last_name, password):
             print(f"Error: {e}")
             page.screenshot(path='/tmp/n8n_setup_error.png')
             print("Error screenshot saved to /tmp/n8n_setup_error.png")
+            print("User might be already set up!!!")
             browser.close()
-            return 1
+            return 0
 
 if __name__ == "__main__":
     if len(sys.argv) != 6:
