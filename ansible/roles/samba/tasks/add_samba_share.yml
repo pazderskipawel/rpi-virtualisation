@@ -3,7 +3,7 @@
     path: /etc/samba/smb.conf
     block: |
       [{{ share_name }}]
-      path = /home/rpi/files/{{ share_path }}
+      path = /actions-runners/files/{{ share_path }}
       browseable = yes
       read only = no
       guest ok = no

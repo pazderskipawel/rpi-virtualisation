@@ -1,7 +1,7 @@
 - name: Copy {{ service_name }}.conf into nginx directory
   ansible.builtin.copy:
     src: "{{ service_config_path }}"
-    dest: /home/rpi/files/nginx/{{ service_name }}.conf
+    dest: /actions-runners/files/nginx/{{ service_name }}.conf
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 SCRIPT_NAME=$(basename "$0")
-EXPECTED_LINE='config file = /home/rpi/actions_repos/rpi-virtualisation/rpi-virtualisation/ansible/ansible.cfg'
+EXPECTED_LINE='config file = /actions-runner/repos/rpi-virtualisation-infra-ansible/rpi-virtualisation-infra-ansible/ansible/ansible.cfg'
 
 usage() {
     cat <<EOF

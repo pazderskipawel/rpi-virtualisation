@@ -11,6 +11,7 @@
       - klipper
       - moonraker
       - fluidd
+      - n8n
       
   tasks:
     - name: Stop and destroy VMs
@@ -53,5 +54,5 @@
 
     - name: Remove configs
       ansible.builtin.file:
-        path: /home/rpi/files
+        path: /actions-runner/files
         state: absent
