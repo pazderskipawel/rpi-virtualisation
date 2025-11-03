@@ -23,7 +23,11 @@
     network_mode: host
     env:
       N8N_SECURE_COOKIE: "false"
-
+      N8N_HOST: "192.168.0.171"
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: "http"
+      WEBHOOK_URL: "http://192.168.0.171:5678/"
+      
 - name: Open n8n port on UFW
   community.general.ufw:
     rule: allow
