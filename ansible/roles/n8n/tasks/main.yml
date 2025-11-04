@@ -4,13 +4,16 @@
     service_name: n8n
     service_config_path: "{{ n8n_nginx_path }}"
 
-- name: Create n8n data directory
+- name: Create n8n directories
   file:
-    path: "{{ n8n_files_path }}"
+    path: "{{ item }}"
     state: directory
     mode: '0755'
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
+  loop:
+    - "{{ n8n_files_path }}"
+    - "{{ n8n_files_path }}/workflows"
 
 - name: Start n8n container
   community.docker.docker_container:
@@ -20,6 +23,7 @@
     restart_policy: "unless-stopped"
     volumes:
       - "{{ n8n_files_path }}:/home/node/.n8n"
+      - "{{ n8n_files_path }}/workflows:/tmp/workflows"
     network_mode: host
     env:
       N8N_SECURE_COOKIE: "false"
@@ -64,3 +68,12 @@
 
 - name: Setup user for n8n
   include_tasks: setup_n8n.yml
+
+- name: Add Samba share
+  include_role: 
+    name: samba
+    tasks_from: add_samba_share
+  vars:
+    share_name: n8n
+    share_path: n8n/workflows
+    share_service_name: n8n-workflows
