@@ -5,6 +5,8 @@ on:
     paths-ignore:
       - '*README.md'
       - '.github/ISSUE_TEMPLATE/**'
+    branches-ignore: 
+      - 'main'
   workflow_dispatch:
 
 concurrency:
