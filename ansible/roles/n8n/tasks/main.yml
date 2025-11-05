@@ -1,19 +1,10 @@
-- name: Add n8n config to nginx
-  include_tasks: ../nginx/tasks/add_service.yml
-  vars:
-    service_name: n8n
-    service_config_path: "{{ n8n_nginx_path }}"
-
 - name: Create n8n directories
   file:
-    path: "{{ item }}"
+    path: "{{ n8n_files_path }}"
     state: directory
     mode: '0755'
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-  loop:
-    - "{{ n8n_files_path }}"
-    - "{{ n8n_files_path }}/workflows"
 
 - name: Start n8n container
   community.docker.docker_container:
@@ -23,7 +14,7 @@
     restart_policy: "unless-stopped"
     volumes:
       - "{{ n8n_files_path }}:/home/node/.n8n"
-      - "{{ n8n_files_path }}/workflows:/tmp/workflows"
+      - "{{ n8n_repo_path }}:/tmp/repo"
     network_mode: host
     env:
       N8N_SECURE_COOKIE: "false"
@@ -52,20 +43,6 @@
     msg: "n8n is running and healthy at http://localhost:{{ n8n_port }}"
   when: n8n_health is succeeded
 
-- name: Verify n8n proxy health
-  uri:
-    url: "http://{{ ansible_default_ipv4.address }}:{{ n8n_port }}/"
-    method: GET
-    status_code: 200
-  retries: 5
-  delay: 5
-  register: n8n_proxy_health
-
-- name: Display n8n proxy status
-  debug:
-    msg: "n8n is running and healthy at http://{{ ansible_default_ipv4.address }}:{{ n8n_port }}"
-  when: n8n_proxy_health is succeeded
-
 - name: Setup user for n8n
   include_tasks: setup_n8n.yml
 
@@ -75,5 +52,5 @@
     tasks_from: add_samba_share
   vars:
     share_name: n8n
-    share_path: n8n/workflows
+    share_path: "{{ n8n_repo_path }}"
     share_service_name: n8n-workflows

@@ -237,7 +237,7 @@
     tasks_from: add_samba_share
   vars:
     share_name: wireguard
-    share_path: wg-peers
+    share_path: /actions-runner/files/wg-peers
     share_service_name: wireguard
 
 - name: Display instructions
