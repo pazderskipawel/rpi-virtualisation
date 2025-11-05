@@ -1,13 +1,10 @@
 - name: Create n8n directories
   file:
-    path: "{{ item }}"
+    path: "{{ n8n_files_path }}"
     state: directory
     mode: '0755'
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-  loop:
-    - "{{ n8n_files_path }}"
-    - "{{ n8n_files_path }}/workflows"
 
 - name: Start n8n container
   community.docker.docker_container:
@@ -17,7 +14,6 @@
     restart_policy: "unless-stopped"
     volumes:
       - "{{ n8n_files_path }}:/home/node/.n8n"
-      - "{{ n8n_files_path }}/workflows:/tmp/workflows"
       - "{{ n8n_repo_path }}:/tmp/repo"
     network_mode: host
     env:
@@ -56,5 +52,5 @@
     tasks_from: add_samba_share
   vars:
     share_name: n8n
-    share_path: n8n/workflows
+    share_path: "{{ n8n_repo_path }}"
     share_service_name: n8n-workflows

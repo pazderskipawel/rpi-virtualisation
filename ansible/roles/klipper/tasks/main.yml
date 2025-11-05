@@ -43,6 +43,6 @@
     tasks_from: add_samba_share
   vars:
     share_name: gcodes
-    share_path: printer_data/gcodes
+    share_path: /actions-runner/files/printer_data/gcodes
     share_service_name: klipper
   

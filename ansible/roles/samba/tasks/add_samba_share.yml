@@ -3,7 +3,7 @@
     path: /etc/samba/smb.conf
     block: |
       [{{ share_name }}]
-      path = /actions-runner/files/{{ share_path }}
+      path = {{ share_path }}
       browseable = yes
       read only = no
       guest ok = no
