@@ -1,0 +1,43 @@
+# Main tasks for Home Assistant OS role
+- name: Creates directory if not exist
+  ansible.builtin.file:
+    path: /actions-runner/files/haos
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Check if any config files exist in directory
+  ansible.builtin.find:
+    paths: /actions-runner/files/haos/
+    patterns: "*.yaml"
+  register: haos_config_file
+
+- name: Copy configs if directory is empty
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/configuration.yaml"
+    dest: /actions-runner/files/haos/
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+  when: haos_config_file.matched == 0
+
+- name: Start haos container
+  community.docker.docker_container:
+    name: haos
+    image: ghcr.io/home-assistant/home-assistant:stable
+    state: started
+    restart_policy: unless-stopped
+    network_mode: host
+    volumes:
+      - "/actions-runner/files/haos/:/config"
+
+- name: Allow homeassistant VM through firewall
+  community.general.ufw:
+    rule: allow
+    port: 8123
+    proto: tcp
+    comment: 'homeassistant VM'
+  
+- name: Configure HAOS after VM creation
+  include_tasks: configure_haos.yml

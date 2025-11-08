@@ -3,5 +3,6 @@
   roles:
     - role: qemu
       tags: [always]
-    - role: homeassistant_os
-      tags: [haos]
+    - role: haos_vm_old
+      tags: [never]
+

@@ -7,3 +7,5 @@
       tags: [klipper]
     - role: n8n
       tags: [n8n]
+    - role: haos
+      tags: [haos]

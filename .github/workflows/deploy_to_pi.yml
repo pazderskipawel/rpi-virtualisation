@@ -57,14 +57,15 @@ jobs:
             run-containers:
               - 'ansible/roles/klipper/**' 
               - 'ansible/roles/n8n/**'
+              - 'ansible/roles/haos/**'
             run-vms:
-              - 'ansible/roles/homeassistant_os/**'
+              - 'ansible/roles/haos_vm_old/**'
       - name: run containers
         if: steps.filter.outputs.run-containers == 'true'
-        run: ansible-playbook run_containers.yml --tags klipper,n8n
+        run: ansible-playbook run_containers.yml --tags klipper,n8n,haos
       - name: run VMs
         if: steps.filter.outputs.run-vms == 'true'
-        run: ansible-playbook run_vms.yml --tags haos
+        run: ansible-playbook run_vms.yml
 
   deploy-vpn:
     needs: detect-and-deploy-modified-services

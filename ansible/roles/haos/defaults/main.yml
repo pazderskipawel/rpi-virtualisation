@@ -1,0 +1,3 @@
+# Home Assistant admin user credentials
+ha_admin_username: "admin"
+ha_admin_password: "password"
