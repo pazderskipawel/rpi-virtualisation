@@ -30,7 +30,7 @@
     restart_policy: unless-stopped
     network_mode: host
     volumes:
-      - "{{role_path}}/files/haos:/config"
+      - "/actions-runner/files/haos/:/config"
 
 - name: Allow homeassistant VM through firewall
   community.general.ufw:
