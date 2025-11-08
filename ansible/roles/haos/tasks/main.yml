@@ -10,12 +10,12 @@
     volumes:
       - "{{role_path}}/files:/config"
 
-- name: Configure HAOS after VM creation
-  include_tasks: configure_haos.yml
-
 - name: Allow homeassistant VM through firewall
   community.general.ufw:
     rule: allow
     port: 8123
     proto: tcp
     comment: 'homeassistant VM'
+  
+- name: Configure HAOS after VM creation
+  include_tasks: configure_haos.yml
