@@ -8,7 +8,7 @@
     restart_policy: unless-stopped
     network_mode: host
     volumes:
-      - "{{role_path}}/files:/config"
+      - "{{role_path}}/files/configuration.yml:/config/configuration.yml"
 
 - name: Allow homeassistant VM through firewall
   community.general.ufw:
