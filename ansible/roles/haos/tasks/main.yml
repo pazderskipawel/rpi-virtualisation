@@ -19,9 +19,3 @@
     port: 8123
     proto: tcp
     comment: 'homeassistant VM'
-
-- name: Display completion info
-  ansible.builtin.debug:
-    msg:
-      - "Home Assistant Setup Complete!"
-      - "Proxy Access: http://{{ ansible_default_ipv4.address }}:8123"

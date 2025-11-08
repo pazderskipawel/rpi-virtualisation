@@ -52,14 +52,14 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
-          #base: ${{ github.event.before }} #compares with previous commit, by default it compares with main
+          base: ${{ github.event.before }} #compares with previous commit, by default it compares with main
           filters: | #has to be absolute path in repo (aka 'working-directory' does not work here)
             run-containers:
               - 'ansible/roles/klipper/**' 
               - 'ansible/roles/n8n/**'
               - 'ansibe/roles/haos/**'
             run-vms:
-              - 'ansible/roles/homeassistant_os/**'
+              - 'ansible/roles/haos_vm_old/**'
       - name: run containers
         if: steps.filter.outputs.run-containers == 'true'
         run: ansible-playbook run_containers.yml --tags klipper,n8n,haos
