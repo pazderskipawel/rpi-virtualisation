@@ -21,7 +21,6 @@
     group: "{{ ansible_user }}"
     mode: '0644'
   when: haos_config_file.matched == 0
-- name: Move config file to files if not exist
 
 - name: Start haos container
   community.docker.docker_container:
