@@ -26,7 +26,7 @@ GITHUB ACTIONS:
   - CICD:
     - checks out code
     - runs playbook which runs docker and qemu
-  - [![Deploy app to Pi](https://github.com/pazderskipawel/rpi-virtualisation/actions/workflows/deploy_to_pi.yml/badge.svg?branch=main)](https://github.com/pazderskipawel/rpi-virtualisation/actions/workflows/deploy_to_pi.yml)
+  - [![Deploy app to Pi](https://github.com/rpi-automation/rpi-automation-infra-ansible/actions/workflows/deploy_to_pi.yml/badge.svg?branch=main)](https://github.com/rpi-automation/rpi-automation-infra-ansible/actions/workflows/deploy_to_pi.yml)
   
 RPI:
   - ANSIBLE (managing raspberry itself):
@@ -49,13 +49,14 @@ RPI:
     - [cockpit](https://cockpit-project.org/applications) (Web-based interface for managing servers):
       - UI app to manage server config, containers and vms
       - config file for nginx (applied using shared nginx task)
-    - home assistant vm 
+    - home assistant container
+      - runs container with haos and copies configs
+    - home assistant vm - old
       - playbook which downloads image and runs qemu tasks to create vm and network
       - file with network configuration for vm
     - samba - allows creating network disk mount to specific files in pi
     - vpn - remote access to rpi using WireGuard
     - ufw - firewall to block unused ports
-    - playbook tu run all services
 
 ## Current netwokring
 ```
@@ -67,7 +68,7 @@ rpi_ip:8080 --> nginx --> localhost:8081 --> docker --> :80 on fluidd container
 
 rpi_ip:9090 --> localhost:9090 --> cockpit service
 
-rpi_ip:8123 --> nginx --> localhost:8123 --> haos_vm_ip:8123 --> haos vm
+rpi_ip:8123 --> :8123 on haos container
 
 samba directories:
 \\rpi_ip\directory_name --> :445 --> smb.conf --> /directory_name in docker container --> /shared_directory

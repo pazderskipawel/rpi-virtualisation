@@ -1,0 +1,27 @@
+# Main tasks for Home Assistant OS role
+
+- name: Start haos container
+  community.docker.docker_container:
+    name: haos
+    image: ghcr.io/home-assistant/home-assistant:stable
+    state: started
+    restart_policy: unless-stopped
+    network_mode: host
+    volumes:
+      - "{{role_path}}/files:/config"
+
+- name: Configure HAOS after VM creation
+  include_tasks: configure_haos.yml
+
+- name: Allow homeassistant VM through firewall
+  community.general.ufw:
+    rule: allow
+    port: 8123
+    proto: tcp
+    comment: 'homeassistant VM'
+
+- name: Display completion info
+  ansible.builtin.debug:
+    msg:
+      - "Home Assistant Setup Complete!"
+      - "Proxy Access: http://{{ ansible_default_ipv4.address }}:8123"
