@@ -57,7 +57,7 @@ jobs:
             run-containers:
               - 'ansible/roles/klipper/**' 
               - 'ansible/roles/n8n/**'
-              - 'ansibe/roles/haos/**'
+              - 'ansible/roles/haos/**'
             run-vms:
               - 'ansible/roles/haos_vm_old/**'
       - name: run containers
