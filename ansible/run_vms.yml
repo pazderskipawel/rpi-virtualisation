@@ -4,5 +4,5 @@
     - role: qemu
       tags: [always]
     - role: haos_vm_old
-      tags: [haos]
+      tags: [never]
 
