@@ -9,3 +9,5 @@
       tags: [n8n]
     - role: haos
       tags: [haos]
+    - role: alerts
+      tags: [alerts]

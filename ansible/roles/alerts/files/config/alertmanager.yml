@@ -1,0 +1,7 @@
+route:
+  receiver: 'n8n-webhook'
+
+receivers:
+  - name: 'n8n-webhook'
+    webhook_configs:
+      - url: 'http://192.168.0.171:5678/webhook/alertmanager'

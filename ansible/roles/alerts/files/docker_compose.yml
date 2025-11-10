@@ -1,0 +1,47 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    networks:
+      - alerts-net
+    ports:
+      - "9090:9090"
+    volumes:
+      - /actions-runner/files/alerts/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    networks:
+      - alerts-net
+    ports:
+      - "9093:9093"
+    volumes:
+      - /actions-runner/files/alerts/config/alertmanager.yml:/etc/alertmanager/config.yml:ro
+    restart: unless-stopped
+
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    networks:
+      - alerts-net
+    expose:
+      - "9100"
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    networks:
+      - alerts-net
+    ports:
+      - "8082:8080" 
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+
+networks:
+  alerts-net:
