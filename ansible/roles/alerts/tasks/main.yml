@@ -21,7 +21,7 @@
     mode: '0644'
   when: existing_config_files.matched == 0
 
-- name: start klipper containers from docker-compose file
+- name: start containers from docker-compose file
   community.docker.docker_compose_v2:
     project_src: "{{ role_path }}/files"
     state: present

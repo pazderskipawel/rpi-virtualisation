@@ -43,14 +43,6 @@
   set_fact:
     onboarding_completed: "{{ onboarding_incomplete_steps | length == 0 }}"
 
-- name: Debug onboarding_check.json
-  debug:
-    var: onboarding_check.json
-
-- name: Debug onboarding_completed
-  debug:
-    var: onboarding_completed
-
 - name: Complete onboarding
   when: not onboarding_completed
   block:
