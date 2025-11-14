@@ -33,11 +33,11 @@
   set_fact:
     onboarding_completed: >-
       {{
-        onboarding_status.json
+        onboarding_check.json
         | selectattr('step', '!=', 'integration')
         | map(attribute='done')
         | difference([false])
-        | length == (onboarding_status.json | selectattr('step', '!=', 'integration') | list | length)
+        | length == (onboarding_check.json | selectattr('step', '!=', 'integration') | list | length)
       }}
 
 - name: Complete onboarding
