@@ -40,6 +40,9 @@
         | length == (onboarding_check.json | selectattr('step', '!=', 'integration') | list | length)
       }}
 
+- debug:
+    var: onboarding_check.json
+
 - name: Debug onboarding_completed
   debug: var=onboarding_completed
 
