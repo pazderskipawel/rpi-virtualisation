@@ -1,0 +1,39 @@
+groups:
+- name: basic-alerts
+  rules:
+    - alert: HighCPUUsage
+      expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High CPU usage detected"
+        description: "CPU usage is over 80% for more than 5 minutes."
+
+    - alert: HighMemoryUsage
+      expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.8
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High memory usage detected"
+        description: "Memory usage is over 80% for more than 5 minutes."
+
+    - alert: ContainerDown
+      expr: absent(container_last_seen{job="cadvisor", name=~"n8n|fluidd|moonraker|klipper|haos|alertmanager|nginx|node_explorer|prometheus"})
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Docker container {{ $labels.name }} down"
+        description: "Container {{ $labels.name }} stopped reporting metrics."
+
+    - alert: ContainerRestarted
+      expr: increase(container_start_time_seconds{job="cadvisor", name=~"n8n|fluidd|moonraker|klipper|haos|alertmanager|nginx|node_explorer|prometheus"}[5m]) > 0
+      for: 1m
+      labels:
+        severity: info
+      annotations:
+        summary: "Container {{ $labels.name }} restarted"
+        description: "Container {{ $labels.name }} has restarted in the last 5 minutes."
+

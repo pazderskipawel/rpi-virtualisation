@@ -28,52 +28,50 @@ GITHUB ACTIONS:
     - runs playbook which runs docker and qemu
   - [![Deploy app to Pi](https://github.com/rpi-automation/rpi-automation-infra-ansible/actions/workflows/deploy_to_pi.yml/badge.svg?branch=main)](https://github.com/rpi-automation/rpi-automation-infra-ansible/actions/workflows/deploy_to_pi.yml)
   
-RPI:
-  - ANSIBLE (managing raspberry itself):
+RPI services:
 
-    Roles tasks:
-    - raspberry:
-      - updates apt packages
-    - qemu:
-      - Prepares and starts qemu, libvrt
-      - shared task to create new vm
-      - shared task to create vm network
-    - docker:
-      - installs and runs docker and docker compose
-    - nginx: 
-      - runs docker container with network mode: host to controll networking
-      - shared task to add new service config file to nginx
-    - klipper (managing 3d printer form RPI):
-      - playbook to run docker copose from file with services managing 3d-printer (klipper/mooraker/fliudd)
-      - config file for nginx (applied using shared nginx task)
-    - [cockpit](https://cockpit-project.org/applications) (Web-based interface for managing servers):
-      - UI app to manage server config, containers and vms
-      - config file for nginx (applied using shared nginx task)
-    - home assistant container
-      - runs container with haos and copies configs
-    - home assistant vm - old
-      - playbook which downloads image and runs qemu tasks to create vm and network
-      - file with network configuration for vm
-    - samba - allows creating network disk mount to specific files in pi
-    - vpn - remote access to rpi using WireGuard
-    - ufw - firewall to block unused ports
+- WireGuard VPN (HOST)
+  rpi_ipv6:51820 -> remote access for anything below
 
-## Current netwokring
-```
-WireGuard VPN -> rpi_ipv6:51820 -> remote access for anything below
+- Nginx (DOCKER)(used for reverse proxy if needed)
 
+- 3D Printer management (DOCKER COMPOSE)
+  - Klipper (printer firmware)
+  - Moonraker (API for klipper)
+  - Fluidd (web interface)
 
-PC              Raspberry Pi
-rpi_ip:8080 --> nginx --> localhost:8081 --> docker --> :80 on fluidd container
+    rpi_ip:8080 --> nginx (reverse proxy) --> localhost:8081 --> docker --> :80 on fluidd container
 
-rpi_ip:9090 --> localhost:9090 --> cockpit service
+- Cockpit service (HOST) (GUI for managing raspberry pi)
 
-rpi_ip:8123 --> :8123 on haos container
+  rpi_ip:9090 --> localhost:9090 --> cockpit service
 
-samba directories:
-\\rpi_ip\directory_name --> :445 --> smb.conf --> /directory_name in docker container --> /shared_directory
+- Home assistant (DOCKER)
 
-\\rpi_ip\gcodes -> /actions-runner/files/printer_data/gcodes
+  rpi_ip:8123 --> :8123 on haos container
 
-\\rpi_ip\wireguard -> /actions-runner/files/wg-peers (directory containing only config files for peer)
-```
+- N8N (DOCKER) automation service
+
+  rpi_ip:5678 --> :5678 on n8n container
+
+- Alerting services (DOCKER COMPOSE):
+  - Prometheus: 
+
+    rpi_ip:9091 --> :9090 on prometheus container
+
+  - alertmanager:
+
+    rpi_ip:9093 --> :9093 on alertmanager container
+
+  - CAdvisor:
+
+    rpi_ip:8082 --> :8080 on cadvisor container
+
+- Samba (HOST) - create and manage network disk for windows
+
+  current directories:
+  - \\rpi_ip\directory_name --> :445 --> smb.conf --> /directory_name in docker container --> /shared_directory
+
+  - \\rpi_ip\gcodes -> /actions-runner/files/printer_data/gcodes
+
+  - \\rpi_ip\wireguard -> /actions-runner/files/wg-peers (directory containing only config files for peer)
