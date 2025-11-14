@@ -5,7 +5,7 @@ services:
     networks:
       - alerts-net
     ports:
-      - "9090:9090"
+      - "9091:9090"
     volumes:
       - /actions-runner/files/alerts/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     restart: unless-stopped
