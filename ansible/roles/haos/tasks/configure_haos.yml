@@ -29,22 +29,27 @@
 #  }
 #]
 
-- name: Determine if onboarding is completed (ignoring integration)
+- name: Find incomplete onboarding steps (excluding integration)
   set_fact:
-    onboarding_completed: >-
+    onboarding_incomplete_steps: >-
       {{
         onboarding_check.json
         | selectattr('step', '!=', 'integration')
-        | map(attribute='done')
-        | difference([false])
-        | length == (onboarding_check.json | selectattr('step', '!=', 'integration') | list | length)
+        | rejectattr('done')
+        | list
       }}
 
-- debug:
+- name: Determine if onboarding completed
+  set_fact:
+    onboarding_completed: "{{ onboarding_incomplete_steps | length == 0 }}"
+
+- name: Debug onboarding_check.json
+  debug:
     var: onboarding_check.json
 
 - name: Debug onboarding_completed
-  debug: var=onboarding_completed
+  debug:
+    var: onboarding_completed
 
 - name: Complete onboarding
   when: not onboarding_completed
