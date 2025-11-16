@@ -8,18 +8,24 @@
     network_mode: host
     working_dir: /e2e
     detach: true
+    auto_remove: false
 
 - name: Wait for container to finish
   community.docker.docker_container:
     name: cypress
     state: absent
     timeout: 600
-  register: container_result
 
 - name: Show Cypress logs
   ansible.builtin.command: docker logs cypress
   register: cypress_logs
   failed_when: false
+
+- name: Remove Cypress container if still exists
+  community.docker.docker_container:
+    name: cypress-test
+    state: absent
+    force_kill: true
 
 - debug:
     var: cypress_logs.stdout
