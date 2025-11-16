@@ -15,9 +15,12 @@
 
 - name: Copy configs if directory is empty
   ansible.builtin.copy:
-    src: "{{ role_path }}/files/hello_world.cy.js"
+    src: "{{ role_path }}/files/{{ item }}"
     dest: /actions-runner/files/cypress/
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
   when: cypress_config_file.matched == 0
+  loop:
+    - hello_world.cy.js
+    - cypress.config.js
