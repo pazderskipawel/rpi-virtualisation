@@ -5,5 +5,4 @@
     volumes:
       - /actions-runner/files/cypress:/e2e
     network_mode: host
-    detach: false     # <-- stream logs to playbook output
-    auto_remove: yes
+    detach: false
