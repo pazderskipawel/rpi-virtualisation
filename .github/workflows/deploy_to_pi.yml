@@ -59,11 +59,12 @@ jobs:
               - 'ansible/roles/n8n/**'
               - 'ansible/roles/haos/**'
               - 'ansible/roles/alerts/**'
+              - 'ansible/roles/cypress/**'
             run-vms:
               - 'ansible/roles/haos_vm_old/**'
       - name: run containers
         if: steps.filter.outputs.run-containers == 'true'
-        run: ansible-playbook run_containers.yml --tags klipper,n8n,haos,alerts
+        run: ansible-playbook run_containers.yml --tags klipper,n8n,haos,alerts,cypress
       - name: run VMs
         if: steps.filter.outputs.run-vms == 'true'
         run: ansible-playbook run_vms.yml
