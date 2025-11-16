@@ -10,7 +10,7 @@
 - name: Check if any config files exist in directory
   ansible.builtin.find:
     paths: /actions-runner/files/cypress/
-    patterns: "*.cy.js"
+    patterns: "*.js"
   register: cypress_config_file
 
 - name: Copy configs if directory is empty
