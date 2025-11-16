@@ -1,10 +1,25 @@
-- name: Pull and start cypress container
+- name: Start Cypress container detached
   community.docker.docker_container:
-    name: cypress-test
+    name: cypress
     image: cypress/included:latest
+    command: npx cypress run --spec cypress/e2e/{{ cypress_test_file }}
     volumes:
       - /actions-runner/files/cypress:/e2e
     network_mode: host
-    detach: false
-    attach: true
     working_dir: /e2e
+    detach: true
+
+- name: Wait for container to finish
+  community.docker.docker_container:
+    name: cypress
+    state: absent
+    timeout: 600
+  register: container_result
+
+- name: Show Cypress logs
+  ansible.builtin.command: docker logs cypress
+  register: cypress_logs
+  failed_when: false
+
+- debug:
+    var: cypress_logs.stdout
