@@ -6,4 +6,5 @@
       - /actions-runner/files/cypress:/e2e
     network_mode: host
     detach: false
+    attach: true
     working_dir: /e2e
