@@ -13,8 +13,8 @@
 - name: Wait for container to finish
   community.docker.docker_container:
     name: cypress
-    state: absent
-    timeout: 600
+    state: stopped
+    timeout: 60
 
 - name: Show Cypress logs
   ansible.builtin.command: docker logs cypress
