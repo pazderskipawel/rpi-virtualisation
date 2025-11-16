@@ -5,4 +5,4 @@
     - name: run cypress test
       include_role: 
         name: cypress
-        tasks_from: run_test
+        tasks_from: run_cypress

@@ -45,7 +45,7 @@ jobs:
       - name: Run needed roles
         run: ansible-playbook run_basic.yml
   
-  detect-and-deploy-modified-services:
+  detect-modifications-and-deploy-services:
     needs: deploy-basic-services
     runs-on: self-hosted
     steps:
@@ -59,18 +59,24 @@ jobs:
               - 'ansible/roles/n8n/**'
               - 'ansible/roles/haos/**'
               - 'ansible/roles/alerts/**'
-              - 'ansible/roles/cypress/**'
             run-vms:
               - 'ansible/roles/haos_vm_old/**'
       - name: run containers
         if: steps.filter.outputs.run-containers == 'true'
-        run: ansible-playbook run_containers.yml --tags klipper,n8n,haos,alerts,cypress
+        run: ansible-playbook run_containers.yml --tags klipper,n8n,haos,alerts
       - name: run VMs
         if: steps.filter.outputs.run-vms == 'true'
         run: ansible-playbook run_vms.yml
 
+  check-cypress:
+    needs: detect-modifications-and-deploy-services
+    runs-on: self-hosted
+    steps:
+      - name: Run needed roles
+        run: ansible-playbook run_cypress_test.yml -e "cypress_test_file=hello_world.cy.js"
+
   deploy-vpn:
-    needs: detect-and-deploy-modified-services
+    needs: check-cypress
     runs-on: self-hosted
     steps:
       - name: Run needed roles

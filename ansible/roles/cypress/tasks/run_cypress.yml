@@ -2,8 +2,8 @@
   community.docker.docker_container:
     name: cypress-test
     image: cypress/included:latest
-    command: "npx cypress run --spec /e2e/{{ cypress_test_file }}"
     volumes:
       - /actions-runner/files/cypress:/e2e
     network_mode: host
+    detach: false     # <-- stream logs to playbook output
     auto_remove: yes

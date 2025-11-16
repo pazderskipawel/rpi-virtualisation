@@ -11,5 +11,3 @@
       tags: [haos]
     - role: alerts
       tags: [alerts]
-    - role: cypress
-      tags: [cypress]
