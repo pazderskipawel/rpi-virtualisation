@@ -37,7 +37,7 @@
 
 - name: Run basic test
   ansible.builtin.shell:
-    cmd: ./actions-runner/files/cypress/runtest.sh
+    cmd: cd /actions-runner/files/cypress && ./runtest.sh
   register: test_result
 
 - name: Show test results stdout (script output)

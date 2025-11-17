@@ -12,4 +12,4 @@ docker run --rm \
   -v "${HOST_TESTS_PATH}:/e2e" \
   -w /e2e \
   cypress/included:latest \
-  npx cypress run --spec "cypress/e2e/${TEST_FILE}"
+  npx cypress run --spec "${TEST_FILE}"
