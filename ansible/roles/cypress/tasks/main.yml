@@ -1,0 +1,49 @@
+#configure directories for cypress tests
+- name: Creates directory if not exist
+  ansible.builtin.file:
+    path: /actions-runner/files/cypress
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Check if any config files exist in directory
+  ansible.builtin.find:
+    paths: /actions-runner/files/cypress/
+    patterns: "*.js"
+  register: cypress_config_file
+
+- name: Copy configs if directory is empty
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /actions-runner/files/cypress/
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'      
+  loop: "{{ lookup('fileglob', role_path + '/files/*', wantlist=True) }}"
+  when: cypress_config_file.matched == 0
+
+- name: Make script excutable
+  ansible.builtin.file:
+    path: /actions-runner/files/cypress/runtest.sh
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '755'
+
+- name: Pull latest Cypress Docker image
+  community.docker.docker_image:
+    name: cypress/included
+    source: pull
+
+- name: Run basic test
+  ansible.builtin.shell:
+    cmd: cd /actions-runner/files/cypress && ./runtest.sh
+  register: test_result
+  failed_when: false
+
+- name: Show Cypress test results summary
+  ansible.builtin.debug:
+    msg: |
+      {{ test_result.stdout | regex_search('(^.*All specs passed.*$)', multiline=True) }}
+      {{ test_result.stdout | regex_search('Passing:\\s+\\d+', multiline=True) }}
+      {{ test_result.stdout | regex_search('Failing:\\s+\\d+', multiline=True) }}
