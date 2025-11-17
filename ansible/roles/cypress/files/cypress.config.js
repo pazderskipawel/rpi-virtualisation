@@ -3,7 +3,7 @@ const { defineConfig } = require('cypress')
 module.exports = defineConfig({
   e2e: {
     baseUrl: 'https://example.cypress.io',  
-    specPattern: '**/*.cy.js',  
+    specPattern: '*.cy.js',  
     supportFile: false,                     
     setupNodeEvents(on, config) {
     },
