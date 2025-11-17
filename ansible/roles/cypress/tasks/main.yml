@@ -15,12 +15,35 @@
 
 - name: Copy configs if directory is empty
   ansible.builtin.copy:
-    src: "{{ role_path }}/files/{{ item }}"
+    src: "{{ item }}"
     dest: /actions-runner/files/cypress/
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-    mode: '0644'
+    mode: '0644'      
+  loop: "{{ lookup('fileglob', role_path + '/files/*', wantlist=True) }}"
   when: cypress_config_file.matched == 0
-  loop:
-    - hello_world.cy.js
-    - cypress.config.js
+
+- name: Make script excutable
+  ansible.builtin.file:
+    path: /actions-runner/files/cypress/runtest.sh
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '755'
+
+- name: Pull latest Cypress Docker image
+  community.docker.docker_image:
+    name: cypress/included
+    source: pull
+
+- name: Run basic test
+  ansible.builtin.shell:
+    cmd: ./actions-runner/files/cypress/runtest.sh
+  register: test_result
+
+- name: Show test results stdout (script output)
+  ansible.builtin.debug:
+    var: test_result.stdout
+
+- name: Show test results stderr (script errors)
+  ansible.builtin.debug:
+    var: test_result.stderr

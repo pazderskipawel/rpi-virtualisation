@@ -69,15 +69,8 @@ jobs:
         if: steps.filter.outputs.run-vms == 'true'
         run: ansible-playbook run_vms.yml
 
-  check-cypress:
-    needs: detect-modifications-and-deploy-services
-    runs-on: self-hosted
-    steps:
-      - name: Run needed roles
-        run: ansible-playbook run_cypress_test.yml -e "cypress_test_file=hello_world.cy.js"
-
   deploy-vpn:
-    needs: check-cypress
+    needs: detect-modifications-and-deploy-services
     runs-on: self-hosted
     steps:
       - name: Run needed roles
