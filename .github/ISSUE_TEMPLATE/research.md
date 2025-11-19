@@ -4,7 +4,7 @@ about: Something to check or discover
 title: "(Theme) Title"
 labels: research
 assignees: pazderskipawel
-projects: ["pazderskipawel/1"]
+projects: ["rpi-automation/1"]
 
 ---
 
