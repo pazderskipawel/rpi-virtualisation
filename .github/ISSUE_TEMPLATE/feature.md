@@ -4,7 +4,7 @@ about: Suggest an idea for this project
 title: "(Theme) Title"
 labels: feature
 assignees: pazderskipawel
-projects: ["pazderskipawel/1"]
+projects: ["rpi-automation/1"]
 
 ---
 
