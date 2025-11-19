@@ -6,7 +6,7 @@
     timeout: 5
   register: onboarding_check
   until: onboarding_check.status == 200
-  retries: 120
+  retries: 10
   delay: 10
 
 # Desired /api/onboarding response
