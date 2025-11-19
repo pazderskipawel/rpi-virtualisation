@@ -8,12 +8,12 @@
 - name: Install HACS if not present
   block:
     - name: Download HACS install script inside container
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ ha_container_name }}"
         command: wget -O /tmp/hacs_install.sh https://get.hacs.xyz
 
     - name: Run HACS install script inside container
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ ha_container_name }}"
         command: bash /tmp/hacs_install.sh
       register: hacs_install
