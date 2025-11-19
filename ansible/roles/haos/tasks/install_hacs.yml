@@ -1,6 +1,6 @@
 - name: Check if HACS is already installed
   community.docker.docker_container_exec:
-    container: "haos"
+    container: haos
     command: test -d /config/custom_components/hacs
   register: hacs_check
   ignore_errors: true
@@ -9,12 +9,12 @@
   block:
     - name: Download HACS install script inside container
       community.docker.docker_container_exec:
-        container: "{{ ha_container_name }}"
+        container: haos
         command: wget -O /tmp/hacs_install.sh https://get.hacs.xyz
 
     - name: Run HACS install script inside container
       community.docker.docker_container_exec:
-        container: "{{ ha_container_name }}"
+        container: haos
         command: bash /tmp/hacs_install.sh
       register: hacs_install
   when: hacs_check.rc != 0
@@ -22,6 +22,6 @@
 
 - name: Restart Home Assistant container if HACS was installed
   community.docker.docker_container:
-    name: "haos"
+    name: haos
     state: restarted
   when: hacs_install is defined and hacs_install.changed
