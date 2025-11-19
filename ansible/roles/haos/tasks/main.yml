@@ -39,8 +39,8 @@
     proto: tcp
     comment: 'homeassistant VM'
 
-- name: Install HACS
-  include_tasks: install_hacs.yml
-
 - name: Configure HAOS after VM creation
   include_tasks: configure_haos.yml
+
+- name: Install HACS
+  include_tasks: install_hacs.yml
