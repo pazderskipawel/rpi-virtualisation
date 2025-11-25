@@ -18,10 +18,10 @@
     network_mode: host
     env:
       N8N_SECURE_COOKIE: "false"
-      N8N_HOST: "192.168.0.171"
-      N8N_PORT: "5678"
+      N8N_HOST: "{{ ansible_default_ipv4.address }}"
+      N8N_PORT: "{{ n8n_port }}"
       N8N_PROTOCOL: "http"
-      WEBHOOK_URL: "http://192.168.0.171:5678/"
+      WEBHOOK_URL: "http://{{ ansible_default_ipv4.address }}:{{ n8n_port }}/"
       
 - name: Open n8n port on UFW
   community.general.ufw:

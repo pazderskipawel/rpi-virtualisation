@@ -1,0 +1,25 @@
+- name: Prepare service
+  include_role:
+    name: docker
+    tasks_from: prepare_env
+  vars:
+    service_port: "{{ excalidraw_port }}"
+    service_name: "excalidraw"
+    service_dir: "{{ excalidraw_files_path }}"
+
+- name: Start excalidraw container
+  community.docker.docker_container:
+    name: "excalidraw"
+    image: "excalidraw/excalidraw:latest"
+    state: started
+    restart_policy: "unless-stopped"
+    ports:
+      - "{{ excalidraw_port }}:80"
+
+- name: Verify service
+  include_role:
+    name: docker
+    tasks_from: verify_env
+  vars:
+    service_port: "{{ excalidraw_port }}"
+    service_name: "excalidraw"
