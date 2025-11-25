@@ -2,13 +2,15 @@ services:
     joplin-db:
         restart: unless-stopped
         image: postgres:latest
+        container_name: joplin-db
         volumes:
-            - /actions-runner/files/joplin:/var/lib/postgresql/data
+            - /actions-runner/files/joplin:/var/lib/postgresql
         environment:
             - POSTGRES_PASSWORD=joplin
             - POSTGRES_USER=joplin
             - POSTGRES_DB=joplin
     joplin-app:
+        container_name: joplin-app
         environment:
             - APP_BASE_URL=http://192.168.0.171
             - APP_PORT=22300
