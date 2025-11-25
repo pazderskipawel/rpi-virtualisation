@@ -1,0 +1,7 @@
+- name: Verify {{ service_name }} localhost health
+  uri:
+    url: "http://{{ ansible_default_ipv4.address }}:{{ service_port }}/"
+    method: GET
+    status_code: 200
+  retries: 5
+  delay: 5

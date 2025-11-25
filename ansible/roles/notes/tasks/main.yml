@@ -1,0 +1,52 @@
+- name: Setup excalidraw witheeboard service
+  block:
+
+    - name: Prepare service
+      include_role:
+        name: docker
+        tasks_from: prepare_env
+      vars:
+        service_port: "{{ excalidraw_port }}"
+        service_name: "excalidraw"
+        service_dir: "{{ excalidraw_files_path }}"
+
+    - name: Start excalidraw container
+      community.docker.docker_container:
+        name: "excalidraw"
+        image: "excalidraw/excalidraw:latest"
+        state: started
+        restart_policy: "unless-stopped"
+        ports:
+          - "{{ excalidraw_port }}:80"
+
+    - name: Verify service
+      include_role:
+        name: docker
+        tasks_from: verify_env
+      vars:
+        service_port: "{{ excalidraw_port }}"
+        service_name: "excalidraw"
+
+- name: Setup Joplin notes server
+  block:
+    - name: Prepare service
+      include_role:
+        name: docker
+        tasks_from: prepare_env
+      vars:
+        service_port: "{{ joplin_port }}"
+        service_name: "joplin"
+        service_dir: "{{ joplin_files_path }}"
+
+    - name: Run docker compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ role_path }}/files"
+        state: present
+
+    - name: Verify service
+      include_role:
+        name: docker
+        tasks_from: verify_env
+      vars:
+        service_port: "{{ joplin_port }}"
+        service_name: "joplin"

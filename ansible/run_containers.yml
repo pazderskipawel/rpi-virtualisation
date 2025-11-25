@@ -13,3 +13,5 @@
       tags: [alerts]
     - role: cypress
       tags: [cypress]
+    - role: notes
+      tags: [notes]
