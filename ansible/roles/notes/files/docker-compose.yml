@@ -12,7 +12,7 @@ services:
     joplin-app:
         container_name: joplin-app
         environment:
-            - APP_BASE_URL=http://192.168.0.171
+            - APP_BASE_URL=http://192.168.0.171:22300
             - APP_PORT=22300
             - POSTGRES_PASSWORD=joplin
             - POSTGRES_DATABASE=joplin
