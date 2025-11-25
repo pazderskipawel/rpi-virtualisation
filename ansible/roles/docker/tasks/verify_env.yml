@@ -9,5 +9,5 @@
 
 - name: Display {{ service_name }} localhost status
   debug:
-    msg: "{{{ service_name }}} is running and healthy at http://localhost:{{ service_port }}"
+    msg: "{{ service_name }} is running and healthy at http://localhost:{{ service_port }}"
   when: service_health is succeeded
