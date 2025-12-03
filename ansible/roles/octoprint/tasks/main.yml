@@ -17,6 +17,7 @@
       - "{{ octoprint_port }}:80"
     volumes:
       - "{{ octoprint_files_path }}:/octoprint"
+      - /dev:/dev
     devices:
       - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0"
 
