@@ -40,6 +40,6 @@
     name: samba
     tasks_from: add_samba_share
   vars:
-    share_name: octoprint_files_pathgcodes
+    share_name: gcodes
     share_path: "{{ octoprint_files_path }}/gcodes"
     share_service_name: octoprint
