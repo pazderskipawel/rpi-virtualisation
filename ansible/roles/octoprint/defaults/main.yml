@@ -1,0 +1,2 @@
+octoprint_port: 8081
+octoprint_files_path: "/actions-runner/files/octoprint"

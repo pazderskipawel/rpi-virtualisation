@@ -1,0 +1,29 @@
+- name: Prepare service
+  include_role:
+    name: docker
+    tasks_from: prepare_env
+  vars:
+    service_port: "{{ octoprint_port }}"
+    service_name: "octoprint"
+    service_dir: "{{ octoprint_files_path }}"
+
+- name: Start octoprint container
+  community.docker.docker_container:
+    name: "octoprint"
+    image: "octoprint/octoprint:latest"
+    state: started
+    restart_policy: "unless-stopped"
+    ports:
+      - "{{ octoprint_port }}:80"
+    volumes:
+      - "{{ octoprint_files_path }}:/octoprint"
+    devices:
+      - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0"
+
+- name: Verify service
+  include_role:
+    name: docker
+    tasks_from: verify_env
+  vars:
+    service_port: "{{ octoprint_port }}"
+    service_name: "octoprint"
