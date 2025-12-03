@@ -27,3 +27,20 @@
   vars:
     service_port: "{{ octoprint_port }}"
     service_name: "octoprint"
+
+- name: Ensure directories for gcodes exists
+  ansible.builtin.file:
+    path: "{{ octoprint_files_path }}/uploads"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Add Samba share
+  include_role: 
+    name: samba
+    tasks_from: add_samba_share
+  vars:
+    share_name: octoprint_files_pathgcodes
+    share_path: "{{ octoprint_files_path }}/uploads"
+    share_service_name: octoprint
