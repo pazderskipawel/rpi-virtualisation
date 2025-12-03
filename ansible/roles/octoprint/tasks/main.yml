@@ -18,7 +18,7 @@
     volumes:
       - "{{ octoprint_files_path }}:/octoprint"
     devices:
-      - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0::/dev/ttyUSB0"
+      - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
 
 - name: Verify service
   include_role:
