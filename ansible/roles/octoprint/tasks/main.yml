@@ -16,8 +16,7 @@
     ports:
       - "{{ octoprint_port }}:80"
     volumes:
-      - "{{ octoprint_files_path }}:/octoprint"
-      - "{{ octoprint_files_path }}/gcodes:/octoprint/octoprint/uploads"
+      - "{{ octoprint_files_path }}:/octoprint/octoprint/uploads"
     devices:
       - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
 
@@ -29,17 +28,11 @@
     service_port: "{{ octoprint_port }}"
     service_name: "octoprint"
 
-- name: Ensure directories for gcodes exists
-  ansible.builtin.file:
-    path: "{{ octoprint_files_path }}/gcodes"
-    state: directory
-    mode: '0755'
-
 - name: Add Samba share
   include_role: 
     name: samba
     tasks_from: add_samba_share
   vars:
     share_name: gcodes
-    share_path: "{{ octoprint_files_path }}/gcodes"
+    share_path: "{{ octoprint_files_path }}"
     share_service_name: octoprint
