@@ -7,6 +7,13 @@
     service_name: "octoprint"
     service_dir: "{{ octoprint_files_path }}"
 
+- name: Create 3D printer symlink
+  file:
+    src: /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0 #this disappears when device is off
+    dest: /dev/3dprinter
+    state: link
+    force: yes
+
 - name: Start octoprint container
   community.docker.docker_container:
     name: "octoprint"
@@ -16,9 +23,9 @@
     ports:
       - "{{ octoprint_port }}:80"
     volumes:
-      - "{{ octoprint_files_path }}:/octoprint/octoprint/uploads"
+      - "{{ octoprint_files_path }}:/octoprint/octoprint"
     devices:
-      - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
+      - "/dev/3dprinter:/dev/ttyUSB0"
 
 - name: Verify service
   include_role:
@@ -34,5 +41,5 @@
     tasks_from: add_samba_share
   vars:
     share_name: gcodes
-    share_path: "{{ octoprint_files_path }}"
+    share_path: "{{ octoprint_files_path }}/uploads"
     share_service_name: octoprint
