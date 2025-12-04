@@ -7,13 +7,18 @@
     service_name: "octoprint"
     service_dir: "{{ octoprint_files_path }}"
 
+- name: Create 3D printer directory
+  file:
+    path: /dev/3dprinter
+    state: directory
+    mode: '0755'
+
 - name: Create 3D printer symlink
   file:
-    src: /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0 #this disappears when device is off
-    dest: /dev/3dprinter
+    src: "{{ octoprint_3dprinter_device_path }}" #this disappears when device is off
+    dest: /dev/3dprinter/ttyUSB0 # name of usb device for container
     state: link
     force: yes
-  failed_when: false
 
 - name: Start octoprint container
   community.docker.docker_container:
@@ -25,9 +30,9 @@
       - "{{ octoprint_port }}:80"
     volumes:
       - "{{ octoprint_files_path }}:/octoprint/octoprint"
-    #devices: mount as volume not as device
-      - "/dev/3dprinter:/dev/ttyUSB0"
-
+      - "/dev/3dprinter:/dev" # it will mount whole /dev/3dprinter directory 
+                              # when device is on it will mount /dev/3dpriunter/ttyUSV0 as /dev/ttyUSB0
+                              # when device is off nothing will be mounted
 - name: Verify service
   include_role:
     name: docker

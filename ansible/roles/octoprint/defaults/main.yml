@@ -1,2 +1,3 @@
 octoprint_port: 8081
 octoprint_files_path: "/actions-runner/files/octoprint"
+octoprint_3dprinter_device_path: "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0"
