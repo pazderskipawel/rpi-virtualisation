@@ -29,7 +29,7 @@
 
 - name: Configure OctoPrint serial port
   blockinfile:
-    path: "{{ octoprint_files_path }}/octoprint/config.yaml"
+    path: "{{ octoprint_files_path }}/config.yaml"
     marker: "# {mark} ANSIBLE OCTOPRINT SERIAL CONFIG"
     insertafter: '^serial:'
     block: |
