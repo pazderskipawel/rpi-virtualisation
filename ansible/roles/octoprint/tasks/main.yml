@@ -13,6 +13,7 @@
     dest: /dev/3dprinter
     state: link
     force: yes
+  failed_when: false
 
 - name: Start octoprint container
   community.docker.docker_container:
