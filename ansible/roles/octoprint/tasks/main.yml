@@ -36,7 +36,7 @@
       port: {{ octoprint_3dprinter_device_path }}
       baudrate: 250000
       autoconnect: true
-  notify: restart octoprint
+  failed_when: false
 
 - name: Add Samba share
   include_role: 
