@@ -24,7 +24,7 @@
       - "{{ octoprint_port }}:80"
     volumes:
       - "{{ octoprint_files_path }}:/octoprint/octoprint"
-    devices:
+    #devices: mount as volume not as device
       - "/dev/3dprinter:/dev/ttyUSB0"
 
 - name: Verify service
