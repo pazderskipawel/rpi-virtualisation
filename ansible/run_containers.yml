@@ -3,8 +3,8 @@
   roles:
     - role: docker
       tags: [always]
-    - role: klipper
-      tags: [klipper]
+    - role: octoprint
+      tags: [octoprint]
     - role: n8n
       tags: [n8n]
     - role: haos
