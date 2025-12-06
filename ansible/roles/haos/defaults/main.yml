@@ -1,3 +1,6 @@
 # Home Assistant admin user credentials
 ha_admin_username: "admin"
 ha_admin_password: "password"
+
+iot_hotspot_ssid: "IoT_Network"
+iot_hotspot_password: "$ecurePa$$123!@#"

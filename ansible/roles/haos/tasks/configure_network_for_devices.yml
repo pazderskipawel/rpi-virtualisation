@@ -1,4 +1,3 @@
-
 - name: Check if IoT hotspot is running
   ansible.builtin.shell: |
     nmcli -t -f NAME,DEVICE device | grep -q "IoT_Network.*wlan0" && echo "running" || echo "stopped"
@@ -7,9 +6,24 @@
 
 - name: Enable IoT hotspot on wlan0
   ansible.builtin.shell: |
-    nmcli device wifi hotspot ssid {{ iot_hotspot_ssid | default('IoT_Network') }} \
-    password {{ iot_hotspot_password | default('SecurePass123') }} ifname wlan0 hidden yes
+    nmcli device wifi hotspot ssid {{ iot_hotspot_ssid }} \
+    password {{ iot_hotspot_password }} ifname wlan0
   when: hotspot_status.stdout == "stopped"
+
+- name: Check if IoT hotspot crontab exists
+  ansible.builtin.shell: |
+    sudo crontab -l 2>/dev/null | grep -q "{{ iot_hotspot_ssid }}" && echo "exists" || echo "missing"
+  register: crontab_status
+  changed_when: false
+
+- name: Add IoT hotspot @reboot to crontab
+  ansible.builtin.cron:
+    name: "IoT Hotspot autostart"
+    job: "nmcli device wifi hotspot ssid {{ iot_hotspot_ssid }} password {{ iot_hotspot_password }} ifname wlan0"
+    special_time: reboot
+    user: root
+    state: present
+  when: crontab_status.stdout == "missing"
 
 - name: Allow IoT devices access to HA services from wlan0
   community.general.ufw:
@@ -22,14 +36,9 @@
     - { port: 8123, proto: tcp, service: 'Home Assistant' }
     - { port: '6666:6668', proto: udp, service: 'LocalTuya' }
 
-- name: Block IoT devices from internet (ONLY forwarding)
+- name: Block IoT subnet from internet (PRIMARY RULE)
   community.general.ufw:
     rule: deny
-    interface: "{{ item.from }}"
-    direction: routed
-    to_interface: "{{ item.to }}"
-    comment: 'Block {{ item.from }} -> {{ item.to }}'
-  loop:
-    - { from: 'wlan0', to: 'wlan0' }   # Tuya -> Tuya
-    - { from: 'wlan0', to: 'wg0' }     # Tuya -> WireGuard
-    - { from: 'wlan0', to: 'docker0' } # Tuya -> Docker
+    from: 10.42.0.0/24 # default nmcli hotspot network
+    out: any
+    comment: 'Block IoT hotspot -> internet'
