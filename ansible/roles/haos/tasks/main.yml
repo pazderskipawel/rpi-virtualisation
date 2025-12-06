@@ -61,3 +61,6 @@
 - name: Configure HAOS after creation (only if onboarding incomplete)
   include_tasks: configure_haos.yml
   when: run_configure_haos
+
+- name: Configure HAOS after creation (only if onboarding incomplete)
+  include_tasks: configure_network_for_devices.yml

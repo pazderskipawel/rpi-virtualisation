@@ -1,0 +1,35 @@
+
+- name: Check if IoT hotspot is running
+  ansible.builtin.shell: |
+    nmcli -t -f NAME,DEVICE device | grep -q "IoT_Network.*wlan0" && echo "running" || echo "stopped"
+  register: hotspot_status
+  changed_when: false
+
+- name: Enable IoT hotspot on wlan0
+  ansible.builtin.shell: |
+    nmcli device wifi hotspot ssid {{ iot_hotspot_ssid | default('IoT_Network') }} \
+    password {{ iot_hotspot_password | default('SecurePass123') }} ifname wlan0 hidden yes
+  when: hotspot_status.stdout == "stopped"
+
+- name: Allow IoT devices access to HA services from wlan0
+  community.general.ufw:
+    rule: allow
+    interface: wlan0
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+    comment: 'IoT wlan0 -> {{ item.service }}'
+  loop:
+    - { port: 8123, proto: tcp, service: 'Home Assistant' }
+    - { port: '6666:6668', proto: udp, service: 'LocalTuya' }
+
+- name: Block IoT devices from internet (ONLY forwarding)
+  community.general.ufw:
+    rule: deny
+    interface: "{{ item.from }}"
+    direction: routed
+    to_interface: "{{ item.to }}"
+    comment: 'Block {{ item.from }} -> {{ item.to }}'
+  loop:
+    - { from: 'wlan0', to: 'wlan0' }   # Tuya -> Tuya
+    - { from: 'wlan0', to: 'wg0' }     # Tuya -> WireGuard
+    - { from: 'wlan0', to: 'docker0' } # Tuya -> Docker
