@@ -7,20 +7,19 @@
     group: "{{ ansible_user }}"
     mode: '0755'
 
-- name: Check if any config files exist in directory
-  ansible.builtin.find:
-    paths: /actions-runner/files/haos/
-    patterns: "*.yaml"
-  register: haos_config_file
-
 - name: Copy configs if directory is empty
   ansible.builtin.copy:
-    src: "{{ role_path }}/files/configuration.yaml"
+    src: "{{ role_path }}/files/{{ item }}"
     dest: /actions-runner/files/haos/
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
-  when: haos_config_file.matched == 0
+    force: no
+  loop: 
+    - "configuration.yaml"
+    - "automations.yaml"
+    - "scripts.yaml"
+    - "scenes.yaml"
 
 - name: Start haos container
   community.docker.docker_container:
@@ -62,7 +61,6 @@
   include_tasks: configure_haos.yml
   when: run_configure_haos
 
-# This will create Hotspot for IOT wifi devices
-# Currently Wifi is used by raspberry itself, and providing eth to it is complicated in my current setup  
-#- name: Configure network for haos (DO NOT USE)
-#  include_tasks: configure_network_for_devices.yml
+# Configure network for HAOS / IoT devices
+# include_tasks: configure_network_for_devices.yml
+# (temporarily disabled while Wi-Fi is used as client)

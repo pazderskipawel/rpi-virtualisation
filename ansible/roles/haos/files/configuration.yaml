@@ -17,3 +17,7 @@ http:
     - 192.168.0.0/24     # Entire subnet
     - 172.16.0.0/12      # Docker networks
     - 127.0.0.1          # Localhost
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
