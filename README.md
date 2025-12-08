@@ -33,15 +33,6 @@ RPI services:
 - WireGuard VPN (HOST)
   rpi_ipv6:51820 -> remote access for anything below
 
-- Nginx (DOCKER)(used for reverse proxy if needed)
-
-- 3D Printer management (DOCKER COMPOSE)
-  - Klipper (printer firmware)
-  - Moonraker (API for klipper)
-  - Fluidd (web interface)
-
-    rpi_ip:8080 --> nginx (reverse proxy) --> localhost:8081 --> docker --> :80 on fluidd container
-
 - Cockpit service (HOST) (GUI for managing raspberry pi)
 
   rpi_ip:9090 --> localhost:9090 --> cockpit service

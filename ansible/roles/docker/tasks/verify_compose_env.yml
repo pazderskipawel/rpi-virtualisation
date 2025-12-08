@@ -1,0 +1,25 @@
+- name: Verify {{ service_name }} compose project
+  community.docker.docker_compose:
+    project_src: "{{ service_dir }}"
+    state: present
+  register: compose_status
+
+- name: Assert all services healthy
+  assert:
+    that:
+      - compose_status.services is defined
+      - compose_status.services | length > 0
+  fail_msg: "No services found in {{ service_dir }}"
+
+- name: Check containers have Traefik labels
+  community.docker.docker_container_info:
+    name: "{{ item }}"
+  loop: "{{ compose_status.services | map(attribute='name') | list }}"
+  register: container_checks
+
+- name: Assert Traefik integration
+  assert:
+    that:
+      - "'traefik.enable=true' in item.container.Labels"
+      - "'proxy' in (item.container.Networks | keys)"
+  loop: "{{ container_checks.results }}"

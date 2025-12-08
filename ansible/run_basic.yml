@@ -3,8 +3,8 @@
   roles:
     - role: firewall
       tags: [always]
-    #- role: nginx
-    #  tags: [always]
+    - role: reverse-proxy
+      tags: [always]
     - role: cockpit
       tags: [always]
     - role: samba

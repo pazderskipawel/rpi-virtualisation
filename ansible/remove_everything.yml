@@ -7,7 +7,6 @@
     vm_networks_to_remove:
       - haos_net
     containers_to_remove:
-      - nginx
       - klipper
       - moonraker
       - fluidd

@@ -1,10 +1,10 @@
-- name: Create n8n directories
-  file:
-    path: "{{ n8n_files_path }}"
-    state: directory
-    mode: '0755'
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+- name: Prepare service
+  include_role:
+    name: docker
+    tasks_from: prepare_env
+  vars:
+    service_name: "n8n"
+    service_dir: "{{ n8n_files_path }}"
 
 - name: Start n8n container
   community.docker.docker_container:
@@ -21,27 +21,23 @@
       N8N_HOST: "{{ ansible_default_ipv4.address }}"
       N8N_PORT: "{{ n8n_port }}"
       N8N_PROTOCOL: "http"
-      WEBHOOK_URL: "http://{{ ansible_default_ipv4.address }}:{{ n8n_port }}/"
+      WEBHOOK_URL: "http://{{ ansible_default_ipv4.address }}/n8n"
+    networks:
+      - name: proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=PathPrefix(`/n8n`)"
+      - "traefik.http.routers.n8n.entrypoints=web"
+      - "traefik.http.services.n8n.loadbalancer.server.port={{ n8n_port }}"
+      - "traefik.http.middlewares.n8n-stripprefix.stripprefix.prefixes=/n8n"
+      - "traefik.http.routers.n8n.middlewares=n8n-stripprefix"
       
-- name: Open n8n port on UFW
-  community.general.ufw:
-    rule: allow
-    port: "{{ n8n_port }}"
-    proto: tcp
-
-- name: Verify n8n localhost health
-  uri:
-    url: "http://localhost:{{ n8n_port }}/"
-    method: GET
-    status_code: 200
-  retries: 5
-  delay: 5
-  register: n8n_health
-
-- name: Display n8n localhost status
-  debug:
-    msg: "n8n is running and healthy at http://localhost:{{ n8n_port }}"
-  when: n8n_health is succeeded
+- name: Verify service
+  include_role:
+    name: docker
+    tasks_from: verify_env
+  vars:
+    service_name: "n8n"
 
 - name: Setup user for n8n
   include_tasks: setup_n8n.yml

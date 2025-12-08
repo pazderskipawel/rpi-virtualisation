@@ -6,8 +6,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
 
-- name: Allow {{ service_name }} port on UFW
-  community.general.ufw:
-    rule: allow
-    port: "{{ service_port }}"
-    proto: tcp
+- name: Ensure proxy network exists
+  community.docker.docker_network:
+    name: proxy
+    state: present

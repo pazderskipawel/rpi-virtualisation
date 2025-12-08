@@ -1,10 +1,10 @@
-- name: Ensure directories for containers exists
-  ansible.builtin.file:
-    path: /actions-runner/files/alerts/config
-    state: directory
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: '0755'
+- name: Prepare service
+  include_role:
+    name: docker
+    tasks_from: prepare_env
+  vars:
+    service_name: "alerts"
+    service_dir: "/actions-runner/files/alerts/config"
 
 - name: Check if any config files exist in directory
   ansible.builtin.find:
@@ -26,13 +26,9 @@
     project_src: "{{ role_path }}/files"
     state: present
 
-- name: Allow alerting services through firewall
-  community.general.ufw:
-    rule: allow
-    port: "{{ item }}"
-    proto: tcp
-    comment: 'alerting services'
-  loop:
-    - "9090"
-    - "9093"
-    - "8082"
+- name: Verify service
+  include_role:
+    name: docker
+    tasks_from: verify_compose_env
+  vars:
+    service_name: "alerts"

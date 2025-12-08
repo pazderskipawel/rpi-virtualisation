@@ -3,31 +3,37 @@
     name: docker
     tasks_from: prepare_env
   vars:
-    service_port: "{{ octoprint_port }}"
     service_name: "octoprint"
     service_dir: "{{ octoprint_files_path }}"
 
-- name: Start octoprint container
+- name: Start Octoprint container
   community.docker.docker_container:
     name: "octoprint"
     image: "octoprint/octoprint:latest"
     state: started
     restart_policy: "unless-stopped"
-    ports:
-      - "{{ octoprint_port }}:80"
     volumes:
       - "{{ octoprint_files_path }}:/octoprint/octoprint"
-      - "/dev:/dev"
-
+    devices: 
+      - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
+    networks:
+      - name: proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.octoprint.rule=PathPrefix(`/octoprint`)"
+      - "traefik.http.routers.octoprint.entrypoints=web"
+      - "traefik.http.services.octoprint.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.octoprint-stripprefix.stripprefix.prefixes=/octoprint"
+      - "traefik.http.routers.octoprint.middlewares=octoprint-stripprefix"
+    
 - name: Verify service
   include_role:
     name: docker
     tasks_from: verify_env
   vars:
-    service_port: "{{ octoprint_port }}"
     service_name: "octoprint"
 
-- name: Configure OctoPrint serial port
+- name: Configure OctoPrint config file
   blockinfile:
     path: "{{ octoprint_files_path }}/config.yaml"
     marker: "# {mark} ANSIBLE OCTOPRINT SERIAL CONFIG"

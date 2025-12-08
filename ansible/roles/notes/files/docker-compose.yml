@@ -9,10 +9,12 @@ services:
             - POSTGRES_PASSWORD=joplin
             - POSTGRES_USER=joplin
             - POSTGRES_DB=joplin
+        networks:
+            - name: proxy
     joplin-app:
         container_name: joplin-app
         environment:
-            - APP_BASE_URL=http://192.168.0.171:22300
+            - APP_BASE_URL=http://192.168.0.171/joplin
             - APP_PORT=22300
             - POSTGRES_PASSWORD=joplin
             - POSTGRES_DATABASE=joplin
@@ -22,7 +24,19 @@ services:
             - DB_CLIENT=pg
         restart: unless-stopped
         image: joplin/server:latest
-        ports:
-            - "22300:22300"
+        networks:
+            - name: proxy
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.joplin-app.rule=PathPrefix(`/joplin`)"
+          - "traefik.http.routers.joplin-app.entrypoints=web"
+          - "traefik.http.services.joplin-app.loadbalancer.server.port=22300"
+          - "traefik.http.middlewares.joplin-app-stripprefix.stripprefix.prefixes=/joplin"
+          - "traefik.http.routers.joplin-app.middlewares=joplin-app-stripprefix"
         depends_on:
             - joplin-db
+
+networks:
+  proxy:
+    external: true
+    name: proxy 
