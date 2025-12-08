@@ -61,8 +61,6 @@ jobs:
               - 'ansible/roles/alerts/**'
               - 'ansible/roles/cypress/**'
               - 'ansible/roles/notes/**'
-            run-vms:
-              - 'ansible/roles/haos_vm_old/**'
       - name: run containers
         if: steps.filter.outputs.run-containers == 'true'
         run: ansible-playbook run_containers.yml --tags octoprint,n8n,haos,alerts,cypress,notes

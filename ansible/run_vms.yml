@@ -1,8 +1,0 @@
-- name: run vms
-  hosts: localhost
-  roles:
-    - role: qemu
-      tags: [always]
-    - role: haos_vm_old
-      tags: [never]
-
