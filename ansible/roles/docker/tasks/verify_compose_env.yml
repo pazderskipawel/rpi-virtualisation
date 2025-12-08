@@ -16,7 +16,6 @@
     name: "{{ item.name }}"
   loop: "{{ compose_status.services }}"
   register: container_checks
-  when: traefik_enabled | default(false)
 
 - name: Assert Traefik integration
   assert:
@@ -24,4 +23,3 @@
       - "'traefik.enable' in item.container.Config.Labels"
       - "'proxy' in (item.container.NetworkSettings.Networks | default({}))"
   loop: "{{ container_checks.results }}"
-  when: traefik_enabled | default(false)
