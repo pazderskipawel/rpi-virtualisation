@@ -6,12 +6,12 @@
 - name: Assert container is running
   assert:
     that:
-      - container_info.container.State.Running
+      - container_info.container.State.Status == "running"
 
 - name: Assert Traefik services are on proxy network
   assert:
     that:
-      - "'proxy' in container_info.container.NetworksSettings.Networks"
+      - "'proxy' in container_info.container.NetworkSettings.Networks"
 
 - name: Assert service has Traefik labels (if enabled)
   assert:
