@@ -12,10 +12,15 @@
     dest: "{{ traefik_files_path }}/traefik.yml"
     mode: '0644'
 
-- name: Create network
+- name: Create proxy network with CUSTOM subnet
   community.docker.docker_network:
     name: proxy
     state: present
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.99.0.0/24
+          gateway: 10.99.0.1
 
 - name: Start Traefik container
   community.docker.docker_container:
