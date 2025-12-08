@@ -10,11 +10,9 @@ services:
     restart: unless-stopped
     labels:
       traefik.enable: "true"
-      traefik.http.routers.prometheus.rule: "PathPrefix(`/prometheus`)"
+      traefik.http.routers.prometheus.rule: "Host(`prometheus.local`)"
       traefik.http.routers.prometheus.entrypoints: "web"
-      traefik.http.services.prometheus.loadbalancer.server.port: "9090"
-      traefik.http.middlewares.prometheus-stripprefix.stripprefix.prefixes: "/prometheus"
-      traefik.http.routers.prometheus.middlewares: "prometheus-stripprefix"
+      traefik.http.services.prometheus.loadbalancer.server.port: "80"
 
   alertmanager:
     image: prom/alertmanager:latest
@@ -26,11 +24,9 @@ services:
     restart: unless-stopped
     labels:
       traefik.enable: "true"
-      traefik.http.routers.alertmanager.rule: "PathPrefix(`/alertmanager`)"
+      traefik.http.routers.alertmanager.rule: "Host(`alertmanager.local`)"
       traefik.http.routers.alertmanager.entrypoints: "web"
-      traefik.http.services.alertmanager.loadbalancer.server.port: "9093"
-      traefik.http.middlewares.alertmanager-stripprefix.stripprefix.prefixes: "/alertmanager"
-      traefik.http.routers.alertmanager.middlewares: "alertmanager-stripprefix"
+      traefik.http.services.alertmanager.loadbalancer.server.port: "80"
 
   node_exporter:
     image: prom/node-exporter:latest
