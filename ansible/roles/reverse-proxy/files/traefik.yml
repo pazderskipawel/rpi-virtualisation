@@ -34,4 +34,8 @@ http:
           - Authorization
         accessControlMaxAge: 100
         addVaryHeader: true
+    n8n-ws:
+      websocket:
+        enabled: true
+
 

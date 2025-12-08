@@ -29,10 +29,10 @@
       traefik.http.routers.n8n.entrypoints: "web"
       traefik.http.services.n8n.loadbalancer.server.port: "{{ n8n_port }}"
       traefik.http.middlewares.n8n-stripprefix.stripprefix.prefixes: "/n8n"
-      traefik.http.middlewares.n8n-headers.headers.accesscontrolallowmethods: "GET, OPTIONS, PUT, POST, PATCH, DELETE"
+      traefik.http.middlewares.n8n-ws.websockets.transport.upgrade: "websocket"
+      traefik.http.middlewares.n8n-headers.headers.customrequestheaders.X-Forwarded-Proto: "http"
       traefik.http.middlewares.n8n-headers.headers.accesscontrolalloworiginlist: "*"
-      traefik.http.middlewares.n8n-headers.headers.accesscontrolallowheaders: "Content-Type, Authorization"
-      traefik.http.routers.n8n.middlewares: "n8n-stripprefix,n8n-headers"
+      traefik.http.routers.n8n.middlewares: "n8n-stripprefix,n8n-ws,n8n-headers"
       
 - name: Verify service
   include_role:
