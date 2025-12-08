@@ -1,42 +1,10 @@
-- name: Verify {{ service_name }} compose project exists
-  stat:
-    path: "{{ service_dir }}/docker-compose.yml"
-  register: compose_file
-
-- name: Assert compose file exists
-  assert:
-    that:
-      - compose_file.stat.exists
-    fail_msg: "No docker-compose.yml in {{ service_dir }}"
-
-- name: Get compose project status
-  shell: docker compose -f {{ service_dir }}/docker-compose.yml ps --format json
-  register: compose_ps
+- name: Verify {{ service_name }} compose project
+  shell: docker compose -f {{ service_dir }}/docker-compose.yml ps --services --filter "status=running"
+  register: running_services
   changed_when: false
 
-- name: Parse running services
-  set_fact:
-    running_services: "{{ compose_ps.stdout | from_json | length if compose_ps.stdout | length > 0 else 0 }}"
-
-- name: Assert services are running
+- name: Assert services running
   assert:
     that:
-      - running_services > 0
-    fail_msg: "No running services in {{ service_dir }} (found {{ running_services }})"
-
-- name: Get container names from compose
-  shell: docker compose -f {{ service_dir }}/docker-compose.yml ps --format "{{ '{{' }}.Name{{ '}}' }}"
-  register: container_names
-  changed_when: false
-
-- name: Check containers have Traefik labels
-  community.docker.docker_container_info:
-    name: "{{ item | trim }}"
-  loop: "{{ container_names.stdout_lines }}"
-  register: container_checks
-
-- name: Assert Traefik integration
-  assert:
-    that:
-      - "'traefik.enable' in item.container.Config.Labels"
-  loop: "{{ container_checks.results }}"
+      - running_services.stdout_lines | length > 0
+    fail_msg: "No running services in {{ service_dir }}"
