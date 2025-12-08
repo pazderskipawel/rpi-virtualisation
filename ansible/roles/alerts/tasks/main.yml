@@ -32,4 +32,4 @@
     tasks_from: verify_compose_env
   vars:
     service_name: "alerts"
-    service_dir: "{{ role_path }}/files"
+    service_dir: "{{ playbook_dir }}/roles/alerts/files"
