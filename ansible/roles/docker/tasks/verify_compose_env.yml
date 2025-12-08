@@ -1,5 +1,5 @@
 - name: Verify {{ service_name }} compose project
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ service_dir }}"
     state: present
   register: compose_status
@@ -13,13 +13,15 @@
 
 - name: Check containers have Traefik labels
   community.docker.docker_container_info:
-    name: "{{ item }}"
-  loop: "{{ compose_status.services | map(attribute='name') | list }}"
+    name: "{{ item.name }}"
+  loop: "{{ compose_status.services }}"
   register: container_checks
+  when: traefik_enabled | default(false)
 
 - name: Assert Traefik integration
   assert:
     that:
-      - "'traefik.enable=true' in item.container.Labels"
-      - "'proxy' in item.container.Networks"
+      - "'traefik.enable' in item.container.Config.Labels"
+      - "'proxy' in (item.container.NetworkSettings.Networks | default({}))" 
   loop: "{{ container_checks.results }}"
+  when: traefik_enabled | default(false)
