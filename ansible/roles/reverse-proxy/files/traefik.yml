@@ -15,3 +15,23 @@ api:
 
 log:
   level: INFO
+
+http:
+  middlewares:
+    spa-headers:
+      headers:
+        accessControlAllowMethods:
+          - GET
+          - OPTIONS
+          - PUT
+          - POST
+          - PATCH
+          - DELETE
+        accessControlAllowOriginList:
+          - "*"
+        accessControlAllowHeaders:
+          - Content-Type
+          - Authorization
+        accessControlMaxAge: 100
+        addVaryHeader: true
+
