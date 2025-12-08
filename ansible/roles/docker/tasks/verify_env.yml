@@ -16,5 +16,5 @@
 - name: Assert service has Traefik labels (if enabled)
   assert:
     that:
-      - "traefik.enable in container_info.container.Config.Labels"
+      - "'traefik.enable' in container_info.container.Config.Labels"
       - "container_info.container.Config.Labels['traefik.enable'] == 'true'"
