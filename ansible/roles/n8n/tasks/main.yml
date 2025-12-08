@@ -15,7 +15,6 @@
     volumes:
       - "{{ n8n_files_path }}:/home/node/.n8n"
       - "{{ n8n_repo_path }}:/tmp/repo"
-    network_mode: host
     env:
       N8N_SECURE_COOKIE: "false"
       N8N_HOST: "{{ ansible_default_ipv4.address }}"

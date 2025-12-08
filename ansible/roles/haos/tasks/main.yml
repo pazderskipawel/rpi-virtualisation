@@ -28,7 +28,6 @@
     image: ghcr.io/home-assistant/home-assistant:stable
     state: started
     restart_policy: unless-stopped
-    network_mode: host
     volumes:
       - "/actions-runner/files/haos/:/config"
     devices:
