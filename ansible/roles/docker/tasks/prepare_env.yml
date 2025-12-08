@@ -5,8 +5,3 @@
     mode: '0755'
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-
-- name: Ensure proxy network exists
-  community.docker.docker_network:
-    name: proxy
-    state: present
