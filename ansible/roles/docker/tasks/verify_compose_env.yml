@@ -9,7 +9,7 @@
     that:
       - compose_status.services is defined
       - compose_status.services | length > 0
-  fail_msg: "No services found in {{ service_dir }}"
+    fail_msg: "No services found in {{ service_dir }}"
 
 - name: Check containers have Traefik labels
   community.docker.docker_container_info:
@@ -22,6 +22,6 @@
   assert:
     that:
       - "'traefik.enable' in item.container.Config.Labels"
-      - "'proxy' in (item.container.NetworkSettings.Networks | default({}))" 
+      - "'proxy' in (item.container.NetworkSettings.Networks | default({}))"
   loop: "{{ container_checks.results }}"
   when: traefik_enabled | default(false)
