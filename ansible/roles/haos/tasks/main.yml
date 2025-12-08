@@ -36,11 +36,9 @@
       - name: proxy
     labels:
       traefik.enable: "true"
-      traefik.http.routers.haos.rule: "PathPrefix(`/haos`)"
+      traefik.http.routers.haos.rule: "Host(`ha.local`)"
       traefik.http.routers.haos.entrypoints: "web"
       traefik.http.services.haos.loadbalancer.server.port: "8123"
-      traefik.http.middlewares.haos-stripprefix.stripprefix.prefixes: "/haos,/haos/"
-      traefik.http.routers.haos.middlewares: "haos-stripprefix"
 
 - name: Verify service
   include_role:

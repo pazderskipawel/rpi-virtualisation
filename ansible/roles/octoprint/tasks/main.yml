@@ -20,13 +20,9 @@
       - name: proxy
     labels:
       traefik.enable: "true"
-      traefik.http.routers.octoprint.rule: "PathPrefix(`/octoprint`)"
+      traefik.http.routers.octoprint.rule: "Host(`octoprint.local`)"
       traefik.http.routers.octoprint.entrypoints: "web"
       traefik.http.services.octoprint.loadbalancer.server.port: "80"
-      traefik.http.middlewares.octoprint-stripprefix.stripprefix.prefixes: "/octoprint"
-      traefik.http.routers.octoprint.middlewares: "octoprint-stripprefix"
-      traefik.http.middlewares.octoprint-headers.headers.accesscontrolalloworiginlist: "*"
-      traefik.http.routers.octoprint.middlewares: "octoprint-stripprefix,octoprint-headers"
     
 - name: Verify service
   include_role:

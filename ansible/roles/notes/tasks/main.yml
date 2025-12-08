@@ -19,11 +19,9 @@
           - name: proxy
         labels:
           traefik.enable: "true"
-          traefik.http.routers.excalidraw.rule: "PathPrefix(`/excalidraw`)"
+          traefik.http.routers.excalidraw.rule: "Host(`excalidraw.local`)"
           traefik.http.routers.excalidraw.entrypoints: "web"
           traefik.http.services.excalidraw.loadbalancer.server.port: "80"
-          traefik.http.middlewares.excalidraw-stripprefix.stripprefix.prefixes: "/excalidraw"
-          traefik.http.routers.excalidraw.middlewares: "excalidraw-stripprefix"
 
     - name: Verify service
       include_role:

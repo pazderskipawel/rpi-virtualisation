@@ -51,11 +51,9 @@ services:
     restart: unless-stopped
     labels:
       traefik.enable: "true"
-      traefik.http.routers.cadvisor.rule: "PathPrefix(`/cadvisor`)"
-      traefik.http.routers.cadvisor.entrypoints: "web"
-      traefik.http.services.cadvisor.loadbalancer.server.port: "8080"
-      traefik.http.middlewares.cadvisor-stripprefix.stripprefix.prefixes: "/cadvisor"
-      traefik.http.routers.cadvisor.middlewares: "cadvisor-stripprefix"
+      traefik.http.routers.cadv.rule: "Host(`cadv.local`)"
+      traefik.http.routers.cadv.entrypoints: "web"
+      traefik.http.services.cadv.loadbalancer.server.port: "8080"
 
 networks:
   proxy:

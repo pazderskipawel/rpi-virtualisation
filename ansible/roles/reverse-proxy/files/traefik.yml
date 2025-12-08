@@ -1,41 +1,8 @@
 entryPoints:
   web:
     address: ":80"
-  websecure:
-    address: ":443"
 
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-    network: proxy
-
-api:
-  dashboard: true
-
-log:
-  level: INFO
-
-http:
-  middlewares:
-    spa-headers:
-      headers:
-        accessControlAllowMethods:
-          - GET
-          - OPTIONS
-          - PUT
-          - POST
-          - PATCH
-          - DELETE
-        accessControlAllowOriginList:
-          - "*"
-        accessControlAllowHeaders:
-          - Content-Type
-          - Authorization
-        accessControlMaxAge: 100
-        addVaryHeader: true
-    n8n-ws:
-      websocket:
-        enabled: true
-
-
