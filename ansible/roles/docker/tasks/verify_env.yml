@@ -11,9 +11,9 @@
 - name: Assert Traefik services are on proxy network
   assert:
     that:
-      - "'proxy' in container_info.container.Networks"
+      - "'proxy' in container_info.container.NetworksSettings.Networks"
 
 - name: Assert service has Traefik labels (if enabled)
   assert:
     that:
-      - "'traefik.enable=true' in container_info.container.Labels"
+      - "'traefik.enable=true' in container_info.container.Config.Labels"
