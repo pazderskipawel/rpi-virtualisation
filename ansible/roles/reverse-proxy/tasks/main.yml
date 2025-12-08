@@ -28,10 +28,10 @@
       - "{{ traefik_files_path }}/traefik.yml:/etc/traefik/traefik.yml:ro"
       - "{{ traefik_files_path }}/acme.json:/acme.json"
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=PathPrefix(`/traefik`)"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.entrypoints=web"
+      traefik.enable: "true"
+      traefik.http.routers.dashboard.rule: "PathPrefix(`/traefik`)"
+      traefik.http.routers.dashboard.service: "api@internal"
+      traefik.http.routers.dashboard.entrypoints: "web"
 
 - name: Verify Traefik service
   include_role:

@@ -25,12 +25,12 @@
     networks:
       - name: proxy
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.n8n.rule=PathPrefix(`/n8n`)"
-      - "traefik.http.routers.n8n.entrypoints=web"
-      - "traefik.http.services.n8n.loadbalancer.server.port={{ n8n_port }}"
-      - "traefik.http.middlewares.n8n-stripprefix.stripprefix.prefixes=/n8n"
-      - "traefik.http.routers.n8n.middlewares=n8n-stripprefix"
+      traefik.enable: "true"
+      traefik.http.routers.n8n.rule: "PathPrefix(`/n8n`)"
+      traefik.http.routers.n8n.entrypoints: "web"
+      traefik.http.services.n8n.loadbalancer.server.port: "{{ n8n_port }}"
+      traefik.http.middlewares.n8n-stripprefix.stripprefix.prefixes: "/n8n"
+      traefik.http.routers.n8n.middlewares: "n8n-stripprefix"
       
 - name: Verify service
   include_role:
