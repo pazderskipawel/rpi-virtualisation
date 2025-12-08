@@ -12,6 +12,11 @@
     dest: "{{ traefik_files_path }}/traefik.yml"
     mode: '0644'
 
+- name: Create network
+  community.docker.docker_network:
+    name: proxy
+    state: present
+
 - name: Start Traefik container
   community.docker.docker_container:
     name: "traefik"
