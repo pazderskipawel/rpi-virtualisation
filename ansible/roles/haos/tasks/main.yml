@@ -30,6 +30,7 @@
     restart_policy: unless-stopped
     volumes:
       - "/actions-runner/files/haos/:/config"
+      - "/var/run/docker.sock:/var/run/docker.sock" #for docker containers monitoring from HA 
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
     networks:
