@@ -5,9 +5,3 @@
     mode: '0755'
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-
-- name: Allow {{ service_name }} port on UFW
-  community.general.ufw:
-    rule: allow
-    port: "{{ service_port }}"
-    proto: tcp

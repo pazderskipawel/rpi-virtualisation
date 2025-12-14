@@ -1,0 +1,46 @@
+- name: Prepare Traefik service
+  include_role:
+    name: docker
+    tasks_from: prepare_env
+  vars:
+    service_name: "traefik"
+    service_dir: "{{ traefik_files_path }}"
+
+- name: Copy static Traefik config
+  copy:
+    src: traefik.yml
+    dest: "{{ traefik_files_path }}/traefik.yml"
+    mode: '0644'
+
+- name: Create network
+  community.docker.docker_network:
+    name: proxy
+    state: present
+
+- name: Start Traefik container
+  community.docker.docker_container:
+    name: "traefik"
+    image: "traefik:v3"
+    state: started
+    restart_policy: "unless-stopped"
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - name: proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "{{ traefik_files_path }}/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "{{ traefik_files_path }}/acme.json:/acme.json"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik.rule: "Host(`traefik.local`)"
+      traefik.http.routers.traefik.entrypoints: "web"
+      traefik.http.services.traefik.loadbalancer.server.port: "80"
+
+- name: Verify Traefik service
+  include_role:
+    name: docker
+    tasks_from: verify_env
+  vars:
+    service_name: "traefik"

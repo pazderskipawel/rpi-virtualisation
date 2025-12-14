@@ -1,0 +1,10 @@
+- name: Verify {{ service_name }} compose project
+  shell: docker compose -f {{ service_dir }}/docker-compose.yml ps --services --filter "status=running"
+  register: running_services
+  changed_when: false
+
+- name: Assert services running
+  assert:
+    that:
+      - running_services.stdout_lines | length > 0
+    fail_msg: "No running services in {{ service_dir }}"

@@ -20,7 +20,7 @@ groups:
         description: "Memory usage is over 80% for more than 5 minutes."
 
     - alert: ContainerDown
-      expr: absent(container_last_seen{job="cadvisor", name=~"n8n|fluidd|moonraker|klipper|haos|alertmanager|nginx|node_explorer|prometheus"})
+      expr: absent(container_last_seen{job="cadvisor", name=~"n8n|fluidd|moonraker|klipper|haos|alertmanager|node_explorer|prometheus"})
       for: 2m
       labels:
         severity: critical
@@ -29,7 +29,7 @@ groups:
         description: "Container {{ $labels.name }} stopped reporting metrics."
 
     - alert: ContainerRestarted
-      expr: increase(container_start_time_seconds{job="cadvisor", name=~"n8n|fluidd|moonraker|klipper|haos|alertmanager|nginx|node_explorer|prometheus"}[5m]) > 0
+      expr: increase(container_start_time_seconds{job="cadvisor", name=~"n8n|fluidd|moonraker|klipper|haos|alertmanager|node_explorer|prometheus"}[5m]) > 0
       for: 1m
       labels:
         severity: info

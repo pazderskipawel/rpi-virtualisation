@@ -1,11 +1,11 @@
 # Main tasks for Home Assistant OS role
-- name: Creates directory if not exist
-  ansible.builtin.file:
-    path: /actions-runner/files/haos
-    state: directory
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: '0755'
+- name: Prepare service
+  include_role:
+    name: docker
+    tasks_from: prepare_env
+  vars:
+    service_name: "haos"
+    service_dir: "/actions-runner/files/haos"
 
 - name: Check if any config files exist in directory
   ansible.builtin.find:
@@ -28,18 +28,25 @@
     image: ghcr.io/home-assistant/home-assistant:stable
     state: started
     restart_policy: unless-stopped
-    network_mode: host
     volumes:
       - "/actions-runner/files/haos/:/config"
+      - "/var/run/docker.sock:/var/run/docker.sock" #for docker containers monitoring from HA 
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
+    networks:
+      - name: proxy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.haos.rule: "Host(`haos.local`)"
+      traefik.http.routers.haos.entrypoints: "web"
+      traefik.http.services.haos.loadbalancer.server.port: "8123"
 
-- name: Allow homeassistant through firewall
-  community.general.ufw:
-    rule: allow
-    port: 8123
-    proto: tcp
-    comment: 'homeassistant'
+- name: Verify service
+  include_role:
+    name: docker
+    tasks_from: verify_env
+  vars:
+    service_name: "haos"
 
 - name: Install HACS
   include_tasks: install_hacs.yml

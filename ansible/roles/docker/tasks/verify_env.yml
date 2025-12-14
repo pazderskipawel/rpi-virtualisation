@@ -1,7 +1,20 @@
-- name: Verify {{ service_name }} localhost health
-  uri:
-    url: "http://{{ ansible_default_ipv4.address }}:{{ service_port }}/"
-    method: GET
-    status_code: 200
-  retries: 5
-  delay: 5
+- name: Verify {{ service_name }} container running
+  community.docker.docker_container_info:
+    name: "{{ service_name }}"
+  register: container_info
+
+- name: Assert container is running
+  assert:
+    that:
+      - container_info.container.State.Status == "running"
+
+- name: Assert Traefik services are on proxy network
+  assert:
+    that:
+      - "'proxy' in container_info.container.NetworkSettings.Networks"
+
+- name: Assert service has Traefik labels (if enabled)
+  assert:
+    that:
+      - "'traefik.enable' in container_info.container.Config.Labels"
+      - "container_info.container.Config.Labels['traefik.enable'] == 'true'"

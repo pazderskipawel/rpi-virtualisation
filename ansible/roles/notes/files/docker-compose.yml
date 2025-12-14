@@ -1,28 +1,40 @@
 services:
-    joplin-db:
-        restart: unless-stopped
-        image: postgres:latest
-        container_name: joplin-db
-        volumes:
-            - /actions-runner/files/joplin:/var/lib/postgresql
-        environment:
-            - POSTGRES_PASSWORD=joplin
-            - POSTGRES_USER=joplin
-            - POSTGRES_DB=joplin
-    joplin-app:
-        container_name: joplin-app
-        environment:
-            - APP_BASE_URL=http://192.168.0.171:22300
-            - APP_PORT=22300
-            - POSTGRES_PASSWORD=joplin
-            - POSTGRES_DATABASE=joplin
-            - POSTGRES_USER=joplin
-            - POSTGRES_PORT=5432
-            - POSTGRES_HOST=joplin-db
-            - DB_CLIENT=pg
-        restart: unless-stopped
-        image: joplin/server:latest
-        ports:
-            - "22300:22300"
-        depends_on:
-            - joplin-db
+  joplin-db:
+    restart: unless-stopped
+    image: postgres:latest
+    container_name: joplin-db
+    volumes:
+      - /actions-runner/files/joplin:/var/lib/postgresql
+    environment:
+      - POSTGRES_PASSWORD=joplin
+      - POSTGRES_USER=joplin
+      - POSTGRES_DB=joplin
+    networks:
+      - proxy
+
+  joplin-app:
+    container_name: joplin-app
+    environment:
+      - APP_BASE_URL=http://joplin.local
+      - APP_PORT=22300
+      - POSTGRES_PASSWORD=joplin
+      - POSTGRES_DATABASE=joplin
+      - POSTGRES_USER=joplin
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=joplin-db
+      - DB_CLIENT=pg
+    restart: unless-stopped
+    image: joplin/server:latest
+    networks:
+      - proxy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.joplin.rule: "Host(`joplin.local`)"
+      traefik.http.routers.joplin.entrypoints: "web"
+      traefik.http.services.joplin.loadbalancer.server.port: "22300"
+    depends_on:
+      - joplin-db
+
+networks:
+  proxy:
+    external: true

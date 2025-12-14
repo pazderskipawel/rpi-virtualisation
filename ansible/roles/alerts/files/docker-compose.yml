@@ -3,46 +3,55 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     networks:
-      - alerts-net
-    ports:
-      - "9091:9090"
+      - proxy
     volumes:
       - /actions-runner/files/alerts/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - /actions-runner/files/alerts/config/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
     restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.prometheus.rule: "Host(`prometheus.local`)"
+      traefik.http.routers.prometheus.entrypoints: "web"
+      traefik.http.services.prometheus.loadbalancer.server.port: "80"
 
   alertmanager:
     image: prom/alertmanager:latest
     container_name: alertmanager
     networks:
-      - alerts-net
-    ports:
-      - "9093:9093"
+      - proxy
     volumes:
       - /actions-runner/files/alerts/config/alertmanager.yml:/etc/alertmanager/config.yml:ro
     restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.alertmanager.rule: "Host(`alertmanager.local`)"
+      traefik.http.routers.alertmanager.entrypoints: "web"
+      traefik.http.services.alertmanager.loadbalancer.server.port: "80"
 
   node_exporter:
     image: prom/node-exporter:latest
     container_name: node_exporter
     networks:
-      - alerts-net
-    expose:
-      - "9100"
+      - proxy
     restart: unless-stopped
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
     networks:
-      - alerts-net
-    ports:
-      - "8082:8080" 
+      - proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
     restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.cadv.rule: "Host(`cadv.local`)"
+      traefik.http.routers.cadv.entrypoints: "web"
+      traefik.http.services.cadv.loadbalancer.server.port: "8080"
 
 networks:
+  proxy:
+    external: true
   alerts-net:

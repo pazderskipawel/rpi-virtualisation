@@ -6,7 +6,6 @@
         name: docker
         tasks_from: prepare_env
       vars:
-        service_port: "{{ excalidraw_port }}"
         service_name: "excalidraw"
         service_dir: "{{ excalidraw_files_path }}"
 
@@ -16,15 +15,19 @@
         image: "excalidraw/excalidraw:latest"
         state: started
         restart_policy: "unless-stopped"
-        ports:
-          - "{{ excalidraw_port }}:80"
+        networks:
+          - name: proxy
+        labels:
+          traefik.enable: "true"
+          traefik.http.routers.excalidraw.rule: "Host(`excalidraw.local`)"
+          traefik.http.routers.excalidraw.entrypoints: "web"
+          traefik.http.services.excalidraw.loadbalancer.server.port: "80"
 
     - name: Verify service
       include_role:
         name: docker
         tasks_from: verify_env
       vars:
-        service_port: "{{ excalidraw_port }}"
         service_name: "excalidraw"
 
 - name: Setup Joplin notes server
@@ -34,7 +37,6 @@
         name: docker
         tasks_from: prepare_env
       vars:
-        service_port: "{{ joplin_port }}"
         service_name: "joplin"
         service_dir: "{{ joplin_files_path }}"
 
@@ -46,7 +48,7 @@
     - name: Verify service
       include_role:
         name: docker
-        tasks_from: verify_env
+        tasks_from: verify_compose_env
       vars:
-        service_port: "{{ joplin_port }}"
         service_name: "joplin"
+        service_dir: "{{ playbook_dir }}/roles/notes/files"
