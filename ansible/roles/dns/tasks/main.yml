@@ -4,9 +4,6 @@
     image: strm/dnsmasq
     restart_policy: unless-stopped
     network_mode: host  # Binds to RPi's 53/udp directly
-    entrypoint:
-      - dnsmasq
-      - "-d"
     volumes:
       "{{ role_path }}/files/dnsmasq.conf:/etc/dnsmasq.conf"
     capabilities:
