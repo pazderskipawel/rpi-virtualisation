@@ -15,3 +15,5 @@
       tags: [cypress]
     - role: notes
       tags: [notes]
+    - role: dns
+      tags: [dns]
