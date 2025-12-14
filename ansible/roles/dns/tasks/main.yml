@@ -1,7 +1,7 @@
 - name: Start DNS container
   community.docker.docker_container:
     name: "dns"
-    image: strm/dnsmasq
+    image: "sirscythe/dnsmasq-arm:latest"  # ARM for RPi
     restart_policy: unless-stopped
     network_mode: host  # Binds to RPi's 53/udp directly
     volumes:
