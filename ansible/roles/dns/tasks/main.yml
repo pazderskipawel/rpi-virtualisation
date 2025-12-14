@@ -8,7 +8,7 @@
       - dnsmasq
       - "-d"
     volumes:
-      dnsmasq.conf:/etc/dnsmasq.conf
+      "{{ role_path }}/files/dnsmasq.conf:/etc/dnsmasq.conf"
     capabilities:
     - NET_ADMIN
 
