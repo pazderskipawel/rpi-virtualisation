@@ -17,16 +17,8 @@ http:
     - 10.99.0.0/24
 
 # Configuration for HACS docker monitoring extension 
-# Example configuration.yaml entry
 monitor_docker:
   - name: Docker
-    containers:
-      - n8n
-      - joplin-app
-      - excalidraw
-      - octoprint
-    rename:
-      joplin-app: joplin
     monitored_conditions:
       - version
       - containers_running
