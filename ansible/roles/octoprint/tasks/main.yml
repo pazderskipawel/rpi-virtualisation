@@ -32,6 +32,13 @@
         "'error gathering device information while adding custom device' in ansible_failed_result.msg | default('') and 
         'usb-1a86_USB_Serial-if00-port0' in ansible_failed_result.msg | default('')"
     
+    - name: Other container error - FAILING
+      ansible.builtin.fail:
+        msg: "Container failed for other reason: {{ ansible_failed_result.msg }}"
+      when: >
+        "'error gathering device information while adding custom device' not in ansible_failed_result.msg | default('') or
+        'usb-1a86_USB_Serial-if00-port0' not in ansible_failed_result.msg | default('')"
+    
 - name: Verify service
   include_role:
     name: docker
