@@ -25,17 +25,10 @@
           traefik.http.routers.octoprint.entrypoints: "web"
           traefik.http.services.octoprint.loadbalancer.server.port: "80"
   rescue:
-    - name: Handle Octoprint device error
-      ansible.builtin.debug:
-        msg: "Printer disconnected - continuing"
-      failed_when: false
-      when: >
-        "'usb-1a86_USB_Serial-if00-port0' in (ansible_failed_result.msg | default('')) or
-        'error gathering device information' in (ansible_failed_result.msg | default(''))"
-
-    - name: Other container errors fail playbook
-      ansible.builtin.fail:
-        msg: "Octoprint failed: {{ ansible_failed_result.msg }}"
+      - name: Handle Octoprint errors
+        ansible.builtin.debug:
+          msg: "{% if 'error gathering device information' in (ansible_failed_result.msg | default('')) %}Printer off - continuing{% else %}Other error{% endif %}"
+        failed_when: "'error gathering device information' not in (ansible_failed_result.msg | default(''))"
     
 - name: Verify service
   include_role:
