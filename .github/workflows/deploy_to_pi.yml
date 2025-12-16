@@ -28,26 +28,26 @@ jobs:
     needs: checkout-code
     runs-on: self-hosted
     steps:
-      - name: Run needed roles
+      - name: Run roles
         run: ansible-playbook run_must_have.yml
   
   deploy-main-services:
     needs: deploy-must-have-services
     runs-on: self-hosted
     steps:
-      - name: run containers
+      - name: Run roles
         run: ansible-playbook run_main.yml
 
   deploy-work-in-progress-services:
-    needs: deploy-main-services
+    needs: deploy-must-have-services
     runs-on: self-hosted
     steps:
-      - name: run containers
+      - name: Run roles
         run: ansible-playbook run_wip_services.yml
 
   deploy-network-services:
     needs: deploy-work-in-progress-services
     runs-on: self-hosted
     steps:
-      - name: Run needed roles
+      - name: Run roles
         run: ansible-playbook run_network.yml
