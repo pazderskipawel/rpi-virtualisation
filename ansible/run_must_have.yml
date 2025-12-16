@@ -1,0 +1,6 @@
+- name: run roles which needs to run on the system
+  hosts: localhost
+  roles:
+    - role: firewall # instals and sets up ufw service
+    - role: docker
+    - role: reverse-proxy # traefik container

@@ -7,12 +7,6 @@
     service_name: "haos"
     service_dir: "/actions-runner/files/haos"
 
-- name: Check if any config files exist in directory
-  ansible.builtin.find:
-    paths: /actions-runner/files/haos/
-    patterns: "*.yaml"
-  register: haos_config_file
-
 - name: Copy configs if directory is empty
   ansible.builtin.copy:
     src: "{{ role_path }}/files/configuration.yaml"
@@ -20,8 +14,8 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
-  when: haos_config_file.matched == 0
-
+    force: no
+    
 - name: Start haos container
   community.docker.docker_container:
     name: haos

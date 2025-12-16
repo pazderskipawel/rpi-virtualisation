@@ -1,0 +1,5 @@
+- name: run containers 
+  hosts: localhost
+  roles:
+    - role: alerts # alertmanager, casvisor, prometheus system alerting manager
+    - role: cypress # run automated tests

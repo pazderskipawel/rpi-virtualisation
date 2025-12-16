@@ -1,0 +1,17 @@
+- name: Start DNS container
+  community.docker.docker_container:
+    name: "dns"
+    image: "sirscythe/dnsmasq-arm:latest"
+    restart_policy: unless-stopped
+    network_mode: host
+    volumes:
+      "{{ role_path }}/files/dnsmasq.conf:/etc/dnsmasq.conf"
+    capabilities:
+    - NET_ADMIN
+
+- name: Allow DNS in firewall
+  community.general.ufw:
+    rule: allow
+    port: 53
+    proto: udp
+    comment: 'dnsmasq container'

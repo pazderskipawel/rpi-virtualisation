@@ -1,7 +1,7 @@
 [Interface]
 PrivateKey = {{ client_private_key_file.content | b64decode | trim }}
 Address = 10.13.13.2/32
-DNS = 192.168.0.1
+DNS = {{ ansible_default_ipv4.address }}
 
 [Peer]
 PublicKey = {{ server_public_key.stdout }}

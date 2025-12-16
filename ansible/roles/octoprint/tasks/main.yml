@@ -6,30 +6,36 @@
     service_name: "octoprint"
     service_dir: "{{ octoprint_files_path }}"
 
-- name: Start Octoprint container
-  community.docker.docker_container:
-    name: "octoprint"
-    image: "octoprint/octoprint:latest"
-    state: started
-    restart_policy: "unless-stopped"
-    volumes:
-      - "{{ octoprint_files_path }}:/octoprint/octoprint"
-    devices: 
-      - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
-    networks:
-      - name: proxy
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.octoprint.rule: "Host(`octoprint.local`)"
-      traefik.http.routers.octoprint.entrypoints: "web"
-      traefik.http.services.octoprint.loadbalancer.server.port: "80"
-    
-- name: Verify service
-  include_role:
-    name: docker
-    tasks_from: verify_env
-  vars:
-    service_name: "octoprint"
+- name: Start Octoprint container if 3d printer is running
+  block:
+    - name: Start container
+      community.docker.docker_container:
+        name: "octoprint"
+        image: "octoprint/octoprint:latest"
+        state: started
+        restart_policy: "unless-stopped"
+        volumes:
+          - "{{ octoprint_files_path }}:/octoprint/octoprint"
+        devices: 
+          - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
+        networks:
+          - name: proxy
+        labels:
+          traefik.enable: "true"
+          traefik.http.routers.octoprint.rule: "Host(`octoprint.local`)"
+          traefik.http.routers.octoprint.entrypoints: "web"
+          traefik.http.services.octoprint.loadbalancer.server.port: "80"
+    - name: Verify service
+      include_role:
+        name: docker
+        tasks_from: verify_env
+      vars:
+        service_name: "octoprint"
+  rescue:
+      - name: Handle Octoprint errors
+        ansible.builtin.debug:
+          msg: "{% if 'error gathering device information' in (ansible_failed_result.msg | default('')) %}Printer off - continuing{% else %}Other error{% endif %}"
+        failed_when: "'error gathering device information' not in (ansible_failed_result.msg | default(''))"
 
 - name: Configure OctoPrint config file
   blockinfile:
