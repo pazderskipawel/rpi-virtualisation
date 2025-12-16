@@ -29,7 +29,7 @@
       ansible.builtin.debug:
         msg: "Octoprint container failed on start - continuing (printer may be off/disconnected)"
       when: >
-        "'error gathering device information while adding custom device "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0": no such file or directory' in ansible_failed_result.msg | default('')"
+        "'error gathering device information while adding custom device \"/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0\": no such file or directory' in ansible_failed_result.msg | default('')"
     
 - name: Verify service
   include_role:
