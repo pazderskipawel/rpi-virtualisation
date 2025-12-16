@@ -23,7 +23,7 @@
           traefik.enable: "true"
           traefik.http.routers.octoprint.rule: "Host(`octoprint.local`)"
           traefik.http.routers.octoprint.entrypoints: "web"
-        traefik.http.services.octoprint.loadbalancer.server.port: "80"
+          traefik.http.services.octoprint.loadbalancer.server.port: "80"
   rescue:
     - name: Printer off/disconnected (expected)
       ansible.builtin.debug:
