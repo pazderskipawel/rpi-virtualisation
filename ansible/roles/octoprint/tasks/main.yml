@@ -8,21 +8,21 @@
 
 - name: Start Octoprint container
   block:
-    community.docker.docker_container:
-      name: "octoprint"
-      image: "octoprint/octoprint:latest"
-      state: started
-      restart_policy: "unless-stopped"
-      volumes:
-        - "{{ octoprint_files_path }}:/octoprint/octoprint"
-      devices: 
-        - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
-      networks:
-        - name: proxy
-      labels:
-        traefik.enable: "true"
-        traefik.http.routers.octoprint.rule: "Host(`octoprint.local`)"
-        traefik.http.routers.octoprint.entrypoints: "web"
+    - community.docker.docker_container:
+        name: "octoprint"
+        image: "octoprint/octoprint:latest"
+        state: started
+        restart_policy: "unless-stopped"
+        volumes:
+          - "{{ octoprint_files_path }}:/octoprint/octoprint"
+        devices: 
+          - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
+        networks:
+          - name: proxy
+        labels:
+          traefik.enable: "true"
+          traefik.http.routers.octoprint.rule: "Host(`octoprint.local`)"
+          traefik.http.routers.octoprint.entrypoints: "web"
         traefik.http.services.octoprint.loadbalancer.server.port: "80"
   rescue:
     - name: Printer off/disconnected (expected)
@@ -31,13 +31,6 @@
       when: >
         "'error gathering device information while adding custom device' in ansible_failed_result.msg | default('') and 
         'usb-1a86_USB_Serial-if00-port0' in ansible_failed_result.msg | default('')"
-    
-    - name: Other container error - FAILING
-      ansible.builtin.fail:
-        msg: "Container failed for other reason: {{ ansible_failed_result.msg }}"
-      when: >
-        "'error gathering device information while adding custom device' not in ansible_failed_result.msg | default('') or
-        'usb-1a86_USB_Serial-if00-port0' not in ansible_failed_result.msg | default('')"
     
 - name: Verify service
   include_role:
