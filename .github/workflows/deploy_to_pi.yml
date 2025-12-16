@@ -46,7 +46,7 @@ jobs:
         run: ansible-playbook run_wip_services.yml
 
   deploy-network-services:
-    needs: deploy-work-in-progress-services
+    needs: [deploy-main-services, deploy-work-in-progress-services]
     runs-on: self-hosted
     steps:
       - name: Run roles
