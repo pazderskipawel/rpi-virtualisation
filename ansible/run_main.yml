@@ -1,0 +1,9 @@
+- name: run containers 
+  hosts: localhost
+  roles: # most to least important
+    - role: haos # home assistant container
+    - role: octoprint # 3d printer manager (marlin firmware)
+    - role: n8n # n8n automation tool
+    - role: cockpit # debian system management service
+    - role: samba # creates smb drives for windows
+    - role: notes # joplin (notes app) and excalidraw ("paint" app)

@@ -1,0 +1,5 @@
+- name: run networking services
+  hosts: localhost
+  roles:
+    - role: dns # dnsmasq container
+    - role: vpn # wireguard service setup

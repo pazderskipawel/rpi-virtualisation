@@ -23,49 +23,30 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
-  check-ansible:
-    needs: checkout-code
-    runs-on: self-hosted
-    steps:
-      - name: ensure Ansible present and expected config
-        run: |
-          chmod +x ansible_install.sh
-          # run the check; if it exits non-zero, run install
-          if ! ./ansible_install.sh check; then
-            echo "Check failed, running install"
-            ./ansible_install.sh install
-          else
-            echo "Check passed, skipping install"
-          fi
 
-  deploy-basic-services:
-    needs: check-ansible
+  deploy-must-have-services:
     runs-on: self-hosted
     steps:
       - name: Run needed roles
         run: ansible-playbook run_basic.yml
   
-  detect-modifications-and-deploy-services:
-    needs: deploy-basic-services
+  deploy-main-services:
+    needs: deploy-must-have-services
     runs-on: self-hosted
     steps:
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          #base: ${{ github.event.before }} #compares with previous commit, by default it compares with main
-          filters: | #has to be absolute path in repo (aka 'working-directory' does not work here)
-            run-containers:
-              - 'ansible/roles/**'
       - name: run containers
-        if: steps.filter.outputs.run-containers == 'true'
-        run: ansible-playbook run_containers.yml --tags octoprint,n8n,haos,alerts,cypress,notes,dns
-      - name: run VMs
-        if: steps.filter.outputs.run-vms == 'true'
-        run: ansible-playbook run_vms.yml
+        run: ansible-playbook run_main.yml
 
-  deploy-vpn:
-    needs: detect-modifications-and-deploy-services
+  deploy-work-in-progress-services:
+    needs: deploy-main-services
+    runs-on: self-hosted
+    steps:
+      - name: run containers
+        run: ansible-playbook run_wip_services.yml
+
+  deploy-network-services:
+    needs: deploy-work-in-progress-services
     runs-on: self-hosted
     steps:
       - name: Run needed roles
-        run: ansible-playbook run_vpn.yml
+        run: ansible-playbook run_network.yml
