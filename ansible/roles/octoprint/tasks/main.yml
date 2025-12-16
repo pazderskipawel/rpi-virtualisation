@@ -7,22 +7,29 @@
     service_dir: "{{ octoprint_files_path }}"
 
 - name: Start Octoprint container
-  community.docker.docker_container:
-    name: "octoprint"
-    image: "octoprint/octoprint:latest"
-    state: started
-    restart_policy: "unless-stopped"
-    volumes:
-      - "{{ octoprint_files_path }}:/octoprint/octoprint"
-    devices: 
-      - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
-    networks:
-      - name: proxy
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.octoprint.rule: "Host(`octoprint.local`)"
-      traefik.http.routers.octoprint.entrypoints: "web"
-      traefik.http.services.octoprint.loadbalancer.server.port: "80"
+  block:
+    community.docker.docker_container:
+      name: "octoprint"
+      image: "octoprint/octoprint:latest"
+      state: started
+      restart_policy: "unless-stopped"
+      volumes:
+        - "{{ octoprint_files_path }}:/octoprint/octoprint"
+      devices: 
+        - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
+      networks:
+        - name: proxy
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.octoprint.rule: "Host(`octoprint.local`)"
+        traefik.http.routers.octoprint.entrypoints: "web"
+        traefik.http.services.octoprint.loadbalancer.server.port: "80"
+  rescue:
+    - name: Printer off/disconnected (expected)
+      ansible.builtin.debug:
+        msg: "Octoprint container failed on start - continuing (printer may be off/disconnected)"
+      when: >
+        "'error gathering device information while adding custom device "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0": no such file or directory' in ansible_failed_result.msg | default('')"
     
 - name: Verify service
   include_role:
