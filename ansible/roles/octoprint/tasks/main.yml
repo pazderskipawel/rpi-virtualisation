@@ -6,9 +6,10 @@
     service_name: "octoprint"
     service_dir: "{{ octoprint_files_path }}"
 
-- name: Start Octoprint container
+- name: Start Octoprint container if 3d printer is running
   block:
-    - community.docker.docker_container:
+    - name: Start container
+      community.docker.docker_container:
         name: "octoprint"
         image: "octoprint/octoprint:latest"
         state: started
@@ -24,18 +25,17 @@
           traefik.http.routers.octoprint.rule: "Host(`octoprint.local`)"
           traefik.http.routers.octoprint.entrypoints: "web"
           traefik.http.services.octoprint.loadbalancer.server.port: "80"
+    - name: Verify service
+      include_role:
+        name: docker
+        tasks_from: verify_env
+      vars:
+        service_name: "octoprint"
   rescue:
       - name: Handle Octoprint errors
         ansible.builtin.debug:
           msg: "{% if 'error gathering device information' in (ansible_failed_result.msg | default('')) %}Printer off - continuing{% else %}Other error{% endif %}"
         failed_when: "'error gathering device information' not in (ansible_failed_result.msg | default(''))"
-    
-- name: Verify service
-  include_role:
-    name: docker
-    tasks_from: verify_env
-  vars:
-    service_name: "octoprint"
 
 - name: Configure OctoPrint config file
   blockinfile:
