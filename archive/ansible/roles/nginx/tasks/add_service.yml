@@ -1,0 +1,21 @@
+- name: Copy {{ service_name }}.conf into nginx directory
+  ansible.builtin.copy:
+    src: "{{ service_config_path }}"
+    dest: /actions-runner/files/nginx/{{ service_name }}.conf
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Reload nginx to apply config
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload
+
+- name: Verify nginx container is running
+  community.docker.docker_container_info:
+    name: nginx
+  register: nginx_info
+  retries: 5
+  delay: 2
+  until: nginx_info.container.State.Running
+  failed_when: not nginx_info.container.State.Running

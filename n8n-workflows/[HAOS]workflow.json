@@ -1,0 +1,63 @@
+{
+  "updatedAt": "2025-11-05T19:27:55.455Z",
+  "createdAt": "2025-11-05T19:27:55.455Z",
+  "id": "QO8KMT6NFSG5yGWD",
+  "name": "[HAOS]workflow",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f6a415a8-6af1-438a-ae34-e5c353f6c353",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.homeAssistant",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "5f1f84cc-7cdd-45f1-a491-7ef63bb36ea1",
+      "name": "Get the config"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get the config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "d96ae5f5-a327-42dd-a6f6-275e20aecc84",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-05T19:27:55.461Z",
+      "createdAt": "2025-11-05T19:27:55.461Z",
+      "role": "workflow:owner",
+      "workflowId": "QO8KMT6NFSG5yGWD",
+      "projectId": "dL8YKrh5gAsYUBJ3"
+    }
+  ],
+  "tags": []
+}
