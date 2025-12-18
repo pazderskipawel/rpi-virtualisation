@@ -1,0 +1,167 @@
+- name: Wait for VM to boot and get DHCP address
+  ansible.builtin.pause:
+    seconds: 60
+
+- name: Get VM IP from network DHCP status
+  shell: |
+    cat /var/lib/libvirt/dnsmasq/virbr_{{ network_name }}.status | grep -oP '"ip-address":\s*"\K[^"]+' | head -1
+  register: vm_ip_status
+  retries: 30
+  delay: 10
+  until: vm_ip_status.stdout != ""
+  changed_when: false
+
+- name: Set VM IP
+  ansible.builtin.set_fact:
+    vm_ip_address: "{{ vm_ip_status.stdout }}"
+
+- name: Complete onboarding
+  block:
+
+    - name: Wait for Home Assistant API (first boot takes 15-20 min)
+      ansible.builtin.uri:
+        url: "http://{{ vm_ip_address }}:8123/api/onboarding"
+        method: GET
+        status_code: 200
+        timeout: 5
+      register: onboarding_check
+      until: onboarding_check.status == 200
+      retries: 120
+      delay: 10
+
+    - name: Create admin user
+      ansible.builtin.uri:
+        url: "http://{{ vm_ip_address }}:8123/api/onboarding/users"
+        method: POST
+        body_format: json
+        body:
+          client_id: "http://{{ vm_ip_address }}:8123"
+          name: "Administrator"
+          username: "{{ ha_admin_username }}"
+          password: "{{ ha_admin_password }}"
+          language: "en"
+        status_code: [200, 400]
+      register: user_created
+
+    - name: Debug full API response
+      ansible.builtin.debug:
+        msg:
+          - "Status: {{ user_created.status }}"
+          - "JSON: {{ user_created.json }}"
+          - "Full response: {{ user_created }}"
+          
+    - name: Save auth code
+      ansible.builtin.set_fact:
+        ha_auth_code: "{{ user_created.json.auth_code | default('') }}"
+      when: 
+        - user_created.status is defined
+        - user_created.status == 200
+
+    - name: Exchange auth code for access token
+      ansible.builtin.uri:
+        url: "http://{{ vm_ip_address }}:8123/auth/token"
+        method: POST
+        body_format: form-urlencoded
+        body:
+          grant_type: "authorization_code"
+          code: "{{ ha_auth_code }}"
+          client_id: "http://{{ vm_ip_address }}:8123"
+        status_code: [200]
+      register: token_response
+      when: ha_auth_code is defined and ha_auth_code != ''
+
+    - name: Save access token
+      ansible.builtin.set_fact:
+        ha_auth_token: "{{ token_response.json.access_token }}"
+      when: 
+        - token_response is defined
+        - token_response.status == 200
+        - token_response.json.access_token is defined
+
+    - name: Set location and unit system
+      ansible.builtin.uri:
+        url: "http://{{ vm_ip_address }}:8123/api/onboarding/core_config"
+        method: POST
+        body_format: json
+        body:
+          latitude: 53.1235
+          longitude: 18.0076
+          elevation: 60
+          unit_system: metric
+          time_zone: "Europe/Warsaw"
+          currency: "PLN"
+          country: "PL"
+        headers:
+          Authorization: "Bearer {{ ha_auth_token }}"
+        status_code: [200, 400]
+      when: ha_auth_token is defined and ha_auth_token != ''
+
+    - name: Complete onboarding - integration
+      ansible.builtin.uri:
+        url: "http://{{ vm_ip_address }}:8123/api/onboarding/integration"
+        method: POST
+        body_format: json
+        body: {}
+        headers:
+          Authorization: "Bearer {{ ha_auth_token }}"
+        status_code: [200, 400]
+      when: ha_auth_token is defined and ha_auth_token != ''
+
+    - name: Disable analytics
+      ansible.builtin.uri:
+        url: "http://{{ vm_ip_address }}:8123/api/onboarding/analytics"
+        method: POST
+        body_format: json
+        body:
+          preferences:
+            base: false
+            usage: false
+            statistics: false
+            diagnostics: false
+        headers:
+          Authorization: "Bearer {{ ha_auth_token }}"
+        status_code: [200, 400]
+      when: ha_auth_token is defined and ha_auth_token != ''
+
+    - name: Wait for configuration to be loaded
+      ansible.builtin.pause:
+        seconds: 10
+
+- name: Copy configuration.yaml file to VM
+  block:
+
+    - name: Shutdown VM for configuration
+      ansible.builtin.shell: |
+        virsh -c qemu:///system shutdown {{ vm_name }}
+
+    - name: Wait for VM to completely stop
+      ansible.builtin.shell: |
+        virsh -c qemu:///system domstate {{ vm_name }}
+      register: vm_state
+      until: vm_state.stdout == "wyłączone" # system is in Polish
+      retries: 10
+      delay: 15
+      changed_when: false
+
+    - name: Copy configuration.yaml to VM
+      ansible.builtin.shell: |
+        virt-copy-in -d {{ vm_name }} -m /dev/sda8:/ {{ role_path }}/files/configuration.yaml /supervisor/homeassistant/
+      #
+      # configuration file is in homeassistant-data partition in supervisor/homeassistant directory
+      #
+      #  rpi@rpi:~ $ virt-filesystems -c qemu:///system -d haos -l
+      #  Name      Type       VFS      Label          Size       Parent
+      # ...
+      #  /dev/sda8 filesystem ext4     hassos-data    5582213120 -
+      #  rpi@rpi:~ $ virt-ls -c qemu:///system -d haos -m /dev/sda8 /supervisor/homeassistant
+      #  ...
+      #  configuration.yaml
+      #  ...
+      #
+      
+    - name: Start VM with configuration deployed
+      community.libvirt.virt:
+        name: "{{ vm_name }}"
+        state: running
+        uri: "qemu:///system"
+

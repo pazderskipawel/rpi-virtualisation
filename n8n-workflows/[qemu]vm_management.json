@@ -1,0 +1,429 @@
+{
+  "updatedAt": "2025-11-06T19:10:46.000Z",
+  "createdAt": "2025-11-05T19:27:55.455Z",
+  "id": "QO8KMT6NFSG5yGWD",
+  "name": "[qemu]vm_management",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "86244a6e-6d80-4b19-af71-f9496d8bcdf6"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "20967df3-dfae-4615-a5ce-8ddc3993fe8c",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "stop",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "stop"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3ef3fc0c-5ef6-4317-961f-6323e096751c",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "restart",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "restart"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "883c91ea-1be2-4bc3-a9b7-2298a613a517",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "snapshot",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "snapshot"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        448,
+        160
+      ],
+      "id": "38a08008-2470-4b10-99f9-0fd203cf29b4",
+      "name": "VM action"
+    },
+    {
+      "parameters": {
+        "command": "=virsh --connect qemu:///system start {{ $('Fill out form').item.json.Name }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "15828088-9eef-43e8-ab5f-d3519167bca3",
+      "name": "start VM",
+      "credentials": {
+        "sshPassword": {
+          "id": "gSIxru3jvF6Lirz0",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=virsh --connect qemu:///system shutdown {{ $('Fill out form').item.json.Name }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        672,
+        96
+      ],
+      "id": "4c1b5ab6-1aff-4fd1-aec8-817e05d6be15",
+      "name": "stop VM",
+      "credentials": {
+        "sshPassword": {
+          "id": "gSIxru3jvF6Lirz0",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=virsh --connect qemu:///system reboot {{ $('Fill out form').item.json.Name }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        672,
+        288
+      ],
+      "id": "3f549029-bc72-42c8-b6c7-da4f6d16e0dd",
+      "name": "restart VM",
+      "credentials": {
+        "sshPassword": {
+          "id": "gSIxru3jvF6Lirz0",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=virsh snapshot-create-as {{ $('Fill out form').item.json.Name }} snapshot-$(date +%s) --description \"Automated snapshot\" "
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        672,
+        480
+      ],
+      "id": "dc87b92c-72c7-44ae-86a9-f831367489ef",
+      "name": "take VM snapshot",
+      "credentials": {
+        "sshPassword": {
+          "id": "gSIxru3jvF6Lirz0",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "VMs",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "VM name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Action",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "start"
+                  },
+                  {
+                    "option": "stop"
+                  },
+                  {
+                    "option": "restart"
+                  },
+                  {
+                    "option": "snapshot"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "ignoreBots": true
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        192
+      ],
+      "id": "f5accb23-0c97-4c55-996f-cf5c5481212b",
+      "name": "Fill out form",
+      "webhookId": "f2b5eaa2-a2fd-4ea5-8c8c-4e2c86f8a014"
+    },
+    {
+      "parameters": {
+        "command": "=virsh --connect qemu:///system domstate {{ $('Fill out form').item.json.Name }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        192
+      ],
+      "id": "2080450c-9473-4bfd-8d03-00ecef2b213e",
+      "name": "Show VM status",
+      "credentials": {
+        "sshPassword": {
+          "id": "gSIxru3jvF6Lirz0",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        192
+      ],
+      "id": "56273cdb-fee1-4539-a2b5-e3eaa9e30991",
+      "name": "Wait",
+      "webhookId": "ebad7fae-d245-4914-874c-a12db2173d0d"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "=Form submitted, current {{ $('Fill out form').item.json.Name }}  VM status",
+        "completionMessage": "={{ $json.stdout }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        192
+      ],
+      "id": "600fbf11-543a-4e40-ae8f-5ae713fada6d",
+      "name": "Form",
+      "webhookId": "19c6eb4c-b767-4fb5-ac8d-6857e45bc3f6"
+    }
+  ],
+  "connections": {
+    "VM action": {
+      "main": [
+        [
+          {
+            "node": "start VM",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "stop VM",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "restart VM",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "take VM snapshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fill out form": {
+      "main": [
+        [
+          {
+            "node": "VM action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Show VM status": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Show VM status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "stop VM": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "start VM": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "restart VM": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "take VM snapshot": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "51de8248-b76b-44b6-a44d-1fe45b1d8ef7",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-05T19:27:55.461Z",
+      "createdAt": "2025-11-05T19:27:55.461Z",
+      "role": "workflow:owner",
+      "workflowId": "QO8KMT6NFSG5yGWD",
+      "projectId": "dL8YKrh5gAsYUBJ3"
+    }
+  ],
+  "tags": []
+}

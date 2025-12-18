@@ -1,0 +1,275 @@
+{
+  "updatedAt": "2025-11-06T10:43:23.000Z",
+  "createdAt": "2025-11-04T16:06:57.059Z",
+  "id": "jI0eluzoWugt2xFi",
+  "name": "[n8n]export_workflows_as_json",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        176,
+        -256
+      ],
+      "id": "506276cd-a6c3-4fb9-b93e-b03e1771b00e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/tmp/repo/{{ $binary.data.fileName }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        -256
+      ],
+      "id": "7a40cdc4-1279-4dcb-8c5b-66305f19f906",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "options": {
+          "format": true,
+          "fileName": "={{ $json.name }}.json"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1072,
+        -256
+      ],
+      "id": "49de65f7-6c59-4088-b81f-8e031cc60c2b",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        -64
+      ],
+      "id": "2c8caad0-98f2-4626-8f13-9923e54c7d68",
+      "name": "Do nothing with deleted files"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0993fcf5-2057-4e42-82cc-dd9ddca71e47",
+              "leftValue": "={{ $json.isArchived }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        -160
+      ],
+      "id": "b3d45447-0e3b-4688-bef5-2b114837c41c",
+      "name": "Check if workflow is deleted"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        -64
+      ],
+      "id": "48c5f7d1-3502-4dc2-97de-27e9434e232d",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "url": "http://192.168.0.171:5678/api/v1/workflows",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "n8nApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        400,
+        -160
+      ],
+      "id": "0c2e9f89-1ed6-4a17-b454-c873c1d4e857",
+      "name": "Get all workflows from n8n api",
+      "alwaysOutputData": false,
+      "credentials": {
+        "n8nApi": {
+          "id": "2F885JkdMxMYowia",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        624,
+        -160
+      ],
+      "id": "8c8ef554-3f94-4747-9dba-d3614cacec5f",
+      "name": "Split Out"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get all workflows from n8n api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if workflow is deleted": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Do nothing with deleted files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get all workflows from n8n api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all workflows from n8n api": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Check if workflow is deleted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "fa4d1d59-4734-4a51-a638-581e937530f6",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-04T16:06:57.072Z",
+      "createdAt": "2025-11-04T16:06:57.072Z",
+      "role": "workflow:owner",
+      "workflowId": "jI0eluzoWugt2xFi",
+      "projectId": "dL8YKrh5gAsYUBJ3"
+    }
+  ],
+  "tags": []
+}

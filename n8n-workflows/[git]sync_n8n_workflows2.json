@@ -1,0 +1,193 @@
+{
+  "updatedAt": "2025-11-06T19:11:01.000Z",
+  "createdAt": "2025-11-05T18:08:16.929Z",
+  "id": "CgZxNvjDz1cDIepk",
+  "name": "[git]sync_n8n_workflows",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        176
+      ],
+      "id": "088a7e6d-4e87-44e4-8c3f-eea998ec86ab",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "commit",
+        "repositoryPath": "/tmp/repo",
+        "message": "[n8n] Sync current workflows",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.git",
+      "typeVersion": 1,
+      "position": [
+        448,
+        176
+      ],
+      "id": "dc2c1080-09d9-4919-860b-08155af446e3",
+      "name": "Git commit",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "addConfig",
+        "repositoryPath": "/tmp/repo",
+        "key": "user.email",
+        "value": "pawelpazderski@hotmail.com",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.git",
+      "typeVersion": 1,
+      "position": [
+        672,
+        176
+      ],
+      "id": "6e11fe87-80e4-471c-a297-fc7600507bad",
+      "name": "Git setup user email"
+    },
+    {
+      "parameters": {
+        "operation": "addConfig",
+        "repositoryPath": "/tmp/repo",
+        "key": "user.name",
+        "value": "Paweł Pazderski",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.git",
+      "typeVersion": 1,
+      "position": [
+        896,
+        256
+      ],
+      "id": "f717a8f6-b2da-44bb-998d-f3d5d673f026",
+      "name": "Git setup user name"
+    },
+    {
+      "parameters": {
+        "authentication": "gitPassword",
+        "operation": "push",
+        "repositoryPath": "/tmp/repo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.git",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "3f4ba3c0-7e1f-47af-ba5b-3ec14b2f2ad2",
+      "name": "Git push",
+      "credentials": {
+        "gitPassword": {
+          "id": "hbxGC14QL0ASzor1",
+          "name": "Git account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "add",
+        "repositoryPath": "/tmp/repo",
+        "pathsToAdd": "*.json"
+      },
+      "type": "n8n-nodes-base.git",
+      "typeVersion": 1,
+      "position": [
+        224,
+        176
+      ],
+      "id": "36543bd2-3f4a-4b6d-ae4f-967064763f99",
+      "name": "Git add workflows"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Git add workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Git commit": {
+      "main": [
+        [
+          {
+            "node": "Git push",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Git setup user email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Git setup user email": {
+      "main": [
+        [
+          {
+            "node": "Git setup user name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Git setup user name": {
+      "main": [
+        [
+          {
+            "node": "Git commit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Git add workflows": {
+      "main": [
+        [
+          {
+            "node": "Git commit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "b47ded31-eb5b-4336-b3e5-ca9464d50940",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-05T18:08:16.938Z",
+      "createdAt": "2025-11-05T18:08:16.938Z",
+      "role": "workflow:owner",
+      "workflowId": "CgZxNvjDz1cDIepk",
+      "projectId": "dL8YKrh5gAsYUBJ3"
+    }
+  ],
+  "tags": []
+}

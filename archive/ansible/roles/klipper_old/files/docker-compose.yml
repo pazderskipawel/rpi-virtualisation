@@ -1,0 +1,45 @@
+services:
+  klipper: #printing service
+    image: mkuf/klipper:latest
+    container_name: klipper
+    privileged: true
+    volumes:
+      - /actions-runner/files/printer_data/config:/opt/printer_data/config
+      - /actions-runner/files/printer_data/run:/opt/printer_data/run
+      - /actions-runner/files/printer_data/gcodes:/opt/printer_data/gcodes
+      - /actions-runner/files/printer_data/logs:/opt/printer_data/logs
+      - /dev:/dev
+    networks:
+      - klipper-net
+    restart: unless-stopped
+
+  moonraker: #api for klipper
+    image: mkuf/moonraker:latest
+    container_name: moonraker
+    depends_on:
+      - klipper
+    ports:
+      - "127.0.0.1:7125:7125" # localhost "only"
+    volumes:
+      - /actions-runner/files/printer_data/config:/opt/printer_data/config
+      - /actions-runner/files/printer_data/run:/opt/printer_data/run
+      - /actions-runner/files/printer_data/gcodes:/opt/printer_data/gcodes
+      - /actions-runner/files/printer_data/logs:/opt/printer_data/logs
+    networks:
+      - klipper-net
+    restart: unless-stopped
+
+  fluidd: #web interface for klipper
+    image: cadriel/fluidd:latest
+    container_name: fluidd
+    depends_on:
+      - moonraker
+    ports:
+      - "127.0.0.1:8081:80"
+    networks:
+      - klipper-net
+    restart: unless-stopped
+
+networks:
+  klipper-net: # network for klipper <--> moonraker
+    driver: bridge
